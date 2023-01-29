@@ -10,7 +10,12 @@ import DismissKeyboardView from '../components/DismissKeyBoardView';
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
 export default function SignIn({navigation}: SignUpScreenProps){
-    const [Name, ID, Pass, PassCheck, PhoneNum, CheckNum, setInput] = useState('');
+    const [Name, setName] = useState('');
+    const [ID, setID] = useState('');
+    const [Pass, setPass] = useState('');
+    const [PassCheck, setPassCheck] = useState('');
+    const [PhoneNum, setPhoneNum] = useState('');
+    const [CheckNum, setCheckNum] = useState('');
     const NameRef = useRef<TextInput | null>(null);
     const IDRef = useRef<TextInput | null>(null);
     const PassRef = useRef<TextInput | null>(null);
@@ -18,8 +23,23 @@ export default function SignIn({navigation}: SignUpScreenProps){
     const PhoneNumRef = useRef<TextInput | null>(null);
     const CheckNumRef = useRef<TextInput | null>(null);
 
-    const onChangeInput = useCallback(text => {
-        setInput(text.trim());
+    const onChangeName = useCallback(text => {
+        setName(text.trim());
+    }, []);
+    const onChangeID = useCallback(text => {
+        setID(text.trim());
+    }, []);
+    const onChangePass = useCallback(text => {
+        setPass(text.trim());
+    }, []);
+    const onChangePassCheck = useCallback(text => {
+        setPassCheck(text.trim());
+    }, []);
+    const onChangePhoneNum = useCallback(text => {
+        setPhoneNum(text.trim());
+    }, []);
+    const onChangeCheckNum = useCallback(text => {
+        setCheckNum(text.trim());
     }, []);
     const onSubmit = useCallback(() => {}, []);
     return (
@@ -41,7 +61,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             selectionColor={'#DE7878'}
                             style={styles.typingInput}
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangeName}
                             textContentType="name"
                             value={Name}
                             clearButtonMode="while-editing"
@@ -54,7 +74,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             selectionColor={'#DE7878'}
                             style={styles.typingInput}
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangeID}
                             textContentType="username"
                             value={ID}
                             clearButtonMode="while-editing"
@@ -68,7 +88,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             secureTextEntry={true} 
                             style={styles.typingInput} 
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangePass}
                             importantForAutofill="yes"
                             textContentType="password"
                             value={Pass}
@@ -83,7 +103,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             secureTextEntry={true} 
                             style={styles.typingInput} 
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangePassCheck}
                             value={PassCheck}
                             clearButtonMode="while-editing"
                             ref={PassCheckRef}
@@ -95,7 +115,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             selectionColor={'#DE7878'}
                             style={styles.typingInput}
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangePhoneNum}
                             textContentType="telephoneNumber"
                             value={PhoneNum}
                             clearButtonMode="while-editing"
@@ -108,7 +128,7 @@ export default function SignIn({navigation}: SignUpScreenProps){
                             selectionColor={'#DE7878'}
                             style={styles.typingInput}
                             autoCapitalize='none'
-                            onChangeText={onChangeInput}
+                            onChangeText={onChangeCheckNum}
                             value={CheckNum}
                             clearButtonMode="while-editing"
                             ref={CheckNumRef}
@@ -127,23 +147,22 @@ export default function SignIn({navigation}: SignUpScreenProps){
 }
 
 const styles = StyleSheet.create({
-    // #0E1D0A
-    entire: {flex: 1, backgroundColor: 'pink', justifyContent: 'center', paddingHorizontal: 20},
-    header: {height: 50},
-    headerText: {fontSize: 24, marginTop: 10, color: '#94EE3A', fontFamily: 'PurplePurse-Regular'},
-    body: {height: 520, width: 360},
-    title: {marginBottom: 10},
-    titleHeader: {},
-    titleBody: {},
-    typing: {height: 480, marginHorizontal: 5},
+    entire: {flex: 1, backgroundColor: '#0E1D0A', justifyContent: 'center'},
+    header: {height: 60},
+    headerText: {fontSize: 22, marginTop: 10, color: '#94EE3A', fontFamily: 'PurplePurse-Regular', marginLeft: 20},
+    body: {height: 520, width: 360, paddingHorizontal: 20},
+    title: {marginBottom: 15},
+    titleHeader: {fontSize: 23, color: 'white'},
+    titleBody: {color: '#C4C4C4', fontSize: 10, marginTop: 5},
+    typing: {height: 380, marginHorizontal: 5},
     typingText: {height: 25, color: '#FFE3E3', fontSize: 13, fontFamily: 'NotoSansKR-Regular'},
     typingInput: {
         height: 25, 
         color: 'white', fontSize: 15,
-        padding: 0, marginTop: 10, marginBottom: 5, marginHorizontal: 3, textAlignVertical: 'bottom',
+        padding: 0, marginTop: 6, marginBottom: 3, marginHorizontal: 3, textAlignVertical: 'bottom',
         borderBottomColor: '#EBAAAA', borderBottomWidth: 2
     },
-    btn: {},
-    startBtn: {},
-    btnText: {}
+    btn: {height: 45, width: '100%', paddingHorizontal: 5},
+    startBtn: {backgroundColor: '#94EE3A', height: '100%', width: '100%', justifyContent: 'center', borderRadius: 23},
+    btnText: {color: 'black', textAlign: 'center'}
 });

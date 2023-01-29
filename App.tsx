@@ -80,7 +80,7 @@ export default function App() {
           <Stack.Screen
             name='SignUp'
             component={SignUp}
-            options={{title: 'SignUp', headerShown: false}}
+            options={{title: 'SignUp'}}
           />
           <Stack.Screen
             name='FindID'
