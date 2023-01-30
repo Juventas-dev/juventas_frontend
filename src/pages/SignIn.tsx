@@ -6,7 +6,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../App';
 import DismissKeyboardView from '../components/DismissKeyBoardView';
-// import { BottomNavigation } from 'react-native-paper';////
+// import { BottomNavigation } from 'react-native-paper';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -44,7 +44,7 @@ export default function SignIn({navigation}: SignInScreenProps){
         navigation.navigate('FindPass');
     }, [navigation]);
 
-    const canGoNext = ID && Pass;
+    // const canGoNext = ID && Pass;
     return (
         <DismissKeyboardView>
             <View style={styles.entire}>
@@ -113,14 +113,14 @@ export default function SignIn({navigation}: SignInScreenProps){
 
 const styles = StyleSheet.create({
     entire: {flex: 1, backgroundColor: '#0E1D0A', alignItems: 'center', justifyContent: 'center'},
-    header: {height: 330},
-    headerText: {fontSize: 60, marginTop: 170, color: '#94EE3A', fontFamily: 'PurplePurse-Regular'},
+    header: {height: 330, width: '100%'},
+    headerText: {fontSize: 60, marginTop: 170, color: '#94EE3A', fontFamily: 'PurplePurse-Regular', textAlign: 'center'},
     body: {height: 240, width: 360, paddingHorizontal: 20, marginBottom: 5},
     finding: {height: 24, flexDirection: 'row', justifyContent: 'flex-end'},
     findIDBtn: {marginRight: 10},
     findPASSBtn: {marginRight: 3},
     findText: {color: '#EBE1E1CC', opacity: 0.8, fontSize: 10, fontFamily: 'NotoSansKR-Regular'},
-    typing: {height: 160, marginHorizontal: 5},
+    typing: {marginHorizontal: 5},
     typingText: {height: 25, color: '#FFE3E3', fontSize: 13, fontFamily: 'NotoSansKR-Regular'},
     typingInput: {
         height: 25, 
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         padding: 0, marginTop: 10, marginBottom: 15, marginHorizontal: 3, textAlignVertical: 'bottom',
         borderBottomColor: '#EBAAAA', borderBottomWidth: 2
     },
-    btn: {height: 55, flexDirection: 'row', justifyContent: 'space-around'},
+    btn: {flexDirection: 'row', justifyContent: 'space-around', marginTop: 10},
     signUpBtn: {
         width: 135, height: 37,
         backgroundColor: '#E6CCCA', 

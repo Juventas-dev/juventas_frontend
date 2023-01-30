@@ -85,12 +85,12 @@ export default function App() {
           <Stack.Screen
             name='FindID'
             component={FindID}
-            options={{title: 'FindID', headerShown: false}}
+            options={{title: 'FindID'}}
           />
           <Stack.Screen
             name='FindPass'
             component={FindPass}
-            options={{title: 'FindPass', headerShown: false}}
+            options={{title: 'FindPass'}}
           />
         </Stack.Navigator>
       )}
@@ -106,5 +106,6 @@ export default function App() {
 // npx pod-install # 맥 전용
 // npm i react-native-keyboard-aware-scroll-view --save
 // npm install @react-navigation/bottom-tabs
-
+// npm install react-native-simple-modal --save
 // npm i react-native-vector-icons react-native-paper
+// npm i --save-dev @types/react-native-vector-icons
