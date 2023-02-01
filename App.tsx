@@ -1,21 +1,18 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import FindID from './src/pages/FindID';
-import FindPass from './src/pages/FindPass';
+import FindPassword from './src/pages/FindPassword';
 import Quest from './src/pages/Quest';
 import Board from './src/pages/Board';
 import Diary from './src/pages/Diary';
 import Mypage from './src/pages/Mypage';
 // import {
 //   SafeAreaView, ScrollView, KeyboardAvoidingView,
-//   Text, Alert, TextInput, Pressable, 
+//   Text, Alert, TextInput, Pressable,
 //   StyleSheet, View
 // } from 'react-native';
 // import {useCallback} from 'react';
@@ -35,7 +32,7 @@ export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
   FindID: undefined;
-  FindPass : undefined;
+  FindPassword: undefined;
 };
 
 const Tab = createBottomTabNavigator();
@@ -50,22 +47,22 @@ export default function App() {
       {isLoggedIn ? (
         <Tab.Navigator>
           <Tab.Screen
-            name='Quest'
+            name="Quest"
             component={Quest}
             options={{title: 'Quest'}}
           />
           <Tab.Screen
-            name='Board'
+            name="Board"
             component={Board}
             options={{title: 'Board'}}
           />
           <Tab.Screen
-            name='Diary'
+            name="Diary"
             component={Diary}
             options={{title: 'Diary'}}
           />
           <Tab.Screen
-            name='Mypage'
+            name="Mypage"
             component={Mypage}
             options={{title: 'Mypage'}}
           />
@@ -73,32 +70,30 @@ export default function App() {
       ) : (
         <Stack.Navigator>
           <Stack.Screen
-            name='SignIn'
+            name="SignIn"
             component={SignIn}
             options={{title: 'SignIn', headerShown: false}}
           />
           <Stack.Screen
-            name='SignUp'
+            name="SignUp"
             component={SignUp}
             options={{title: 'SignUp'}}
           />
           <Stack.Screen
-            name='FindID'
+            name="FindID"
             component={FindID}
             options={{title: 'FindID'}}
           />
           <Stack.Screen
-            name='FindPass'
-            component={FindPass}
-            options={{title: 'FindPass'}}
+            name="FindPassword"
+            component={FindPassword}
+            options={{title: 'FindPassword'}}
           />
         </Stack.Navigator>
       )}
     </NavigationContainer>
   );
 }
-
-
 
 // npm i @react-navigation/native
 // npm i @react-navigation/native-stack
