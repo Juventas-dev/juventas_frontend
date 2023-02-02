@@ -12,6 +12,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+<<<<<<< HEAD
 		7699B88040F8A987B510C191 /* libPods-Juventas-JuventasTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Juventas-JuventasTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8D67A2CB69B74B14A1235589 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 59EEE31D7D3946A08A6AC1DD /* NotoSansKR-Black.otf */; };
@@ -20,6 +21,16 @@
 		8054BAC9AE2644B896804B6B /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 990A6D94D674420EA6D14E21 /* NotoSansKR-Regular.otf */; };
 		AB03E80B1D6F46F8A8660A0B /* NotoSansKR-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B776F429809145CEBD419C5D /* NotoSansKR-Thin.otf */; };
 		7DC843EB0CC54FC598051714 /* PurplePurse-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B8D236B2AB34635A9B01D72 /* PurplePurse-Regular.ttf */; };
+=======
+		5F0E282F70524CC1A1726147 /* NotoSansKR-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FAB1174920AE410FBA9D03AB /* NotoSansKR-Bold.otf */; };
+		7699B88040F8A987B510C191 /* libPods-Juventas-JuventasTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Juventas-JuventasTests.a */; };
+		7DC843EB0CC54FC598051714 /* PurplePurse-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B8D236B2AB34635A9B01D72 /* PurplePurse-Regular.ttf */; };
+		8054BAC9AE2644B896804B6B /* NotoSansKR-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 990A6D94D674420EA6D14E21 /* NotoSansKR-Regular.otf */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8D67A2CB69B74B14A1235589 /* NotoSansKR-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 59EEE31D7D3946A08A6AC1DD /* NotoSansKR-Black.otf */; };
+		AB03E80B1D6F46F8A8660A0B /* NotoSansKR-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B776F429809145CEBD419C5D /* NotoSansKR-Thin.otf */; };
+		D4F131D4A772458EAF1F6869 /* NotoSansKR-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 443F2F298D194F78BE8ED9BF /* NotoSansKR-Light.otf */; };
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +55,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Juventas/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-Juventas-JuventasTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Juventas-JuventasTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-Juventas.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas.debug.xcconfig"; path = "Target Support Files/Pods-Juventas/Pods-Juventas.debug.xcconfig"; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		5709B34CF0A7D63546082F79 /* Pods-Juventas.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas.release.xcconfig"; path = "Target Support Files/Pods-Juventas/Pods-Juventas.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-Juventas-JuventasTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas-JuventasTests.debug.xcconfig"; path = "Target Support Files/Pods-Juventas-JuventasTests/Pods-Juventas-JuventasTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Juventas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Juventas.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +68,20 @@
 		990A6D94D674420EA6D14E21 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; name = "NotoSansKR-Regular.otf"; path = "../assets/fonts/NotoSansKR-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		B776F429809145CEBD419C5D /* NotoSansKR-Thin.otf */ = {isa = PBXFileReference; name = "NotoSansKR-Thin.otf"; path = "../assets/fonts/NotoSansKR-Thin.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		6B8D236B2AB34635A9B01D72 /* PurplePurse-Regular.ttf */ = {isa = PBXFileReference; name = "PurplePurse-Regular.ttf"; path = "../assets/fonts/PurplePurse-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+=======
+		443F2F298D194F78BE8ED9BF /* NotoSansKR-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansKR-Light.otf"; path = "../assets/fonts/NotoSansKR-Light.otf"; sourceTree = "<group>"; };
+		5709B34CF0A7D63546082F79 /* Pods-Juventas.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas.release.xcconfig"; path = "Target Support Files/Pods-Juventas/Pods-Juventas.release.xcconfig"; sourceTree = "<group>"; };
+		59EEE31D7D3946A08A6AC1DD /* NotoSansKR-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansKR-Black.otf"; path = "../assets/fonts/NotoSansKR-Black.otf"; sourceTree = "<group>"; };
+		5B7EB9410499542E8C5724F5 /* Pods-Juventas-JuventasTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas-JuventasTests.debug.xcconfig"; path = "Target Support Files/Pods-Juventas-JuventasTests/Pods-Juventas-JuventasTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5DCACB8F33CDC322A6C60F78 /* libPods-Juventas.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Juventas.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B8D236B2AB34635A9B01D72 /* PurplePurse-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "PurplePurse-Regular.ttf"; path = "../assets/fonts/PurplePurse-Regular.ttf"; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Juventas/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		89C6BE57DB24E9ADA2F236DE /* Pods-Juventas-JuventasTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Juventas-JuventasTests.release.xcconfig"; path = "Target Support Files/Pods-Juventas-JuventasTests/Pods-Juventas-JuventasTests.release.xcconfig"; sourceTree = "<group>"; };
+		990A6D94D674420EA6D14E21 /* NotoSansKR-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansKR-Regular.otf"; path = "../assets/fonts/NotoSansKR-Regular.otf"; sourceTree = "<group>"; };
+		B776F429809145CEBD419C5D /* NotoSansKR-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansKR-Thin.otf"; path = "../assets/fonts/NotoSansKR-Thin.otf"; sourceTree = "<group>"; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		FAB1174920AE410FBA9D03AB /* NotoSansKR-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansKR-Bold.otf"; path = "../assets/fonts/NotoSansKR-Bold.otf"; sourceTree = "<group>"; };
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +144,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
+		3D74EFE5B20341B2B264C786 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				59EEE31D7D3946A08A6AC1DD /* NotoSansKR-Black.otf */,
+				FAB1174920AE410FBA9D03AB /* NotoSansKR-Bold.otf */,
+				443F2F298D194F78BE8ED9BF /* NotoSansKR-Light.otf */,
+				990A6D94D674420EA6D14E21 /* NotoSansKR-Regular.otf */,
+				B776F429809145CEBD419C5D /* NotoSansKR-Thin.otf */,
+				6B8D236B2AB34635A9B01D72 /* PurplePurse-Regular.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,6 +204,7 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
 		3D74EFE5B20341B2B264C786 /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
@@ -175,6 +219,8 @@
 			sourceTree = "<group>";
 			path = "";
 		};
+=======
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -597,7 +643,11 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+<<<<<<< HEAD
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+=======
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -631,6 +681,10 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+<<<<<<< HEAD
+=======
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -668,7 +722,11 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+<<<<<<< HEAD
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+=======
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -694,6 +752,10 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+<<<<<<< HEAD
+=======
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

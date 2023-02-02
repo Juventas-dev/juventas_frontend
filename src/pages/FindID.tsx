@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../App';
+import {RootStackParamList} from '../../AppInner';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 type FindIDScreenProps = NativeStackScreenProps<RootStackParamList, 'FindID'>;
