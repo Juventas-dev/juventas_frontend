@@ -8,3 +8,8 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+<<<<<<< HEAD
+=======
+
+-keep class com.juventas.BuildConfig { *; }
+>>>>>>> c1d8fcf8e0bf27befbe2a787ab3b7aa84854e920
