@@ -8,17 +8,18 @@ import {
   Alert,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../App';
+import {RootStackParamList} from '../../AppInner';
 import DismissKeyboardView from '../components/DismissKeyBoardView';
-
+import axios, {AxiosError} from 'axios';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {ActivityIndicator} from 'react-native';
+import Config from 'react-native-config';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
-export default function SignIn({navigation}: SignUpScreenProps) {
+export default function SignUp({navigation}: SignUpScreenProps) {
   const [modal, showModal] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [Name, setName] = useState('');
   const [ID, setID] = useState('');
   const [Pass, setPass] = useState('');
@@ -32,53 +33,83 @@ export default function SignIn({navigation}: SignUpScreenProps) {
   const PhoneNumRef = useRef<TextInput | null>(null);
   const CheckNumRef = useRef<TextInput | null>(null);
 
-  const onChangeName = useCallback(text => {
+  const onChangeName = useCallback((text: string) => {
     setName(text.trim());
   }, []);
-  const onChangeID = useCallback(text => {
+  const onChangeID = useCallback((text: string) => {
     setID(text.trim());
   }, []);
-  const onChangePass = useCallback(text => {
+  const onChangePass = useCallback((text: string) => {
     setPass(text.trim());
   }, []);
-  const onChangePassCheck = useCallback(text => {
+  const onChangePassCheck = useCallback((text: string) => {
     setPassCheck(text.trim());
   }, []);
-  const onChangePhoneNum = useCallback(text => {
+  const onChangePhoneNum = useCallback((text: string) => {
     setPhoneNum(text.trim());
     // 숫자만 입력 가능하게 해야 할까?
   }, []);
-  const onChangeCheckNum = useCallback(text => {
+  const onChangeCheckNum = useCallback((text: string) => {
     setCheckNum(text.trim());
     // 숫자만 입력 가능하게 해야 할까?
   }, []);
 
   const getCheckNum = useCallback(() => {
     if (!PhoneNum) {
-      Alert.alert('알림', '전화번호를 입력해주세요');
+      return Alert.alert('알림', '전화번호를 입력해주세요');
+    } else if (!/^\d{3}-\d{3,4}-\d{4}$/.test(PhoneNum)) {
+      return Alert.alert('알림', '올바른 전화번호를 입력해주세요');
     } else {
       showModal(true);
     }
-  }, []);
+  }, [PhoneNum]);
   // 인증번호 발행
-
-  const canGoNext =
-    Name &&
-    ID &&
-    Pass &&
-    PassCheck &&
+  const canGoNext = Name && ID && Pass;
+  /*PassCheck &&
     PhoneNum &&
     CheckNum &&
-    Pass === PassCheck; // 인증번호 확인 단계도 거쳐야 함
-  const onSubmit = useCallback(() => {
-    if (canGoNext) {
-      Alert.alert('알림', '환영합니다.');
-    } else {
-      Alert.alert('알림', '부족');
+    Pass == PassCheck; */ // 인증번호 확인 단계도 거쳐야 함
+  const onSubmit = useCallback(async () => {
+    if (loading) {
+      return;
     }
-  }, []);
+    if (!Name || !Name.trim()) {
+      return Alert.alert('알림', '이름을 입력해주세요.');
+    }
+    if (!ID || !ID.trim()) {
+      return Alert.alert('알림', '아이디를 입력해주세요.');
+    }
+    if (!Pass || !Pass.trim()) {
+      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+    }
+    /* if (!PassCheck) {
+      return Alert.alert('알림', '비밀번호가 다릅니다.');
+    } // 인증번호 확인 추가 */
+    console.log(Name, ID, Pass, PhoneNum /*PassCheck*/);
+    try {
+      setLoading(true);
+      const response = await axios.post(`${Config.API_URL}/user/signup`, {
+        name: Name,
+        id: ID,
+        pwd: Pass,
+        phone: PhoneNum,
+        ///PassCheck,
+      });
+      console.log(response);
+      Alert.alert('알림', '회원가입 되었습니다.');
+      navigation.navigate('SignIn');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        Alert.alert('알림', errorResponse.data?.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [navigation, loading, Name, ID, Pass, PhoneNum /*PassCheck*/]);
   return (
-    <KeyboardAwareScrollView>
+    <DismissKeyboardView>
       <View style={styles.entire}>
         <View style={styles.header}>
           <Text style={styles.headerText}>juventas</Text>
@@ -177,8 +208,15 @@ export default function SignIn({navigation}: SignUpScreenProps) {
             </View>
           </View>
           <View style={styles.btn}>
-            <Pressable style={styles.startBtn} onPress={onSubmit}>
-              <Text style={styles.btnText}>유벤타스 시작하기</Text>
+            <Pressable
+              style={styles.startBtn}
+              disabled={!canGoNext || loading}
+              onPress={onSubmit}>
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.btnText}>유벤타스 시작하기</Text>
+              )}
             </Pressable>
           </View>
         </View>
@@ -199,7 +237,7 @@ export default function SignIn({navigation}: SignUpScreenProps) {
           </View>
         </Pressable>
       )}
-    </KeyboardAwareScrollView>
+    </DismissKeyboardView>
   );
 }
 
