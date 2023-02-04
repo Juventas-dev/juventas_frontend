@@ -10,11 +10,19 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import DismissKeyboardView from '../components/DismissKeyBoardView';
-// import { BottomNavigation } from 'react-native-paper';
+import {
+  KakaoOAuthToken,
+  KakaoProfile,
+  getProfile,
+  login,
+} from '@react-native-seoul/kakao-login';
+import {useAppDispatch} from '../store';
+import userSlice from '../slices/user';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
-export default function SignIn({navigation}: SignInScreenProps) {
+function SignIn({navigation}: SignInScreenProps) {
+  const dispatch = useAppDispatch();
   const [ID, setID] = useState('');
   const [Pass, setPass] = useState('');
   const IDRef = useRef<TextInput | null>(null);
@@ -47,6 +55,26 @@ export default function SignIn({navigation}: SignInScreenProps) {
   const toFindPass = useCallback(() => {
     navigation.navigate('FindPassword');
   }, [navigation]);
+
+  const signInWithKakao = async (): Promise<void> => {
+    try {
+      const token: KakaoOAuthToken = await login();
+      const profile: KakaoProfile = await getProfile();
+
+      console.log(token);
+      console.log(profile);
+      Alert.alert('알림', '로그인 되었습니다.');
+      dispatch(
+        userSlice.actions.setUser({
+          name: profile.nickname,
+          id: 'kakao' + profile.id,
+          loginType: 'kakao',
+        }),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // const canGoNext = ID && Pass;
   return (
@@ -107,6 +135,10 @@ export default function SignIn({navigation}: SignInScreenProps) {
             <Pressable style={styles.signInBtn} onPress={onSubmit}>
               {/* 로그인 버튼 */}
               <Text style={styles.btnText}>로그인</Text>
+            </Pressable>
+            <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
+              {/* 로그인 버튼 */}
+              <Text style={styles.btnText}>카카오 로그인</Text>
             </Pressable>
           </View>
         </View>
@@ -183,3 +215,5 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansKR-Regular',
   },
 });
+
+export default SignIn;

@@ -1,13 +1,49 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-// import {NativeStackScreenProps} from '@react-navigation/native-stack';
-// import {RootStackParamList} from '../../App';
-import DismissKeyboardView from '../components/DismissKeyBoardView';
+import {View, Pressable, Text} from 'react-native';
+import {logout, unlink} from '@react-native-seoul/kakao-login';
+import {useAppDispatch} from '../store';
+import userSlice from '../slices/user';
 
-// type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
+function Mypage() {
+  const dispatch = useAppDispatch();
+  const signOutWithKakao = async (): Promise<void> => {
+    const message = await logout();
 
-export default function Mypage() {
-  return <DismissKeyboardView />;
+    dispatch(
+      userSlice.actions.setUser({
+        name: '',
+        id: '',
+        loginType: '',
+      }),
+    );
+
+    console.log(message);
+  };
+
+  const unlinkKakao = async (): Promise<void> => {
+    const message = await unlink();
+
+    dispatch(
+      userSlice.actions.setUser({
+        name: '',
+        id: '',
+        loginType: '',
+      }),
+    );
+
+    console.log(message);
+  };
+
+  return (
+    <View>
+      <Pressable onPress={signOutWithKakao}>
+        <Text>로그아웃</Text>
+      </Pressable>
+      <Pressable onPress={unlinkKakao}>
+        <Text>회원 탈퇴</Text>
+      </Pressable>
+    </View>
+  );
 }
 
-const styles = StyleSheet.create({});
+export default Mypage;
