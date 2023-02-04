@@ -40,7 +40,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 // const {width, height} = Dimensions.get('window') = 360 592
 
 function AppInner() {
-  const isLoggedIn = useSelector((state: RootState) => !!state.user.ID);
+  const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
   return isLoggedIn ? (
     <Tab.Navigator>
       <Tab.Screen name="Quest" component={Quest} options={{title: 'Quest'}} />
