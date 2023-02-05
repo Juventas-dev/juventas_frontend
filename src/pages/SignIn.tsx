@@ -16,8 +16,10 @@ import {
   getProfile,
   login,
 } from '@react-native-seoul/kakao-login';
+import NaverLogin from '@react-native-seoul/naver-login';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
+import Config from 'react-native-config';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -63,7 +65,6 @@ function SignIn({navigation}: SignInScreenProps) {
 
       console.log(token);
       console.log(profile);
-      Alert.alert('알림', '로그인 되었습니다.');
       dispatch(
         userSlice.actions.setUser({
           name: profile.nickname,
@@ -71,6 +72,33 @@ function SignIn({navigation}: SignInScreenProps) {
           loginType: 'kakao',
         }),
       );
+      Alert.alert('알림', '로그인 되었습니다.');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const signInWithNaver = async (): Promise<void> => {
+    try {
+      const response = await NaverLogin.login({
+        appName: '유벤타스',
+        consumerKey: `${Config.NAVER_LOGIN_CLIENT_ID}`,
+        consumerSecret: `${Config.NAVER_LOGIN_CLIENT_SECRET}`,
+      });
+      const profile = await NaverLogin.getProfile(
+        response.successResponse?.accessToken,
+      );
+
+      console.log(response);
+      console.log(profile);
+      dispatch(
+        userSlice.actions.setUser({
+          name: profile.response.name,
+          id: 'naver' + profile.response.id,
+          loginType: 'naver',
+        }),
+      );
+      Alert.alert('알림', '로그인 되었습니다.');
     } catch (error) {
       console.log(error);
     }
@@ -127,18 +155,17 @@ function SignIn({navigation}: SignInScreenProps) {
             />
           </View>
           <View style={styles.btn}>
-            {/* 회원가입 로그인 버튼 */}
             <Pressable style={styles.signUpBtn} onPress={toSignUp}>
-              {/* 회원가입 버튼 */}
               <Text style={styles.btnText}>회원가입</Text>
             </Pressable>
             <Pressable style={styles.signInBtn} onPress={onSubmit}>
-              {/* 로그인 버튼 */}
               <Text style={styles.btnText}>로그인</Text>
             </Pressable>
             <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
-              {/* 로그인 버튼 */}
               <Text style={styles.btnText}>카카오 로그인</Text>
+            </Pressable>
+            <Pressable style={styles.signInBtn} onPress={signInWithNaver}>
+              <Text style={styles.btnText}>네이버 로그인</Text>
             </Pressable>
           </View>
         </View>
