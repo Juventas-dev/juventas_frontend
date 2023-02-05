@@ -1,6 +1,5 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
-  View,
   Text,
   Pressable,
   TextInput,
@@ -11,6 +10,8 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
 
 type FindIDScreenProps = NativeStackScreenProps<RootStackParamList, 'FindID'>;
 
@@ -27,56 +28,65 @@ function FindID({navigation}: FindIDScreenProps) {
     setPhoneNum(text.trim());
   }, []);
 
-  const onSubmit = useCallback(() => {
-    Alert.alert('알림', '아이디 찾기', [
-      {
-        text: '확인',
-        onPress: () => navigation.goBack(),
-      },
-    ]);
-  }, [navigation]);
+  const onSubmit = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/user/findId?name=${Name}&phone=${PhoneNum}`,
+      );
+      Alert.alert('알림', response.data.message, [
+        {
+          text: '확인',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        Alert.alert('알림', errorResponse.data.message);
+      }
+    }
+  }, [navigation, Name, PhoneNum]);
 
   return (
     <KeyboardAwareScrollView
       style={styles.keyboardAwareScrollView}
       showsVerticalScrollIndicator={false}>
       <SafeAreaView style={styles.entire}>
-        <View style={styles.container}>
-          <Text style={styles.logo}>juventas</Text>
-          <Text style={styles.typingText}>이름</Text>
-          <TextInput
-            selectionColor={'#DE7878'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangeName}
-            textContentType="name"
-            value={Name}
-            blurOnSubmit={false}
-            clearButtonMode="while-editing"
-            returnKeyType="next"
-            ref={NameRef}
-            onSubmitEditing={() => PhoneNumRef.current?.focus()}
-          />
-          <Text style={styles.typingText}>전화번호</Text>
-          <TextInput
-            selectionColor={'#DE7878'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangePhoneNum}
-            keyboardType="number-pad"
-            value={PhoneNum}
-            clearButtonMode="while-editing"
-            returnKeyType="done"
-            ref={PhoneNumRef}
-            onSubmitEditing={onSubmit}
-          />
-          <Pressable
-            style={!Name || !PhoneNum ? styles.findBtn : styles.findBtnActive}
-            onPress={onSubmit}
-            disabled={!Name || !PhoneNum}>
-            <Text style={styles.btnText}>아이디 찾기</Text>
-          </Pressable>
-        </View>
+        <Text style={styles.logo}>juventas</Text>
+        <Text style={styles.typingText}>이름</Text>
+        <TextInput
+          selectionColor={'#DE7878'}
+          style={styles.typingInput}
+          autoCapitalize="none"
+          onChangeText={onChangeName}
+          textContentType="name"
+          value={Name}
+          blurOnSubmit={false}
+          clearButtonMode="while-editing"
+          returnKeyType="next"
+          ref={NameRef}
+          onSubmitEditing={() => PhoneNumRef.current?.focus()}
+        />
+        <Text style={styles.typingText}>전화번호</Text>
+        <TextInput
+          selectionColor={'#DE7878'}
+          style={styles.typingInput}
+          autoCapitalize="none"
+          onChangeText={onChangePhoneNum}
+          keyboardType="number-pad"
+          value={PhoneNum}
+          clearButtonMode="while-editing"
+          returnKeyType="done"
+          ref={PhoneNumRef}
+          onSubmitEditing={onSubmit}
+        />
+        <Pressable
+          style={!Name || !PhoneNum ? styles.findBtn : styles.findBtnActive}
+          onPress={onSubmit}
+          disabled={!Name || !PhoneNum}>
+          <Text style={styles.btnText}>아이디 찾기</Text>
+        </Pressable>
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -89,8 +99,6 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     backgroundColor: '#0E1D0A',
-  },
-  container: {
     marginHorizontal: 25,
   },
   logo: {
