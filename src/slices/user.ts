@@ -6,7 +6,6 @@ const initialState = {
   phoneNum: '',
   loginType: '',
   accessToken: '',
-  refreshToken: '',
 };
 const userSlice = createSlice({
   name: 'user',
