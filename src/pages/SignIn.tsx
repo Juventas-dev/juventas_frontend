@@ -6,10 +6,10 @@ import {
   Pressable,
   StyleSheet,
   View,
+  SafeAreaView,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
-import DismissKeyboardView from '../components/DismissKeyBoardView';
 import {
   KakaoOAuthToken,
   KakaoProfile,
@@ -17,9 +17,12 @@ import {
   login,
 } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
+import axios, {AxiosError} from 'axios';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import Config from 'react-native-config';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -36,15 +39,40 @@ function SignIn({navigation}: SignInScreenProps) {
   const onChangePass = useCallback((text: string) => {
     setPass(text.trim());
   }, []);
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     if (!ID || !ID.trim()) {
       return Alert.alert('알림', '아이디를 입력해주세요.');
     }
     if (!Pass || !Pass.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
-    Alert.alert('알림', '로그인되었습니다.');
-  }, [ID, Pass]);
+    try {
+      const response = await axios.post(`${Config.API_URL}/user/login`, {
+        id: ID,
+        pwd: Pass,
+      });
+      console.log(response);
+      dispatch(
+        userSlice.actions.setUser({
+          name: response.data.name,
+          id: ID,
+          loginType: 'custom',
+          accessToken: response.data.accessToken,
+        }),
+      );
+      await EncryptedStorage.setItem(
+        'refreshToken',
+        response.data.refreshToken,
+      );
+      return Alert.alert('알림', '로그인되었습니다.');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
+      }
+    }
+  }, [dispatch, ID, Pass]);
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
@@ -73,6 +101,11 @@ function SignIn({navigation}: SignInScreenProps) {
         }),
       );
       Alert.alert('알림', '로그인 되었습니다.');
+      const response = await axios.post(`${Config.API_URL}/user/signup`, {
+        name: profile.nickname,
+        id: 'kakao' + profile.id,
+      });
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -80,25 +113,31 @@ function SignIn({navigation}: SignInScreenProps) {
 
   const signInWithNaver = async (): Promise<void> => {
     try {
-      const response = await NaverLogin.login({
+      const {successResponse} = await NaverLogin.login({
         appName: '유벤타스',
         consumerKey: `${Config.NAVER_LOGIN_CLIENT_ID}`,
         consumerSecret: `${Config.NAVER_LOGIN_CLIENT_SECRET}`,
       });
-      const profile = await NaverLogin.getProfile(
-        response.successResponse?.accessToken,
-      );
-
-      console.log(response);
-      console.log(profile);
-      dispatch(
-        userSlice.actions.setUser({
+      if (successResponse) {
+        const profile = await NaverLogin.getProfile(
+          successResponse.accessToken,
+        );
+        console.log(successResponse);
+        console.log(profile);
+        dispatch(
+          userSlice.actions.setUser({
+            name: profile.response.name,
+            id: 'naver' + profile.response.id,
+            loginType: 'naver',
+          }),
+        );
+        Alert.alert('알림', '로그인 되었습니다.');
+        const response = await axios.post(`${Config.API_URL}/user/signup`, {
           name: profile.response.name,
           id: 'naver' + profile.response.id,
-          loginType: 'naver',
-        }),
-      );
-      Alert.alert('알림', '로그인 되었습니다.');
+        });
+        console.log(response);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -106,140 +145,141 @@ function SignIn({navigation}: SignInScreenProps) {
 
   // const canGoNext = ID && Pass;
   return (
-    <DismissKeyboardView>
-      <View style={styles.entire}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>juventas</Text>
+    <KeyboardAwareScrollView
+      style={styles.keyboardAwareScrollView}
+      showsVerticalScrollIndicator={false}>
+      <SafeAreaView style={styles.entire}>
+        <Text style={styles.logo}>juventas</Text>
+        <View style={styles.finding}>
+          {/* 아이디찾기 비밀번호 찾기 */}
+          <Pressable onPress={toFindID} style={styles.findBtn}>
+            <Text style={styles.findText}>아이디 찾기</Text>
+          </Pressable>
+          <Pressable onPress={toFindPass} style={styles.findBtn}>
+            <Text style={styles.findText}>비밀번호 찾기</Text>
+          </Pressable>
         </View>
-        <View style={styles.body}>
-          <View style={styles.finding}>
-            {/* 아이디찾기 비밀번호 찾기 */}
-            <Pressable onPress={toFindID} style={styles.findIDBtn}>
-              <Text style={styles.findText}>아이디 찾기</Text>
-            </Pressable>
-            <Pressable onPress={toFindPass} style={styles.findPASSBtn}>
-              <Text style={styles.findText}>비밀번호 찾기</Text>
-            </Pressable>
-          </View>
-          <View style={styles.typing}>
-            {/* 아이디 비밀번호 입력 */}
-            <Text style={styles.typingText}> 아이디</Text>
-            <TextInput
-              selectionColor={'#DE7878'}
-              style={styles.typingInput}
-              autoCapitalize="none"
-              onChangeText={onChangeID}
-              importantForAutofill="yes"
-              autoComplete="username"
-              textContentType="username"
-              value={ID}
-              clearButtonMode="while-editing"
-              ref={IDRef}
-              onSubmitEditing={() => PassRef.current?.focus()}
-              blurOnSubmit={false}
-            />
-            <Text style={styles.typingText}>비밀번호</Text>
-            <TextInput
-              selectionColor={'#DE7878'}
-              secureTextEntry={true}
-              style={styles.typingInput}
-              autoCapitalize="none"
-              onChangeText={onChangePass}
-              importantForAutofill="yes"
-              autoComplete="password"
-              textContentType="password"
-              value={Pass}
-              clearButtonMode="while-editing"
-              ref={PassRef}
-              onSubmitEditing={onSubmit}
-            />
-          </View>
-          <View style={styles.btn}>
-            <Pressable style={styles.signUpBtn} onPress={toSignUp}>
-              <Text style={styles.btnText}>회원가입</Text>
-            </Pressable>
-            <Pressable style={styles.signInBtn} onPress={onSubmit}>
-              <Text style={styles.btnText}>로그인</Text>
-            </Pressable>
-            <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
-              <Text style={styles.btnText}>카카오 로그인</Text>
-            </Pressable>
-            <Pressable style={styles.signInBtn} onPress={signInWithNaver}>
-              <Text style={styles.btnText}>네이버 로그인</Text>
-            </Pressable>
-          </View>
+        {/* 아이디 비밀번호 입력 */}
+        <Text style={styles.typingText}>아이디</Text>
+        <TextInput
+          selectionColor={'#DE7878'}
+          style={styles.typingInput}
+          autoCapitalize="none"
+          onChangeText={onChangeID}
+          importantForAutofill="yes"
+          autoComplete="username"
+          textContentType="username"
+          value={ID}
+          clearButtonMode="while-editing"
+          returnKeyType="next"
+          ref={IDRef}
+          onSubmitEditing={() => PassRef.current?.focus()}
+          blurOnSubmit={false}
+        />
+        <Text style={styles.typingText}>비밀번호</Text>
+        <TextInput
+          selectionColor={'#DE7878'}
+          secureTextEntry={true}
+          style={styles.typingInput}
+          autoCapitalize="none"
+          onChangeText={onChangePass}
+          importantForAutofill="yes"
+          autoComplete="password"
+          textContentType="password"
+          value={Pass}
+          clearButtonMode="while-editing"
+          returnKeyType="done"
+          ref={PassRef}
+          onSubmitEditing={onSubmit}
+        />
+        <View style={styles.btn}>
+          <Pressable style={styles.signUpBtn} onPress={toSignUp}>
+            <Text style={styles.btnText}>회원가입</Text>
+          </Pressable>
+          <Pressable style={styles.signInBtn} onPress={onSubmit}>
+            <Text style={styles.btnText}>로그인</Text>
+          </Pressable>
         </View>
-      </View>
-    </DismissKeyboardView>
+        <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
+          <Text style={styles.btnText}>카카오 로그인</Text>
+        </Pressable>
+        <Pressable style={styles.signInBtn} onPress={signInWithNaver}>
+          <Text style={styles.btnText}>네이버 로그인</Text>
+        </Pressable>
+      </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAwareScrollView: {
+    backgroundColor: '#0E1D0A',
+  },
   entire: {
     flex: 1,
     backgroundColor: '#0E1D0A',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginHorizontal: 25,
   },
-  header: {height: 330, width: '100%'},
-  headerText: {
+  logo: {
     fontSize: 60,
     marginTop: 170,
     color: '#94EE3A',
     fontFamily: 'PurplePurse-Regular',
     textAlign: 'center',
   },
-  body: {height: 240, width: 360, paddingHorizontal: 20, marginBottom: 5},
-  finding: {height: 24, flexDirection: 'row', justifyContent: 'flex-end'},
-  findIDBtn: {marginRight: 10},
-  findPASSBtn: {marginRight: 3},
-  findText: {
-    color: '#EBE1E1CC',
-    opacity: 0.8,
-    fontSize: 10,
-    fontFamily: 'NotoSansKR-Regular',
+  finding: {
+    marginTop: 122,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
-  typing: {marginHorizontal: 5},
+  findBtn: {
+    marginLeft: 10,
+  },
+  findText: {
+    color: 'rgba(235, 225, 225, 0.8)',
+    fontSize: 10,
+  },
   typingText: {
-    height: 25,
     color: '#FFE3E3',
     fontSize: 13,
-    fontFamily: 'NotoSansKR-Regular',
   },
   typingInput: {
-    height: 25,
     color: 'white',
     fontSize: 15,
     padding: 0,
-    marginTop: 10,
-    marginBottom: 15,
-    marginHorizontal: 3,
-    textAlignVertical: 'bottom',
+    marginTop: 7,
+    marginBottom: 18,
     borderBottomColor: '#EBAAAA',
     borderBottomWidth: 2,
   },
-  btn: {flexDirection: 'row', justifyContent: 'space-around', marginTop: 10},
+  btn: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    columnGap: 20,
+    marginTop: 10,
+  },
   signUpBtn: {
-    width: 135,
-    height: 37,
+    flex: 1,
+    height: 43,
     backgroundColor: '#E6CCCA',
     marginBottom: 20,
-    borderRadius: 20,
+    borderRadius: 30,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   signInBtn: {
-    width: 135,
-    height: 37,
+    flex: 1,
+    height: 43,
     backgroundColor: '#94EE3A',
     marginBottom: 20,
-    borderRadius: 20,
+    borderRadius: 30,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   btnText: {
     color: 'black',
-    textAlign: 'center',
     fontSize: 13,
-    fontFamily: 'NotoSansKR-Regular',
+    fontWeight: '500',
   },
 });
 

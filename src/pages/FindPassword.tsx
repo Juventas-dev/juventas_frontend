@@ -13,6 +13,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
 
 type FindPassScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -53,14 +55,27 @@ function FindPassword({navigation}: FindPassScreenProps) {
   }, [PhoneNum]);
   // 인증번호 발행
 
-  const onSubmit = useCallback(() => {
-    Alert.alert('알림', '비밀번호 찾기', [
-      {
-        text: '확인',
-        onPress: () => navigation.goBack(),
-      },
-    ]);
-  }, [navigation]);
+  const onSubmit = useCallback(async () => {
+    try {
+      const response = await axios.patch(`${Config.API_URL}/user/findPwd`, {
+        id: ID,
+        name: Name,
+        phone: PhoneNum,
+      });
+      Alert.alert('알림', response.data.message, [
+        {
+          text: '확인',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        Alert.alert('알림', errorResponse.data.message);
+      }
+    }
+  }, [navigation, ID, Name, PhoneNum]);
 
   return (
     <KeyboardAwareScrollView

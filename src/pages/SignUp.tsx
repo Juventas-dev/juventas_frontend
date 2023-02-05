@@ -102,7 +102,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
       if (errorResponse) {
-        Alert.alert('알림', errorResponse.data?.message);
+        Alert.alert('알림', errorResponse.data.message);
       }
     } finally {
       setLoading(false);
