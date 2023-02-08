@@ -7,9 +7,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import FindID from './src/pages/FindID';
-import Quest from './src/pages/Quest';
-import Board from './src/pages/Board';
-import Diary from './src/pages/Diary';
 import Mypage from './src/pages/Mypage';
 import {useAppDispatch} from './src/store';
 import {RootState} from './src/store/reducer';
@@ -17,15 +14,11 @@ import {useSelector} from 'react-redux';
 import userSlice from './src/slices/user';
 import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
-// import {
-//   SafeAreaView, ScrollView, KeyboardAvoidingView,
-//   Text, Alert, TextInput, Pressable,
-//   StyleSheet, View
-// } from 'react-native';
-// import {useCallback} from 'react';
-// import DismissKeyboardView from './src/components/DismissKeyBoardView'
-// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
-// import { create } from 'react-test-renderer';
+import BoardNavigation from './src/navigations/BoardNavigation';
+import Message from './src/pages/Message';
+import Home from './src/pages/Home';
+import Setting from './src/pages/Setting';
+
 export type LoggedInParamList = {
   Quest: undefined;
   Board: undefined;
@@ -82,13 +75,26 @@ function AppInner() {
 
   return isLoggedIn ? (
     <Tab.Navigator>
-      <Tab.Screen name="Quest" component={Quest} options={{title: 'Quest'}} />
-      <Tab.Screen name="Board" component={Board} options={{title: 'Board'}} />
-      <Tab.Screen name="Diary" component={Diary} options={{title: 'Diary'}} />
+      <Tab.Screen
+        name="BoardNav"
+        component={BoardNavigation}
+        options={{title: 'Board'}}
+      />
+      <Tab.Screen
+        name="Message"
+        component={Message}
+        options={{title: 'Message'}}
+      />
+      <Tab.Screen name="Home" component={Home} options={{title: 'Home'}} />
       <Tab.Screen
         name="Mypage"
         component={Mypage}
         options={{title: 'Mypage'}}
+      />
+      <Tab.Screen
+        name="Setting"
+        component={Setting}
+        options={{title: 'Setting'}}
       />
     </Tab.Navigator>
   ) : (

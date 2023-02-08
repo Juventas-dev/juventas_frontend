@@ -1,11 +1,11 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-function Board() {
+function Setting() {
   return (
     <View>
-      <Text>게시판</Text>
+      <Text>환경설정</Text>
     </View>
   );
 }
-export default Board;
+export default Setting;
