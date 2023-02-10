@@ -18,7 +18,6 @@ import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
 import Home from './src/pages/Home';
 import Setting from './src/pages/Setting';
-import FoundationIcon from 'react-native-vector-icons/Foundation';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
@@ -49,7 +48,7 @@ const screenoptions = ({route}: {route:RouteProp<ParamListBase, string>}) => {
       const focusedColor = focused ? '#1F6733' : '#DAE2D8'
       switch (name) {
         case 'BoardNav':
-          return <FoundationIcon name="lightbulb" size={40} color={focusedColor} />
+          return <IoniconsIcon name="menu" size={40} color={focusedColor} />
         case 'Message':
           return <AntDesignIcon name="message1" size={40} color={focusedColor} />
         case 'Mypage':
@@ -58,7 +57,10 @@ const screenoptions = ({route}: {route:RouteProp<ParamListBase, string>}) => {
           return <IoniconsIcon name="settings" size={40} color={focusedColor} />
       }
       return <FontAwesome5Icon name="home" size={40} color={focusedColor} />
-    }
+    },
+    tabBarActiveTintColor: '#1F6733',
+    tabBarInactiveTintColof: '#DAE2D8',
+    tabBarLabelStyle: {fontSize: 11, paddingBottom: 10}
   }
 }
 

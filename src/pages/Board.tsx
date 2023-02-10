@@ -1,11 +1,12 @@
 import React, { useCallback, useState, useRef } from 'react';
-import {View, Text, FlatList, Pressable, StyleSheet, TextInput} from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../navigations/BoardNavigation';
-
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigations/BoardNavigation';
+// import { useNavigation } from '@react-navigation/native';
+// const navigation = useNavigation();
 const DATA = [
   {
     id: '1234',
@@ -31,21 +32,17 @@ type BoardScreenProps = NativeStackScreenProps<RootStackParamList, 'Board'>;
 type ItemProps = {title: string, c_id:string, id: string};
 
 function Board({navigation}: BoardScreenProps) {
-  const SearchRef = useRef<TextInput | null>(null);
-  const [searchFocused, setSearchFocused] = useState(false);
-  const onFocusSearch = useCallback(() => {setSearchFocused(true);}, []);
-  const onPressCancel = useCallback(() => {
-    setSearchFocused(false);
-    SearchRef.current?.clear();
-    SearchRef.current?.blur();
-  }, []);
+  
   const onChangeSearch = useCallback((text: string) => {
     // 검색
   }, []);
+  const toSearchPost = useCallback(() => {navigation.navigate('SearchPost')}, [navigation])
   const toNewPost = useCallback(() => {
     navigation.navigate('NewPost');
   }, [navigation])
-  const toPostDetail = useCallback(() => {navigation.navigate('PostDetail')}, [navigation]);
+  const toPostDetail = useCallback(() => {
+    navigation.navigate('PostDetail');
+  }, [navigation]);
 
   const Item = ({title, c_id, id}: ItemProps) => (
     <Pressable style={styles.posting} onPress={toPostDetail}>
@@ -76,25 +73,11 @@ function Board({navigation}: BoardScreenProps) {
               style={styles.headerSearchInput} 
               placeholder="노하우 검색"
               placeholderTextColor={'#DAE2D8'}
-              onFocus={onFocusSearch}
-              ref={SearchRef}
-              onChangeText={onChangeSearch}
+              onFocus={toSearchPost}
+              // ref={SearchRef}
+              // onChangeText={onChangeSearch}
             />
           </View>
-          <Pressable 
-            style={
-              searchFocused
-              ? styles.headerSearchCancelBtn
-              : styles.headerSearchCancelBtnInactive
-            }
-            onPress={onPressCancel}>
-            <Text 
-              style={
-                searchFocused
-              ? styles.headerSearchCancelBtnText
-              : styles.headerSearchCancelBtnTextInactive
-              }>취소</Text>
-          </Pressable>
         </View>
       </View>
       <View style={styles.boardType}>
@@ -160,23 +143,6 @@ const styles = StyleSheet.create({
     padding: 0,
     width: '88%',
     paddingLeft: 10
-  },
-  headerSearchCancelBtn: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  headerSearchCancelBtnInactive: {
-    height: 0,
-    weight: 0,
-  },
-  headerSearchCancelBtnText: {
-    color: '#1F6733',
-    fontSize: 18
-  },
-  headerSearchCancelBtnTextInactive: {
-    height: 0,
-    width: 0
   },
   boardType:{
     flexDirection: 'row'
