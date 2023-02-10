@@ -18,12 +18,18 @@ import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
 import Home from './src/pages/Home';
 import Setting from './src/pages/Setting';
+import FoundationIcon from 'react-native-vector-icons/Foundation';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import IoniconsIcon from 'react-native-vector-icons/Ionicons';
+import { RouteProp, ParamListBase } from '@react-navigation/native';
 
 export type LoggedInParamList = {
-  Quest: undefined;
   Board: undefined;
-  Diary: undefined;
+  Message: undefined;
+  Home: undefined;
   Mypage: undefined;
+  Setting: undefined;
 };
 
 export type RootStackParamList = {
@@ -32,6 +38,29 @@ export type RootStackParamList = {
   FindID: undefined;
   FindPassword: undefined;
 };
+
+type TabBarIconProps = {focused: boolean}
+const screenoptions = ({route}: {route:RouteProp<ParamListBase, string>}) => {
+  return {
+    tabBarStyle: { height: 80},
+    tabBarHideOnKeyboard: true,
+    tabBarIcon: ({focused}: TabBarIconProps) => {
+      const {name} = route
+      const focusedColor = focused ? '#1F6733' : '#DAE2D8'
+      switch (name) {
+        case 'BoardNav':
+          return <FoundationIcon name="lightbulb" size={40} color={focusedColor} />
+        case 'Message':
+          return <AntDesignIcon name="message1" size={40} color={focusedColor} />
+        case 'Mypage':
+          return <IoniconsIcon name="person" size={40} color={focusedColor} />
+        case 'Setting':
+          return <IoniconsIcon name="settings" size={40} color={focusedColor} />
+      }
+      return <FontAwesome5Icon name="home" size={40} color={focusedColor} />
+    }
+  }
+}
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -74,27 +103,31 @@ function AppInner() {
   }, [dispatch]);
 
   return isLoggedIn ? (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={screenoptions}>
       <Tab.Screen
         name="BoardNav"
         component={BoardNavigation}
-        options={{title: 'Board'}}
+        options={{title: 'Board', headerShown: false, tabBarLabel: '게시판'}}
       />
       <Tab.Screen
         name="Message"
         component={Message}
-        options={{title: 'Message'}}
+        options={{title: 'Message', tabBarLabel: '쪽지'}}
       />
-      <Tab.Screen name="Home" component={Home} options={{title: 'Home'}} />
+      <Tab.Screen 
+        name="Home" 
+        component={Home} 
+        options={{title: 'Home', tabBarLabel: '홈'}} 
+      />
       <Tab.Screen
         name="Mypage"
         component={Mypage}
-        options={{title: 'Mypage'}}
+        options={{title: 'Mypage', tabBarLabel: '내 정보'}}
       />
       <Tab.Screen
         name="Setting"
         component={Setting}
-        options={{title: 'Setting'}}
+        options={{title: 'Setting', tabBarLabel: '설정'}}
       />
     </Tab.Navigator>
   ) : (
