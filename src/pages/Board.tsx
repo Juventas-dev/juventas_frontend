@@ -1,12 +1,11 @@
-import React, { useCallback, useState, useRef } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet, TextInput } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet, TextInput, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import FontAwesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/BoardNavigation';
-// import { useNavigation } from '@react-navigation/native';
-// const navigation = useNavigation();
+
 const DATA = [
   {
     id: '1234',
@@ -32,26 +31,35 @@ type BoardScreenProps = NativeStackScreenProps<RootStackParamList, 'Board'>;
 type ItemProps = {title: string, c_id:string, id: string};
 
 function Board({navigation}: BoardScreenProps) {
-  
-  const onChangeSearch = useCallback((text: string) => {
-    // 검색
-  }, []);
   const toSearchPost = useCallback(() => {navigation.navigate('SearchPost')}, [navigation])
   const toNewPost = useCallback(() => {
     navigation.navigate('NewPost');
   }, [navigation])
-  const toPostDetail = useCallback(() => {
-    navigation.navigate('PostDetail');
-  }, [navigation]);
 
   const Item = ({title, c_id, id}: ItemProps) => (
-    <Pressable style={styles.posting} onPress={toPostDetail}>
-      <View style={styles.postProfile}>
-        <Text>{id}</Text>
-      </View>
+    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: id})}>
       <View style={styles.postContent}>
-        <Text style={styles.postContentCategory}>{c_id}</Text>
-        <Text style={styles.postContentTitle}>{title}</Text>
+        <Text style={styles.postContentCategory} numberOfLines={1}>{c_id}</Text>
+        <Text style={styles.postContentTitle} numberOfLines={2}>{title}</Text>
+      </View>
+      <View style={styles.postInfo}>
+        <View style={styles.postInfoDetail}>
+          <FontAwesomeIcon
+              name="thumbs-up"
+              size={30}
+              color='#DAE2D8'
+              // 내가 추천했을 경우 색을 다르게
+            />
+          <Text style={styles.postInfoTxt}>122</Text>
+        </View>
+        <View style={styles.postInfoDetail}>
+        <FontAwesome5Icon
+              name="comment-dots"
+              size={30}
+              color='#DAE2D8'
+            />
+          <Text style={styles.postInfoTxt}>31</Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -80,18 +88,25 @@ function Board({navigation}: BoardScreenProps) {
           </View>
         </View>
       </View>
-      <View style={styles.boardType}>
-        <Pressable><Text>전체</Text></Pressable>
-        <Pressable><Text>노하우</Text></Pressable>
-        <Pressable><Text>질문</Text></Pressable>
-        
-      </View>
-      <View style={styles.category}>
-        <Pressable style={styles.categoryBtn}><Text style={styles.categoryTxt}>전체</Text></Pressable>
-        <Pressable style={styles.categoryBtn}><Text style={styles.categoryTxt}>건강</Text></Pressable>
-        <Pressable style={styles.categoryBtn}><Text style={styles.categoryTxt}>여가</Text></Pressable>
-        <Pressable style={styles.categoryBtn}><Text style={styles.categoryTxt}>학습</Text></Pressable>
-        <Pressable style={styles.categoryBtn}><Text style={styles.categoryTxt}>관계</Text></Pressable>
+      <View style={styles.filtering}>
+        <Pressable style={styles.category}>
+          <Text style={styles.categoryTxt}>카테고리</Text>
+          <FontAwesome5Icon
+            name="caret-down"
+            size={30}
+            color='#DAE2D8'
+            style={styles.categoryIcon}
+          />
+        </Pressable>
+        <Pressable style={styles.category}>
+          <Text style={styles.categoryTxt}>필터</Text>
+          <FontAwesome5Icon
+            name="caret-down"
+            size={30}
+            color='#DAE2D8'
+            style={styles.categoryIcon}
+          />
+        </Pressable>
       </View>
       <FlatList
         data={DATA}
@@ -99,7 +114,7 @@ function Board({navigation}: BoardScreenProps) {
         keyExtractor={Item => Item.id}
       />
       <Pressable style={styles.newPostBtn}>
-        <FontAwesomeIcon5 
+        <FontAwesome5Icon 
           name="pen-nib"
           size={40}
           color='white'
@@ -144,42 +159,37 @@ const styles = StyleSheet.create({
     width: '88%',
     paddingLeft: 10
   },
-  boardType:{
-    flexDirection: 'row'
+  filtering:{
+    flexDirection: 'row',
+    justifyContent: 'space-around'
   },
   category: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    height: 40
-  },
-  categoryBtn: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 40,
   },
   categoryTxt: {
     fontSize: 18,
-    color: '#DAE2D8'
+    color: '#DAE2D8',
+    marginLeft: 20
+  },
+  categoryIcon: {
+    marginRight: 15
   },
   posting: {
     borderTopWidth: 1,
     borderTopColor: '#EBEFEA',
     flexDirection: 'row',
     height: 80,
-    alignItems: 'center'
-  },
-  postProfile: {
-    width: 60,
-    height: 60,
-    backgroundColor: 'pink',
-    borderRadius: 30,
-    marginLeft: 15,
-    justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   postContent: {
-    marginLeft: 10,
-    justifyContent: 'center'
+    marginLeft: 20,
+    justifyContent: 'center',
+    width: '65%',
   },
   postContentCategory:{
     fontSize: 14,
@@ -188,6 +198,18 @@ const styles = StyleSheet.create({
   postContentTitle: {
     fontSize: 18,
     color: '#878787'
+  },
+  postInfo: {
+    flexDirection: 'row',
+    marginRight: 20
+  },
+  postInfoDetail: {
+    marginLeft: 20,
+    alignItems: 'center'
+  },
+  postInfoTxt: {
+    fontSize: 11,
+    color: '#B7CBB2'
   },
   newPostBtn: {
     backgroundColor: '#1F6733',
