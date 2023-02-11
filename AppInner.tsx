@@ -48,7 +48,7 @@ const screenoptions = ({route}: {route:RouteProp<ParamListBase, string>}) => {
       const focusedColor = focused ? '#1F6733' : '#DAE2D8'
       switch (name) {
         case 'BoardNav':
-          return <IoniconsIcon name="menu" size={40} color={focusedColor} />
+          return <FontAwesome5Icon name="bars" size={40} color={focusedColor} />
         case 'Message':
           return <AntDesignIcon name="message1" size={40} color={focusedColor} />
         case 'Mypage':

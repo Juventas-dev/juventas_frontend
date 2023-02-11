@@ -32,14 +32,11 @@ type ItemProps = {title: string, c_id:string, id: string};
 
 function SearchPost({navigation}: SearchPostScreenProps) {
   const toBoard = useCallback(() => {navigation.pop();}, [navigation]);
-	const toPostDetail = useCallback(() => {
-    navigation.navigate('PostDetail');
-  }, [navigation]);
 	const SearchRef = useRef<TextInput | null>(null);
 	const Item = ({title, c_id, id}: ItemProps) => (
-    <Pressable style={styles.posting} onPress={toPostDetail}>
-			<Text style={styles.postContentCategory}>{c_id}</Text>
-			<Text style={styles.postContentTitle}>{title}</Text>
+    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: id})}>
+			<Text style={styles.postContentCategory} numberOfLines={1}>{c_id}</Text>
+			<Text style={styles.postContentTitle} numberOfLines={2}>{title}</Text>
     </Pressable>
   );
 	useFocusEffect(useCallback(() => {SearchRef.current?.focus();}, []));
