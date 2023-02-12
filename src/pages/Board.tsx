@@ -1,43 +1,41 @@
-import React, { useCallback } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet, TextInput, RefreshControl } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet, TextInput, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigations/BoardNavigation';
-
-const DATA = [
-  {
-    id: '1234',
-    c_id: '0',
-    q_id: '0',
-    Is_qna: 'F',
-    title: '줄넘기 하는 법',
-    content: '줄넘기는 이렇게!',
-    img_path: '',
-  },
-  {
-    id: '12345',
-    c_id: '1',
-    q_id: '0',
-    Is_qna: 'F',
-    title: '서핑보드 중심 잡기',
-    content: '어려워요',
-    img_path: '',
-  },
-];
+import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
 
 type BoardScreenProps = NativeStackScreenProps<RootStackParamList, 'Board'>;
-type ItemProps = {title: string, c_id:string, id: string};
+type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
 
 function Board({navigation}: BoardScreenProps) {
   const toSearchPost = useCallback(() => {navigation.navigate('SearchPost')}, [navigation])
   const toNewPost = useCallback(() => {
     navigation.navigate('NewPost');
   }, [navigation])
-
-  const Item = ({title, c_id, id}: ItemProps) => (
-    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: id})}>
+  const [DATA, setDATA] = useState<ItemProps[]>([]);
+  
+  useEffect(() => {
+    const getBoardAndRefresh = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/board/post`);
+        setDATA(response.data.post);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
+      }
+    };
+    getBoardAndRefresh();
+  },[]);
+  
+  const Item = ({incr, c_id, title, like, comment}: ItemProps) => (
+    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: incr})}>
       <View style={styles.postContent}>
         <Text style={styles.postContentCategory} numberOfLines={1}>{c_id}</Text>
         <Text style={styles.postContentTitle} numberOfLines={2}>{title}</Text>
@@ -50,7 +48,7 @@ function Board({navigation}: BoardScreenProps) {
               color='#DAE2D8'
               // 내가 추천했을 경우 색을 다르게
             />
-          <Text style={styles.postInfoTxt}>122</Text>
+          <Text style={styles.postInfoTxt}>{like}</Text>
         </View>
         <View style={styles.postInfoDetail}>
         <FontAwesome5Icon
@@ -58,7 +56,7 @@ function Board({navigation}: BoardScreenProps) {
               size={30}
               color='#DAE2D8'
             />
-          <Text style={styles.postInfoTxt}>31</Text>
+          <Text style={styles.postInfoTxt}>{comment}</Text>
         </View>
       </View>
     </Pressable>
@@ -109,9 +107,9 @@ function Board({navigation}: BoardScreenProps) {
         </Pressable>
       </View>
       <FlatList
-        data={DATA}
-        renderItem={({item}) => <Item title={item.title} c_id={item.c_id} id={item.id} />}
-        keyExtractor={Item => Item.id}
+        data={DATA} // 여러 키가 있어서 오류가 남
+        renderItem={({item}) => <Item title={item.title} incr={item.incr} c_id={item.c_id} like={item.like} comment={item.comment} />}
+        keyExtractor={Item => String(Item.incr)} // incr을 무식하게 String으로 바꿔서 하는 게 맞나?
       />
       <Pressable style={styles.newPostBtn}>
         <FontAwesome5Icon 
