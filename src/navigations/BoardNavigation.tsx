@@ -8,7 +8,7 @@ import SearchPost from '../pages/SearchPost';
 export type RootStackParamList = {
   Board: undefined;
   NewPost: undefined;
-  PostDetail: {postID: string};
+  PostDetail: {postID: number};
   SearchPost: undefined;
 };
 

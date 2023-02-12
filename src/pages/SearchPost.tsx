@@ -1,40 +1,64 @@
-import React, { useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, TextInput, Text, FlatList } from 'react-native';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
+import { View, Pressable, StyleSheet, TextInput, Text, FlatList, Alert } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {RootStackParamList} from '../navigations/BoardNavigation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
 
-const DATA = [
-  {
-    id: '1234',
-    c_id: '0',
-    q_id: '0',
-    Is_qna: 'F',
-    title: '줄넘기 하는 법',
-    content: '줄넘기는 이렇게!',
-    img_path: '',
-  },
-  {
-    id: '12345',
-    c_id: '1',
-    q_id: '0',
-    Is_qna: 'F',
-    title: '서핑보드 중심 잡기',
-    content: '어려워요',
-    img_path: '',
-  },
-];
+// const DATA = [
+//   {
+//     id: '1234',
+//     c_id: '0',
+//     q_id: '0',
+//     Is_qna: 'F',
+//     title: '줄넘기 하는 법',
+//     content: '줄넘기는 이렇게!',
+//     img_path: '',
+//   },
+//   {
+//     id: '12345',
+//     c_id: '1',
+//     q_id: '0',
+//     Is_qna: 'F',
+//     title: '서핑보드 중심 잡기',
+//     content: '어려워요',
+//     img_path: '',
+//   },
+// ];
 
 type SearchPostScreenProps = NativeStackScreenProps<RootStackParamList, 'SearchPost'>;
-type ItemProps = {title: string, c_id:string, id: string};
+type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
 
 function SearchPost({navigation}: SearchPostScreenProps) {
   const toBoard = useCallback(() => {navigation.pop();}, [navigation]);
 	const SearchRef = useRef<TextInput | null>(null);
-	const Item = ({title, c_id, id}: ItemProps) => (
-    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: id})}>
+	const [keyword, setKeyword] = useState('');
+
+	const onChangeSearch = useCallback((text: string) => {setKeyword(text)}, []);
+
+	const [DATA, setDATA] = useState<ItemProps[]>([]);
+	useEffect(() => {
+    const getBoardAndRefresh = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/board/search?keyword=${keyword}`);
+        setDATA(response.data.post);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
+      }
+    };
+    getBoardAndRefresh();
+  },[keyword]);
+
+	// like랑 comment는 필요 없음
+	const Item = ({incr, c_id, title, like, comment}: ItemProps) => (
+    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: incr})}>
 			<Text style={styles.postContentCategory} numberOfLines={1}>{c_id}</Text>
 			<Text style={styles.postContentTitle} numberOfLines={2}>{title}</Text>
     </Pressable>
@@ -56,7 +80,7 @@ function SearchPost({navigation}: SearchPostScreenProps) {
 						placeholderTextColor={'#DAE2D8'}
 						// onFocus={}
 						ref={SearchRef}
-						// onChangeText={onChangeSearch}
+						onChangeText={onChangeSearch}
 					/>
 				</View>
 				<Pressable 
@@ -67,8 +91,8 @@ function SearchPost({navigation}: SearchPostScreenProps) {
 			</View>
 			<FlatList
 				data={DATA}
-				renderItem={({item}) => <Item title={item.title} c_id={item.c_id} id={item.id} />}
-				keyExtractor={Item => Item.id}
+				renderItem={({item}) => <Item title={item.title} incr={item.incr} c_id={item.c_id} like={item.like} comment={item.comment} />}
+				keyExtractor={Item => String(Item.incr)}
 			/>
     </SafeAreaView>
     );
