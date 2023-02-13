@@ -1,4 +1,4 @@
-import { SafeAreaView, Text, View, TextInput, FlatList, Pressable, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView, Text, View, TextInput, FlatList, Pressable, StyleSheet, Alert, RefreshControl } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useRoute } from '@react-navigation/native';
 import {RootStackParamList} from '../navigations/BoardNavigation';
@@ -26,6 +26,14 @@ function PostDetail({navigation}: PostDetailScreenProps) {
 	const [needReset, setNeedReset] = useState(false);
 	const onChangeComment = useCallback((text: string) => {setCommentValue(text);}, []);
 
+	const [refreshing, setRefreshing] = useState(false);
+	const onRefresh = useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+		setRefreshing(false);
+		}, 1000);
+	}, []);
+
 	useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
@@ -42,7 +50,7 @@ function PostDetail({navigation}: PostDetailScreenProps) {
       }
     };
     getBoardAndRefresh();
-  },[needReset]);
+  },[needReset, refreshing]);
 
 	const userID = useSelector((state:RootState)=>state.user.id);
 	const [myPostRecommend, setMyPostRecommend] = useState(false);
@@ -116,32 +124,32 @@ function PostDetail({navigation}: PostDetailScreenProps) {
 
 	const Item = ({incr, c_content, user_name, like}: CommentItemProps) => (
     <Pressable style={styles.eachComment}>
-			<View style={styles.commentProfile}>
-				<Pressable style={styles.profile}></Pressable>
-				<View style={styles.commentContent}>
-					<Text style={styles.commentContentIDTxt}>{user_name}</Text>
-					<Text style={styles.commentContentBodyTxt}>{c_content}</Text>
-				</View>
+		<View style={styles.commentProfile}>
+			<Pressable style={styles.profile}></Pressable>
+			<View style={styles.commentContent}>
+				<Text style={styles.commentContentIDTxt}>{user_name}</Text>
+				<Text style={styles.commentContentBodyTxt}>{c_content}</Text>
 			</View>
-			<View style={styles.commentInfo}>
-				{/* onPress시 incr이용해서 like 눌러주는 기능 */}
-				<Pressable style={styles.recommend} onPress={() => likeComment(incr)}> 
-					<Text style={styles.recommendNum}>{like}</Text>
-					<FontAwesomeIcon
-						name="star"
-						size={28}
-						color='#DAE2D8'
-						style={styles.commentIcon}
-					/>
-				</Pressable>
-				<FontAwesome5Icon
-					name="caret-down"
-					size={40}
+		</View>
+		<View style={styles.commentInfo}>
+			{/* onPress시 incr이용해서 like 눌러주는 기능 */}
+			<Pressable style={styles.recommend} onPress={() => likeComment(incr)}> 
+				<Text style={styles.recommendNum}>{like}</Text>
+				<FontAwesomeIcon
+					name="star"
+					size={28}
 					color='#DAE2D8'
 					style={styles.commentIcon}
 				/>
-			</View>
-		</Pressable>
+			</Pressable>
+			<FontAwesome5Icon
+				name="caret-down"
+				size={40}
+				color='#DAE2D8'
+				style={styles.commentIcon}
+			/>
+		</View>
+	</Pressable>
   );
 
 	return <SafeAreaView style={styles.entire}>
@@ -171,6 +179,7 @@ function PostDetail({navigation}: PostDetailScreenProps) {
 					data={commentDATA}
 					renderItem={({item}) => <Item incr={item.incr} c_content={item.c_content} user_name={item.user_name} like={item.like} />}
 					keyExtractor={Item => String(Item.incr)}
+        			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 				/>
 			</View>
 		</KeyboardAwareScrollView>
