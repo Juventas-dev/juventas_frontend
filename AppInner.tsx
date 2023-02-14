@@ -36,6 +36,9 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
+  Board: undefined;
+  Knowhow: undefined;
+  Quest: undefined;
 };
 
 const screenoptions = ({route}: {route: RouteProp<ParamListBase, string>}) => {
