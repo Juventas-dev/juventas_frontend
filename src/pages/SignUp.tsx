@@ -258,13 +258,11 @@ const styles = StyleSheet.create({
   titleHeader: {
     fontSize: 23,
     color: 'white',
-    fontFamily: 'NotoSansKR-Bold',
     top: -20,
   },
   titleBody: {
     color: '#C4C4C4',
     fontSize: 10,
-    fontFamily: 'NotoSansKR-Regular',
     top: -30,
   },
   typing: {marginHorizontal: 5},
@@ -272,7 +270,6 @@ const styles = StyleSheet.create({
     height: 25,
     color: '#FFE3E3',
     fontSize: 13,
-    fontFamily: 'NotoSansKR-Regular',
   },
   typingInput: {
     height: 25,
@@ -299,7 +296,6 @@ const styles = StyleSheet.create({
   },
   checkNumText: {
     fontSize: 8,
-    fontFamily: 'NotoSansKR-Regular',
     top: -2,
     textAlign: 'center',
   },
@@ -335,13 +331,11 @@ const styles = StyleSheet.create({
   modalTextHeader: {
     fontSize: 15,
     color: 'black',
-    fontFamily: 'NotoSansKR-Bold',
     top: -2,
   },
   modalTextBody: {
     fontSize: 10,
     color: '#8D8D8D',
-    fontFamily: 'NotoSansKR-Regular',
     top: -10,
   },
 });

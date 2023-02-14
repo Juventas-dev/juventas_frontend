@@ -31,6 +31,7 @@ export type LoggedInParamList = {
   Board: undefined;
   Diary: undefined;
   Mypage: undefined;
+  Knowhow: undefined;
 };
 
 export type RootStackParamList = {
@@ -38,6 +39,9 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
+  Board: undefined;
+  Knowhow: undefined;
+  Quest: undefined;
 };
 
 const Tab = createBottomTabNavigator();
@@ -82,7 +86,11 @@ function AppInner() {
 
   return isLoggedIn ? (
     <Tab.Navigator>
-      <Tab.Screen name="Quest" component={Quest} options={{title: 'Quest'}} />
+      <Tab.Screen
+        name="Quest"
+        component={Quest}
+        options={{title: 'Quest', headerShown: false}}
+      />
       <Tab.Screen name="Board" component={Board} options={{title: 'Board'}} />
       <Tab.Screen name="Diary" component={Diary} options={{title: 'Diary'}} />
       <Tab.Screen
