@@ -82,7 +82,7 @@ function PostDetail({route}: PostDetailScreenProps) {
       }
     };
     getBoardAndRefresh();
-  }, [idCurrent, needReset, postDATA, refreshing]);
+  }, []);
 
   const userID = useSelector((state: RootState) => state.user.id);
   const [myPostRecommend, setMyPostRecommend] = useState(false);
