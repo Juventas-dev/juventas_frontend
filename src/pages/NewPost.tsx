@@ -1,71 +1,133 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
-  PermissionsAndroid,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
+  SafeAreaView,
 } from 'react-native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {SafeAreaView} from 'react-native';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// const Stack = createNativeStackNavigator();
+import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import MultipleImagePicker, {
+  ImageResults,
+  MediaType,
+} from '@baronha/react-native-multiple-image-picker';
+import Config from 'react-native-config';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 
 type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'NewPost'>;
 
-export default function NewPost({navigation}: BoardScreenProps) {
-  const showPicker = async () => {
-    const grantedcamera = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-      {
-        title: 'A Camera Permission',
-        message: 'App needs access to your camera',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'Okay',
-      },
-    );
-    const grantedstorage = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      {
-        title: 'A Camera Permission',
-        message: 'App needs access to your camera',
-        buttonNeutral: 'Ask Me Later',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'Okay',
-      },
-    );
-    if (
-      grantedcamera === PermissionsAndroid.RESULTS.GRANTED &&
-      grantedstorage === PermissionsAndroid.RESULTS.GRANTED
-    ) {
-      console.log('Camera & storage permission given');
-    } else {
-      console.log('Camera permission denied');
-    }
+const NewPost = ({navigation}: BoardScreenProps) => {
+  const [categorySelected, setCategorySelected] = useState<number | null>(null);
+  const [filterSelected, setFilterSelected] = useState<number | null>(null);
+  const [images, setImages] = useState<ImageResults[]>([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  const categoryDATA = ['건강', '여가', '학습', '관계'];
+  const filterDATA = ['노하우', 'QnA'];
+  const userID = useSelector((state: RootState) => state.user.id);
+
+  const onChangeTitle = useCallback((text: string) => {
+    setTitle(text);
+  }, []);
+  const onChangeContent = useCallback((text: string) => {
+    setContent(text);
+  }, []);
+
+  const selectImage = async () => {
+    const response = await MultipleImagePicker.openPicker({
+      mediaType: MediaType.IMAGE,
+      maxSelectedAssets: 3,
+      doneTitle: '완료',
+      cancelTitle: '취소',
+      selectedAssets: images,
+    });
+    setImages(response);
   };
+
+  const upload = async () => {
+    await axios.post(`${Config.API_URL}/board/post`, {
+      id: userID,
+      c_id: categorySelected,
+      q_id: 0,
+      is_qna: filterSelected,
+      title: title,
+      content: content,
+    });
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAwareScrollView>
       <SafeAreaView style={styles.Background}>
         <View style={styles.topContainer}>
-          <Pressable style={styles.backBt}>
+          <Pressable style={styles.backBt} onPress={() => navigation.goBack()}>
             <Text style={styles.back}>뒤로</Text>
           </Pressable>
           <Text style={styles.titleHeader}>글쓰기</Text>
-          <Pressable style={styles.upLoadBt} /*onpress={}*/>
+          <Pressable style={styles.upLoadBt} onPress={upload}>
             <Text style={styles.upLoad}>업로드</Text>
           </Pressable>
         </View>
         <View>
-          <Pressable style={styles.listBt}>
-            <Text style={styles.categoryList}>카테고리</Text>
-          </Pressable>
-          <Pressable style={styles.listBt}>
-            <Text style={styles.categoryList}>퀘스트</Text>
-          </Pressable>
+          <SelectDropdown
+            data={categoryDATA}
+            onSelect={(_selectedItem, index) => {
+              setCategorySelected(index);
+            }}
+            defaultButtonText="카테고리"
+            defaultValue={0}
+            buttonTextAfterSelection={(selectedItem, _index) => {
+              return selectedItem;
+            }}
+            buttonStyle={styles.listBt}
+            buttonTextStyle={styles.categoryList}
+            renderDropdownIcon={() => {
+              return (
+                <FontAwesome5Icon
+                  name="caret-down"
+                  size={30}
+                  color="#DAE2D8"
+                  style={styles.categoryIcon}
+                />
+              );
+            }}
+            dropdownOverlayColor="transparent"
+            rowStyle={styles.categoryList}
+          />
+          <SelectDropdown
+            data={filterDATA}
+            onSelect={(_selectedItem, index) => {
+              setFilterSelected(index);
+            }}
+            defaultButtonText="필터"
+            defaultValue={0}
+            buttonTextAfterSelection={(selectedItem, _index) => {
+              return selectedItem;
+            }}
+            buttonStyle={styles.listBt}
+            buttonTextStyle={styles.categoryList}
+            renderDropdownIcon={() => {
+              return (
+                <FontAwesome5Icon
+                  name="caret-down"
+                  size={30}
+                  color="#DAE2D8"
+                  style={styles.categoryIcon}
+                />
+              );
+            }}
+            dropdownOverlayColor="transparent"
+            rowStyle={styles.categoryList}
+          />
         </View>
         <View style={styles.board}>
           <View style={styles.boardTitle}>
@@ -74,13 +136,15 @@ export default function NewPost({navigation}: BoardScreenProps) {
               placeholder="제목을 입력하세요"
               placeholderTextColor="#B7CBB2"
               multiline={true}
+              value={title}
+              onChangeText={onChangeTitle}
             />
             <Pressable
               android_ripple={{
                 color: '#ffffff',
               }}
               style={styles.circle}
-              onPress={showPicker}>
+              onPress={selectImage}>
               <Icon name="camera-alt" color="white" size={24} />
             </Pressable>
           </View>
@@ -90,17 +154,19 @@ export default function NewPost({navigation}: BoardScreenProps) {
               placeholder="내용을 입력하세요"
               placeholderTextColor="#B7CBB2"
               multiline={true}
+              value={content}
+              onChangeText={onChangeContent}
             />
           </View>
         </View>
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   Background: {
-    backgroundColor: '#DAE2D8',
+    backgroundColor: '#F9FAF8',
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
@@ -145,14 +211,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 5,
-    flexDirection: 'column',
-    justifyContent: 'center',
   },
   categoryList: {
     fontSize: 18,
     color: '#B7CBB2',
-    textAlign: 'left',
     marginLeft: 10,
+  },
+  categoryIcon: {
+    marginRight: 15,
+  },
+  categoryRow: {
+    backgroundColor: 'white',
   },
   /*
   filter: {
@@ -201,3 +270,5 @@ const styles = StyleSheet.create({
   },
   imageBt: {},
 });
+
+export default NewPost;
