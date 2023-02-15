@@ -118,7 +118,6 @@ function Board({navigation}: BoardScreenProps) {
       try {
         const response = await axios.get(`${Config.API_URL}/board/post`);
         setDATA(response.data.post);
-        console.log(response.data.bestPost);
         setBestPostDATA(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
