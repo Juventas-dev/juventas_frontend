@@ -66,34 +66,34 @@ function SearchPost({navigation}: SearchPostScreenProps) {
 	useFocusEffect(useCallback(() => {SearchRef.current?.focus();}, []));
   return (
     <SafeAreaView style={styles.entire}>
-			<View style={styles.headerSearchingArea}>
-				<View style={styles.headerSearch}>
-					<FontAwesomeIcon
-						name="search"
-						size={22}
-						color='#DAE2D8'
-						style={styles.headerSearchIcon}
-					/>
-					<TextInput 
-						style={styles.headerSearchInput} 
-						placeholder="노하우 검색"
-						placeholderTextColor={'#DAE2D8'}
-						// onFocus={}
-						ref={SearchRef}
-						onChangeText={onChangeSearch}
-					/>
-				</View>
-				<Pressable 
-					style={styles.headerSearchCancelBtn}
-					onPress={toBoard}>
-					<Text style={styles.headerSearchCancelBtnText}>취소</Text>
-				</Pressable>
+		<View style={styles.headerSearchingArea}>
+			<View style={styles.headerSearch}>
+				<FontAwesomeIcon
+					name="search"
+					size={22}
+					color='#DAE2D8'
+					style={styles.headerSearchIcon}
+				/>
+				<TextInput 
+					style={styles.headerSearchInput} 
+					placeholder="노하우 검색"
+					placeholderTextColor={'#DAE2D8'}
+					// onFocus={}
+					ref={SearchRef}
+					onChangeText={onChangeSearch}
+				/>
 			</View>
-			<FlatList
-				data={DATA}
-				renderItem={({item}) => <Item title={item.title} incr={item.incr} c_id={item.c_id} like={item.like} comment={item.comment} />}
-				keyExtractor={Item => String(Item.incr)}
-			/>
+			<Pressable 
+				style={styles.headerSearchCancelBtn}
+				onPress={toBoard}>
+				<Text style={styles.headerSearchCancelBtnText}>취소</Text>
+			</Pressable>
+		</View>
+		<FlatList
+			data={DATA}
+			renderItem={({item}) => <Item title={item.title} incr={item.incr} c_id={item.c_id} like={item.like} comment={item.comment} />}
+			keyExtractor={Item => String(Item.incr)}
+		/>
     </SafeAreaView>
     );
 }
