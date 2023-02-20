@@ -1,30 +1,274 @@
-import { View, StyleSheet } from 'react-native';
+import React, {useState, useCallback} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../navigations/BoardNavigation';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  SafeAreaView,
+} from 'react-native';
+import {BoardStackParamList} from '../navigations/BoardNavigation';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import SelectDropdown from 'react-native-select-dropdown';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import MultipleImagePicker, {
+  ImageResults,
+  MediaType,
+} from '@baronha/react-native-multiple-image-picker';
+import Config from 'react-native-config';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 
-type NewPostScreenProps = NativeStackScreenProps<RootStackParamList, 'NewPost'>;
+type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'NewPost'>;
 
-function NewPost({navigation}: NewPostScreenProps) {
+const NewPost = ({navigation}: BoardScreenProps) => {
+  const [categorySelected, setCategorySelected] = useState<number | null>(null);
+  const [filterSelected, setFilterSelected] = useState<number | null>(null);
+  const [images, setImages] = useState<ImageResults[]>([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  const categoryDATA = ['건강', '여가', '학습', '관계'];
+  const filterDATA = ['노하우', 'QnA'];
+  const userID = useSelector((state: RootState) => state.user.id);
+
+  const onChangeTitle = useCallback((text: string) => {
+    setTitle(text);
+  }, []);
+  const onChangeContent = useCallback((text: string) => {
+    setContent(text);
+  }, []);
+
+  const selectImage = async () => {
+    const response = await MultipleImagePicker.openPicker({
+      mediaType: MediaType.IMAGE,
+      maxSelectedAssets: 3,
+      doneTitle: '완료',
+      cancelTitle: '취소',
+      selectedAssets: images,
+    });
+    setImages(response);
+  };
+
+  const upload = async () => {
+    await axios.post(`${Config.API_URL}/board/post`, {
+      id: userID,
+      c_id: categorySelected,
+      q_id: 0,
+      is_qna: filterSelected,
+      title: title,
+      content: content,
+    });
+    navigation.goBack();
+  };
+
   return (
-    <SafeAreaView>
-        <View style={styles.body}></View>
-        <View style={styles.comment}></View>
-        <View style={styles.myComment}></View>
-    </SafeAreaView>
+    <KeyboardAwareScrollView>
+      <SafeAreaView style={styles.Background}>
+        <View style={styles.topContainer}>
+          <Pressable style={styles.backBt} onPress={() => navigation.goBack()}>
+            <Text style={styles.back}>뒤로</Text>
+          </Pressable>
+          <Text style={styles.titleHeader}>글쓰기</Text>
+          <Pressable style={styles.upLoadBt} onPress={upload}>
+            <Text style={styles.upLoad}>업로드</Text>
+          </Pressable>
+        </View>
+        <View>
+          <SelectDropdown
+            data={categoryDATA}
+            onSelect={(_selectedItem, index) => {
+              setCategorySelected(index);
+            }}
+            defaultButtonText="카테고리"
+            defaultValue={0}
+            buttonTextAfterSelection={(selectedItem, _index) => {
+              return selectedItem;
+            }}
+            buttonStyle={styles.listBt}
+            buttonTextStyle={styles.categoryList}
+            renderDropdownIcon={() => {
+              return (
+                <FontAwesome5Icon
+                  name="caret-down"
+                  size={30}
+                  color="#DAE2D8"
+                  style={styles.categoryIcon}
+                />
+              );
+            }}
+            dropdownOverlayColor="transparent"
+            rowStyle={styles.categoryList}
+          />
+          <SelectDropdown
+            data={filterDATA}
+            onSelect={(_selectedItem, index) => {
+              setFilterSelected(index);
+            }}
+            defaultButtonText="필터"
+            defaultValue={0}
+            buttonTextAfterSelection={(selectedItem, _index) => {
+              return selectedItem;
+            }}
+            buttonStyle={styles.listBt}
+            buttonTextStyle={styles.categoryList}
+            renderDropdownIcon={() => {
+              return (
+                <FontAwesome5Icon
+                  name="caret-down"
+                  size={30}
+                  color="#DAE2D8"
+                  style={styles.categoryIcon}
+                />
+              );
+            }}
+            dropdownOverlayColor="transparent"
+            rowStyle={styles.categoryList}
+          />
+        </View>
+        <View style={styles.board}>
+          <View style={styles.boardTitle}>
+            <TextInput
+              style={styles.titleInput}
+              placeholder="제목을 입력하세요"
+              placeholderTextColor="#B7CBB2"
+              multiline={true}
+              value={title}
+              onChangeText={onChangeTitle}
+            />
+            <Pressable
+              android_ripple={{
+                color: '#ffffff',
+              }}
+              style={styles.circle}
+              onPress={selectImage}>
+              <Icon name="camera-alt" color="white" size={24} />
+            </Pressable>
+          </View>
+          <View style={styles.contentBoard}>
+            <TextInput
+              style={styles.contentInput}
+              placeholder="내용을 입력하세요"
+              placeholderTextColor="#B7CBB2"
+              multiline={true}
+              value={content}
+              onChangeText={onChangeContent}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
-}
-
-export default NewPost;
+};
 
 const styles = StyleSheet.create({
-    body: {
-
-    },
-    comment: {
-
-    },
-    myComment: {
-        
-    }
+  Background: {
+    backgroundColor: '#F9FAF8',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  topContainer: {
+    height: 24,
+    marginTop: 10,
+    marginBottom: 10,
+    flexDirection: 'row',
+  },
+  titleHeader: {
+    flex: 10,
+    color: '#1F6733',
+    fontSize: 20,
+    marginTop: 1,
+    textAlign: 'center',
+  },
+  upLoadBt: {
+    flex: 2,
+    width: 70,
+    heigth: 18,
+    alignItems: 'center',
+    marginTop: 3,
+    marginRight: 7,
+  },
+  backBt: {
+    flex: 2,
+    alignItems: 'flex-end',
+    marginTop: 3,
+  },
+  upLoad: {
+    color: '#1F6733',
+    fontSize: 18,
+  },
+  back: {
+    color: '#1F6733',
+    fontSize: 18,
+  },
+  listBt: {
+    width: 350,
+    height: 40,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginBottom: 5,
+  },
+  categoryList: {
+    fontSize: 18,
+    color: '#B7CBB2',
+    marginLeft: 10,
+  },
+  categoryIcon: {
+    marginRight: 15,
+  },
+  categoryRow: {
+    backgroundColor: 'white',
+  },
+  /*
+  filter: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },*/
+  board: {
+    height: 572,
+    width: 350,
+    borderRadius: 10,
+    flexDirection: 'column',
+    backgroundColor: 'green',
+  },
+  boardTitle: {
+    flex: 1.5,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+  },
+  contentBoard: {
+    flex: 13,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    backgroundColor: 'white',
+  },
+  titleInput: {
+    marginLeft: 5,
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  contentInput: {
+    marginLeft: 5,
+    fontSize: 17,
+  },
+  circle: {
+    backgroundColor: '#B7CBB2',
+    borderRadius: 27,
+    height: 48,
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 7,
+    marginTop: 7,
+  },
+  imageBt: {},
 });
+
+export default NewPost;
