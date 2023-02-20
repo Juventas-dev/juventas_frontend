@@ -70,6 +70,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
       <SafeAreaView style={styles.Background}>
         <View style={styles.topContainer}>
           <Pressable style={styles.backBt} onPress={() => navigation.goBack()}>
+            <Icon name="left" color="#346627" size={18} />
             <Text style={styles.back}>뒤로</Text>
           </Pressable>
           <Text style={styles.titleHeader}>글쓰기</Text>
@@ -172,29 +173,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   topContainer: {
+    width: 350,
     height: 24,
     marginTop: 10,
     marginBottom: 10,
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   titleHeader: {
-    flex: 10,
+    flex: 1,
     color: '#1F6733',
     fontSize: 20,
     marginTop: 1,
     textAlign: 'center',
   },
   upLoadBt: {
-    flex: 2,
-    width: 70,
+    flex: 1,
     heigth: 18,
-    alignItems: 'center',
+    alignItems: 'flex-end',
     marginTop: 3,
-    marginRight: 7,
   },
   backBt: {
-    flex: 2,
-    alignItems: 'flex-end',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     marginTop: 3,
   },
   upLoad: {
@@ -204,6 +206,7 @@ const styles = StyleSheet.create({
   back: {
     color: '#1F6733',
     fontSize: 18,
+    marginLeft: 5,
   },
   listBt: {
     width: 350,
