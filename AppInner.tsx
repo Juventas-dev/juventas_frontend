@@ -16,12 +16,12 @@ import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
-import Home from './src/pages/Home';
 import Setting from './src/pages/Setting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import {RouteProp, ParamListBase} from '@react-navigation/native';
+import HomeNavigation from './src/navigations/HomeNavigation';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -118,9 +118,10 @@ function AppInner() {
       />
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeNavigation}
         options={{
           title: 'Home',
+          headerShown: false,
           tabBarLabel: '홈',
           tabBarIcon: ({color}) => (
             <FontAwesome5Icon name="home" color={color} size={40} />
