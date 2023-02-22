@@ -16,12 +16,11 @@ import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
-import Home from './src/pages/Home';
 import Setting from './src/pages/Setting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
-import { RouteProp, ParamListBase } from '@react-navigation/native';
+import HomeNavigation from './src/navigations/HomeNavigation';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -36,33 +35,20 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
+  Board: undefined;
+  Knowhow: undefined;
+  Quest: undefined;
 };
 
-type TabBarIconProps = {focused: boolean}
-const screenoptions = ({route}: {route:RouteProp<ParamListBase, string>}) => {
+const screenoptions = () => {
   return {
-    tabBarStyle: { height: 80},
+    tabBarStyle: {height: 80},
     tabBarHideOnKeyboard: true,
-    tabBarIcon: ({focused}: TabBarIconProps) => {
-      const {name} = route
-      const focusedColor = focused ? '#1F6733' : '#DAE2D8'
-      switch (name) {
-        case 'BoardNav':
-          return <FontAwesome5Icon name="bars" size={40} color={focusedColor} />
-        case 'Message':
-          return <AntDesignIcon name="message1" size={40} color={focusedColor} />
-        case 'Mypage':
-          return <IoniconsIcon name="person" size={40} color={focusedColor} />
-        case 'Setting':
-          return <IoniconsIcon name="settings" size={40} color={focusedColor} />
-      }
-      return <FontAwesome5Icon name="home" size={40} color={focusedColor} />
-    },
     tabBarActiveTintColor: '#1F6733',
     tabBarInactiveTintColof: '#DAE2D8',
-    tabBarLabelStyle: {fontSize: 11, paddingBottom: 10}
-  }
-}
+    tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
+  };
+};
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -105,31 +91,66 @@ function AppInner() {
   }, [dispatch]);
 
   return isLoggedIn ? (
-    <Tab.Navigator screenOptions={screenoptions}>
+    <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
       <Tab.Screen
         name="BoardNav"
         component={BoardNavigation}
-        options={{title: 'Board', headerShown: false, tabBarLabel: '게시판'}}
+        options={{
+          title: 'Board',
+          headerShown: false,
+          tabBarLabel: '게시판',
+          tabBarIcon: ({color}) => (
+            <FontAwesome5Icon name="bars" color={color} size={40} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Message"
         component={Message}
-        options={{title: 'Message', tabBarLabel: '쪽지'}}
+        options={{
+          title: 'Message',
+          headerShown: false,
+          tabBarLabel: '쪽지',
+          tabBarIcon: ({color}) => (
+            <AntDesignIcon name="message1" color={color} size={40} />
+          ),
+        }}
       />
-      <Tab.Screen 
-        name="Home" 
-        component={Home} 
-        options={{title: 'Home', tabBarLabel: '홈'}} 
+      <Tab.Screen
+        name="HomeNav"
+        component={HomeNavigation}
+        options={{
+          title: 'Home',
+          headerShown: false,
+          tabBarLabel: '홈',
+          tabBarIcon: ({color}) => (
+            <FontAwesome5Icon name="home" color={color} size={40} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Mypage"
         component={Mypage}
-        options={{title: 'Mypage', tabBarLabel: '내 정보'}}
+        options={{
+          title: 'Mypage',
+          headerShown: false,
+          tabBarLabel: '내정보',
+          tabBarIcon: ({color}) => (
+            <IoniconsIcon name="person" color={color} size={40} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Setting"
         component={Setting}
-        options={{title: 'Setting', tabBarLabel: '설정'}}
+        options={{
+          title: 'Setting',
+          headerShown: false,
+          tabBarLabel: '설정',
+          tabBarIcon: ({color, size}) => (
+            <IoniconsIcon name="settings" color={color} size={size} />
+          ),
+        }}
       />
     </Tab.Navigator>
   ) : (

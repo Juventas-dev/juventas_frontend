@@ -2,9 +2,10 @@ import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { View, Pressable, StyleSheet, TextInput, Text, FlatList, Alert } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import {RootStackParamList} from '../navigations/BoardNavigation';
+import {BoardStackParamList} from '../navigations/BoardNavigation';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { useRoute } from '@react-navigation/native';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 
@@ -29,11 +30,17 @@ import Config from 'react-native-config';
 //   },
 // ];
 
-type SearchPostScreenProps = NativeStackScreenProps<RootStackParamList, 'SearchPost'>;
+type SearchPostScreenProps = NativeStackScreenProps<BoardStackParamList, 'SearchPost'>;
 type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
 
 function SearchPost({navigation}: SearchPostScreenProps) {
-  const toBoard = useCallback(() => {navigation.pop();}, [navigation]);
+  const goWhere = useRoute().params.goBackToBoard;
+
+  const toBoard = useCallback(() => {
+		navigation.pop();
+		if (goWhere == 'T') {navigation.navigate('Board');}
+		else {navigation.navigate('Home');}
+	}, [navigation]);
 	const SearchRef = useRef<TextInput | null>(null);
 	const [keyword, setKeyword] = useState('');
 
