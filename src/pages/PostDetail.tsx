@@ -1,7 +1,7 @@
 import { SafeAreaView, Text, View, TextInput, FlatList, Pressable, StyleSheet, Alert, RefreshControl } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useRoute } from '@react-navigation/native';
-import {RootStackParamList} from '../navigations/BoardNavigation';
+import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import React, { useCallback, useState, useEffect } from 'react';
@@ -11,16 +11,16 @@ import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 
-type PostDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'PostDetail'>;
-type PostItemProps = {is_qna: string, title: string, content: string, img_path: string, user_name: string, like: number};
+type PostDetailScreenProps = NativeStackScreenProps<BoardStackParamList, 'PostDetail'>;
+type PostItemProps = {is_qna: string, title: string, content: string, user_name: string, like: number, img_path_1: string, img_path_2: string, img_path_3: string};
 type CommentItemProps = {incr: number, c_content: string, user_name: string, like: number};
 
-function PostDetail({navigation}: PostDetailScreenProps) {
-	const idCurrent = useRoute().params.postID;
+function PostDetail({navigation, route}: PostDetailScreenProps) {
+	const idCurrent = route.params.postID;
 	// DATA에서 불러오기(임시)
 	// const postInfo = DATA.filter(function(element){return element.id == idCurrent;})[0];
 
-	const [postDATA, setPostDATA] = useState<PostItemProps>({is_qna: 'T', title: '', content: '', img_path: '', user_name: '', like: 0});
+	const [postDATA, setPostDATA] = useState<PostItemProps>({is_qna: 'T', title: '', content: '', user_name: '', like: 0, img_path_1: '', img_path_2: '', img_path_3: ''});
 	const [commentDATA, setCommentDATA] = useState<CommentItemProps[]>([]);
 	const [commentValue, setCommentValue] = useState('');
 	const [needReset, setNeedReset] = useState(false);
@@ -30,14 +30,18 @@ function PostDetail({navigation}: PostDetailScreenProps) {
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
 		setTimeout(() => {
-		setRefreshing(false);
+			setRefreshing(false);
 		}, 1000);
 	}, []);
+
+	navigation.setOptions({
+		headerTitle: postDATA.is_qna === 'T' ? '질문' : '노하우',
+	});
 
 	useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post/${idCurrent}`);
+        const response = await axios.get(`${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`);
         setPostDATA(response.data.post[0]);
 				console.log(postDATA);
 				setCommentDATA(response.data.comment);
@@ -65,13 +69,12 @@ function PostDetail({navigation}: PostDetailScreenProps) {
 					w_id: idCurrent,
 				});
 				console.log(response.data);
-				console.log(1);
 			} catch (error) {
 				const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+				console.error(errorResponse);
+				if (errorResponse) {
+				return Alert.alert('알림', errorResponse.data?.message);
+        		}
 			}
 		};
 		recommendPostWait();
