@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, {useState, useCallback, useEffect} from 'react';
+=======
+import React, {useState, useCallback} from 'react';
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
   Pressable,
@@ -14,10 +18,17 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+<<<<<<< HEAD
 // import MultipleImagePicker, {
 //   ImageResults,
 //   MediaType,
 // } from '@baronha/react-native-multiple-image-picker';
+=======
+import MultipleImagePicker, {
+  ImageResults,
+  MediaType,
+} from '@baronha/react-native-multiple-image-picker';
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
@@ -25,6 +36,7 @@ import {RootState} from '../store';
 type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'NewPost'>;
 
 const NewPost = ({navigation}: BoardScreenProps) => {
+<<<<<<< HEAD
   // const [categorySelected, setCategorySelected] = useState<number | null>(null);
   // const [filterSelected, setFilterSelected] = useState<number | null>(null);
   // const [images, setImages] = useState<ImageResults[]>([]);
@@ -98,6 +110,60 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   return (
     <KeyboardAwareScrollView>
       {/* <SafeAreaView style={styles.Background}>
+=======
+  const [categorySelected, setCategorySelected] = useState<number | null>(null);
+  const [filterSelected, setFilterSelected] = useState<number | null>(null);
+  const [images, setImages] = useState<ImageResults[]>([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  const categoryDATA = ['건강', '여가', '학습', '관계'];
+  const filterDATA = ['노하우', 'QnA'];
+  const userID = useSelector((state: RootState) => state.user.id);
+
+  const onChangeTitle = useCallback((text: string) => {
+    setTitle(text);
+  }, []);
+  const onChangeContent = useCallback((text: string) => {
+    setContent(text);
+  }, []);
+
+  const selectImage = async () => {
+    const response = await MultipleImagePicker.openPicker({
+      mediaType: MediaType.IMAGE,
+      maxSelectedAssets: 3,
+      doneTitle: '완료',
+      cancelTitle: '취소',
+      selectedAssets: images,
+    });
+    setImages(response);
+  };
+
+  const upload = async () => {
+    await axios.post(`${Config.API_URL}/board/post`, {
+      id: userID,
+      c_id: categorySelected,
+      q_id: 0,
+      is_qna: filterSelected,
+      title: title,
+      content: content,
+    });
+    navigation.goBack();
+  };
+
+  return (
+    <KeyboardAwareScrollView>
+      <SafeAreaView style={styles.Background}>
+        <View style={styles.topContainer}>
+          <Pressable style={styles.backBt} onPress={() => navigation.goBack()}>
+            <Text style={styles.back}>뒤로</Text>
+          </Pressable>
+          <Text style={styles.titleHeader}>글쓰기</Text>
+          <Pressable style={styles.upLoadBt} onPress={upload}>
+            <Text style={styles.upLoad}>업로드</Text>
+          </Pressable>
+        </View>
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
         <View>
           <SelectDropdown
             data={categoryDATA}
@@ -151,6 +217,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
           />
         </View>
         <View style={styles.board}>
+<<<<<<< HEAD
           <Pressable
             android_ripple={{
               color: '#ffffff',
@@ -188,6 +255,38 @@ const NewPost = ({navigation}: BoardScreenProps) => {
           />
         </View>
       </SafeAreaView> */}
+=======
+          <View style={styles.boardTitle}>
+            <TextInput
+              style={styles.titleInput}
+              placeholder="제목을 입력하세요"
+              placeholderTextColor="#B7CBB2"
+              multiline={true}
+              value={title}
+              onChangeText={onChangeTitle}
+            />
+            <Pressable
+              android_ripple={{
+                color: '#ffffff',
+              }}
+              style={styles.circle}
+              onPress={selectImage}>
+              <Icon name="camera-alt" color="white" size={24} />
+            </Pressable>
+          </View>
+          <View style={styles.contentBoard}>
+            <TextInput
+              style={styles.contentInput}
+              placeholder="내용을 입력하세요"
+              placeholderTextColor="#B7CBB2"
+              multiline={true}
+              value={content}
+              onChangeText={onChangeContent}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
     </KeyboardAwareScrollView>
   );
 };
@@ -199,11 +298,47 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
+<<<<<<< HEAD
   upLoad: {
     color: '#1F6733',
     fontSize: 18,
     fontWeight: '700',
     marginRight: 10,
+=======
+  topContainer: {
+    height: 24,
+    marginTop: 10,
+    marginBottom: 10,
+    flexDirection: 'row',
+  },
+  titleHeader: {
+    flex: 10,
+    color: '#1F6733',
+    fontSize: 20,
+    marginTop: 1,
+    textAlign: 'center',
+  },
+  upLoadBt: {
+    flex: 2,
+    width: 70,
+    heigth: 18,
+    alignItems: 'center',
+    marginTop: 3,
+    marginRight: 7,
+  },
+  backBt: {
+    flex: 2,
+    alignItems: 'flex-end',
+    marginTop: 3,
+  },
+  upLoad: {
+    color: '#1F6733',
+    fontSize: 18,
+  },
+  back: {
+    color: '#1F6733',
+    fontSize: 18,
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
   },
   listBt: {
     width: 350,
@@ -223,6 +358,7 @@ const styles = StyleSheet.create({
   categoryRow: {
     backgroundColor: 'white',
   },
+<<<<<<< HEAD
   board: {
     minHeight: 570,
     width: 350,
@@ -249,10 +385,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 21,
     paddingTop: 10,
     paddingBottom: 5,
+=======
+  /*
+  filter: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },*/
+  board: {
+    height: 572,
+    width: 350,
+    borderRadius: 10,
+    flexDirection: 'column',
+    backgroundColor: 'green',
+  },
+  boardTitle: {
+    flex: 1.5,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+  },
+  contentBoard: {
+    flex: 13,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    backgroundColor: 'white',
+  },
+  titleInput: {
+    marginLeft: 5,
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  contentInput: {
+    marginLeft: 5,
+    fontSize: 17,
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
   },
   circle: {
     backgroundColor: '#B7CBB2',
     borderRadius: 27,
+<<<<<<< HEAD
     height: 49,
     width: 49,
     alignItems: 'center',
@@ -264,3 +437,16 @@ const styles = StyleSheet.create({
 });
 
 export default NewPost;
+=======
+    height: 48,
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 7,
+    marginTop: 7,
+  },
+  imageBt: {},
+});
+
+export default NewPost;
+>>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f

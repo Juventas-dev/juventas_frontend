@@ -21,6 +21,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
+import {RouteProp, ParamListBase} from '@react-navigation/native';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -40,7 +41,7 @@ export type RootStackParamList = {
   Quest: undefined;
 };
 
-const screenoptions = () => {
+const screenoptions = ({route}: {route: RouteProp<ParamListBase, string>}) => {
   return {
     tabBarStyle: {height: 80},
     tabBarHideOnKeyboard: true,

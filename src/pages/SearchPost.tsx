@@ -1,13 +1,21 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { View, Pressable, StyleSheet, TextInput, Text, FlatList, Alert } from 'react-native';
+import React, {useCallback, useState, useRef} from 'react';
+import {
+  View,
+  SafeAreaView,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  Text,
+  FlatList,
+} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { useRoute } from '@react-navigation/native';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
+import SearchPostItem from '../components/SearchPostItem';
 
 // const DATA = [
 //   {
@@ -35,6 +43,8 @@ type ItemProps = {incr: number, c_id: number, title: string, like: number, comme
 
 function SearchPost({navigation}: SearchPostScreenProps) {
   const goWhere = useRoute().params.goBackToBoard;
+	// 이게 그 선언부 날아갔다는...밑에 쓰길래 일단 선언해봄
+	const [DATA, setDATA] = useState();
 
   const toBoard = useCallback(() => {
 		navigation.pop();
@@ -44,122 +54,102 @@ function SearchPost({navigation}: SearchPostScreenProps) {
 	const SearchRef = useRef<TextInput | null>(null);
 	const [keyword, setKeyword] = useState('');
 
-	const onChangeSearch = useCallback((text: string) => {setKeyword(text)}, []);
+  const searchKeyword = useRef<string>('');
 
-	const [DATA, setDATA] = useState<ItemProps[]>([]);
-	useEffect(() => {
-    const getBoardAndRefresh = async () => {
-      try {
-        const response = await axios.get(`${Config.API_URL}/board/search?keyword=${keyword}`);
-        setDATA(response.data.post);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
-      }
-    };
-    getBoardAndRefresh();
-  },[keyword]);
-
-	// like랑 comment는 필요 없음
-	const Item = ({incr, c_id, title, like, comment}: ItemProps) => (
-    <Pressable style={styles.posting} onPress={() => navigation.navigate('PostDetail', {postID: incr})}>
-			<Text style={styles.postContentCategory} numberOfLines={1}>{c_id}</Text>
-			<Text style={styles.postContentTitle} numberOfLines={2}>{title}</Text>
-    </Pressable>
+  useFocusEffect(
+    useCallback(() => {
+      SearchRef.current?.focus();
+    }, []),
   );
-	useFocusEffect(useCallback(() => {SearchRef.current?.focus();}, []));
+
+  const onChangeSearch = useCallback((text: string) => {
+    setKeyword(text);
+  }, []);
+
+  const onSubmit = useCallback(async () => {
+    const response = await axios.get(
+      `${Config.API_URL}/board/search?keyword=${keyword}`,
+    );
+    setDATA(response.data.post);
+    searchKeyword.current = keyword;
+  }, [keyword]);
+
   return (
     <SafeAreaView style={styles.entire}>
-		<View style={styles.headerSearchingArea}>
-			<View style={styles.headerSearch}>
-				<FontAwesomeIcon
-					name="search"
-					size={22}
-					color='#DAE2D8'
-					style={styles.headerSearchIcon}
-				/>
-				<TextInput 
-					style={styles.headerSearchInput} 
-					placeholder="노하우 검색"
-					placeholderTextColor={'#DAE2D8'}
-					// onFocus={}
-					ref={SearchRef}
-					onChangeText={onChangeSearch}
-				/>
-			</View>
-			<Pressable 
-				style={styles.headerSearchCancelBtn}
-				onPress={toBoard}>
-				<Text style={styles.headerSearchCancelBtnText}>취소</Text>
-			</Pressable>
-		</View>
-		<FlatList
-			data={DATA}
-			renderItem={({item}) => <Item title={item.title} incr={item.incr} c_id={item.c_id} like={item.like} comment={item.comment} />}
-			keyExtractor={Item => String(Item.incr)}
-		/>
+      <View style={styles.headerSearchingArea}>
+        <View style={styles.headerSearch}>
+          <FontAwesomeIcon
+            name="search"
+            size={22}
+            color="#DAE2D8"
+            style={styles.headerSearchIcon}
+          />
+          <TextInput
+            style={styles.headerSearchInput}
+            placeholder="노하우 검색"
+            placeholderTextColor={'#DAE2D8'}
+            // onFocus={}
+            ref={SearchRef}
+            onChangeText={onChangeSearch}
+            returnKeyType="done"
+            onSubmitEditing={onSubmit}
+          />
+        </View>
+        <Pressable style={styles.headerSearchCancelBtn} onPress={toBoard}>
+          <Text style={styles.headerSearchCancelBtnText}>취소</Text>
+        </Pressable>
+      </View>
+      <FlatList
+        data={DATA}
+        renderItem={({item}) => (
+          <SearchPostItem item={item} searchKeyword={searchKeyword.current} />
+        )}
+        keyExtractor={Item => String(Item.incr)}
+      />
     </SafeAreaView>
-    );
+  );
 }
 
 export default SearchPost;
 
 const styles = StyleSheet.create({
-	entire: {
-		backgroundColor: 'white',
-		flex: 1
-	},
-	headerSearchingArea: {
-		flexDirection: 'row',
-		paddingHorizontal: 15,
-		alignItems: 'center',
-		paddingVertical: 15,
-		backgroundColor: '#F9FAF8'
-	},
-	headerSearch: {
-		flexDirection: 'row',
-		backgroundColor: '#EBEFEA',
-		borderRadius: 10,
-		alignItems: 'center',
-		height: 40,
-		flex: 4,
-	},
-	headerSearchIcon: {
-		marginLeft: 15
-	},
-	headerSearchInput: {
-		backgroundColor: 'transparent',
-		color: '#1F6733',
-		fontSize: 18,
-		padding: 0,
-		width: '88%',
-		paddingLeft: 10
-	},
-	headerSearchCancelBtn: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		flex: 1,
-	},
-	headerSearchCancelBtnText: {
-		color: '#1F6733',
-		fontSize: 18
-	},
-	posting: {
-    borderTopWidth: 1,
-    borderTopColor: '#EBEFEA',
-    height: 80,
-    justifyContent: 'center',
-		paddingLeft: 35
+  entire: {
+    backgroundColor: 'white',
+    flex: 1,
   },
-  postContentCategory:{
-    fontSize: 14,
-    color: '#5F5D5D'
+  headerSearchingArea: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    alignItems: 'center',
+    paddingVertical: 15,
+    backgroundColor: '#F9FAF8',
   },
-  postContentTitle: {
+  headerSearch: {
+    flexDirection: 'row',
+    backgroundColor: '#EBEFEA',
+    borderRadius: 10,
+    alignItems: 'center',
+    height: 40,
+    flex: 4,
+  },
+  headerSearchIcon: {
+    marginLeft: 15,
+  },
+  headerSearchInput: {
+    backgroundColor: 'transparent',
+    color: '#1F6733',
     fontSize: 18,
-    color: '#878787'
-  }
+    padding: 0,
+    width: '88%',
+    paddingLeft: 10,
+  },
+  headerSearchCancelBtn: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  headerSearchCancelBtnText: {
+    color: '#1F6733',
+    fontSize: 18,
+  },
 });
