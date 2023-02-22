@@ -20,7 +20,6 @@ import Setting from './src/pages/Setting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
-import {RouteProp, ParamListBase} from '@react-navigation/native';
 import HomeNavigation from './src/navigations/HomeNavigation';
 
 export type LoggedInParamList = {
@@ -41,7 +40,7 @@ export type RootStackParamList = {
   Quest: undefined;
 };
 
-const screenoptions = ({route}: {route: RouteProp<ParamListBase, string>}) => {
+const screenoptions = () => {
   return {
     tabBarStyle: {height: 80},
     tabBarHideOnKeyboard: true,
@@ -92,7 +91,7 @@ function AppInner() {
   }, [dispatch]);
 
   return isLoggedIn ? (
-    <Tab.Navigator screenOptions={screenoptions}>
+    <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
       <Tab.Screen
         name="BoardNav"
         component={BoardNavigation}
@@ -110,6 +109,7 @@ function AppInner() {
         component={Message}
         options={{
           title: 'Message',
+          headerShown: false,
           tabBarLabel: '쪽지',
           tabBarIcon: ({color}) => (
             <AntDesignIcon name="message1" color={color} size={40} />
@@ -117,7 +117,7 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Home"
+        name="HomeNav"
         component={HomeNavigation}
         options={{
           title: 'Home',
@@ -133,7 +133,8 @@ function AppInner() {
         component={Mypage}
         options={{
           title: 'Mypage',
-          tabBarLabel: '내 정보',
+          headerShown: false,
+          tabBarLabel: '내정보',
           tabBarIcon: ({color}) => (
             <IoniconsIcon name="person" color={color} size={40} />
           ),
@@ -144,6 +145,7 @@ function AppInner() {
         component={Setting}
         options={{
           title: 'Setting',
+          headerShown: false,
           tabBarLabel: '설정',
           tabBarIcon: ({color, size}) => (
             <IoniconsIcon name="settings" color={color} size={size} />

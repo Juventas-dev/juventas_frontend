@@ -38,7 +38,7 @@ type CommentItemProps = {
   like: number;
 };
 
-function PostDetail({route}: PostDetailScreenProps) {
+function PostDetail({navigation, route}: PostDetailScreenProps) {
   const idCurrent = route.params.postID;
 
   const [postDATA, setPostDATA] = useState<PostItemProps>({
@@ -64,11 +64,15 @@ function PostDetail({route}: PostDetailScreenProps) {
     }, 1000);
   }, []);
 
+  navigation.setOptions({
+    headerTitle: postDATA.is_qna === 'T' ? '질문' : '노하우',
+  });
+
   useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
         const response = await axios.get(
-          `${Config.API_URL}/board/post/${idCurrent}`,
+          `${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`,
         );
         setPostDATA(response.data.post[0]);
         console.log(postDATA);

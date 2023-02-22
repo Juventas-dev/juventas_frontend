@@ -74,6 +74,7 @@ function SearchPost({navigation}: SearchPostScreenProps) {
             onChangeText={onChangeSearch}
             returnKeyType="done"
             onSubmitEditing={onSubmit}
+            clearButtonMode="while-editing"
           />
         </View>
         <Pressable style={styles.headerSearchCancelBtn} onPress={toBoard}>
@@ -127,7 +128,9 @@ const styles = StyleSheet.create({
   headerSearchCancelBtn: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    width: 45,
+    marginLeft: 9,
+    marginRight: 5,
   },
   headerSearchCancelBtnText: {
     color: '#1F6733',
