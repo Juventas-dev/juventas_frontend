@@ -190,16 +190,19 @@ const styles = StyleSheet.create({
     color: '#1F6733',
     fontSize: 12,
     marginBottom: 2,
+    fontWeight: '800',
   },
   questName: {
     color: 'black',
     fontSize: 24,
     marginBottom: 5,
+    fontWeight: '800',
   },
   howManyPeopleInQuest: {
     color: '#8D8D8D',
     fontSize: 12,
     marginBottom: 8,
+    fontWeight: '600',
   },
   submitQuestTodayBtn: {
     backgroundColor: '#1F6733',
@@ -212,6 +215,7 @@ const styles = StyleSheet.create({
   submitQuestTodayTxt: {
     color: 'white',
     fontSize: 14,
+    fontWeight: '700',
   },
   reselect: {
     flex: 4,

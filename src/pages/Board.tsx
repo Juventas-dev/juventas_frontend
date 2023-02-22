@@ -15,6 +15,8 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 import SelectDropdown from 'react-native-select-dropdown';
 import PostItem from '../components/PostItem';
 
@@ -36,6 +38,8 @@ const FlatListHeader = (bestPostDATA: ItemProps[]) => (
 );
 
 function Board({navigation}: BoardScreenProps) {
+  const userID = useSelector((state: RootState) => state.user.id);
+
   const toSearchPost = useCallback(() => {
     navigation.navigate('SearchPost');
   }, [navigation]);
@@ -72,13 +76,15 @@ function Board({navigation}: BoardScreenProps) {
             const response = await axios.get(
               `${Config.API_URL}/board/post?c_id=${
                 categorySelected - 1
-              }&is_qna='${temp}'`,
+              }&is_qna='${temp}'&id='${userID}'`,
             );
             setDATA(response.data.post);
             setBestPostDATA([]);
           } else {
             const response = await axios.get(
-              `${Config.API_URL}/board/post?c_id=${categorySelected - 1}`,
+              `${Config.API_URL}/board/post?c_id=${
+                categorySelected - 1
+              }&id='${userID}'`,
             );
             setDATA(response.data.post);
             setBestPostDATA([]);
@@ -92,12 +98,14 @@ function Board({navigation}: BoardScreenProps) {
               temp = 'T';
             }
             const response = await axios.get(
-              `${Config.API_URL}/board/post?is_qna='${temp}'`,
+              `${Config.API_URL}/board/post?is_qna='${temp}'&id='${userID}'`,
             );
             setDATA(response.data.post);
             setBestPostDATA([]);
           } else {
-            const response = await axios.get(`${Config.API_URL}/board/post`);
+            const response = await axios.get(
+              `${Config.API_URL}/board/post?id='${userID}'`,
+            );
             setDATA(response.data.post);
             setBestPostDATA(response.data.bestPost);
           }
@@ -111,12 +119,14 @@ function Board({navigation}: BoardScreenProps) {
       }
     };
     filterPost();
-  }, [categorySelected, filterSelected, refreshing]);
+  }, [categorySelected, filterSelected, refreshing, userID]);
 
   useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post`);
+        const response = await axios.get(
+          `${Config.API_URL}/board/post?id='${userID}'`,
+        );
         setDATA(response.data.post);
         setBestPostDATA(response.data.bestPost);
       } catch (error) {

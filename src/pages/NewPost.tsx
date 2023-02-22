@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {
   Pressable,
@@ -28,6 +28,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   const [categorySelected, setCategorySelected] = useState<number | null>(null);
   const [filterSelected, setFilterSelected] = useState<number | null>(null);
   const [images, setImages] = useState<ImageResults[]>([]);
+  const [questId, setQuestId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -35,6 +36,9 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   const filterDATA = ['노하우', 'QnA'];
   const userID = useSelector((state: RootState) => state.user.id);
 
+  const onChangeQuest = useCallback((text: string) => {
+    setQuestId(text);
+  }, []);
   const onChangeTitle = useCallback((text: string) => {
     setTitle(text);
   }, []);
@@ -53,31 +57,47 @@ const NewPost = ({navigation}: BoardScreenProps) => {
     setImages(response);
   };
 
-  const upload = async () => {
-    await axios.post(`${Config.API_URL}/board/post`, {
-      id: userID,
-      c_id: categorySelected,
-      q_id: 0,
-      is_qna: filterSelected,
-      title: title,
-      content: content,
+  useEffect(() => {
+    const upload = async () => {
+      let temp;
+      if (filterSelected === 1) {
+        temp = 'T';
+      } else {
+        temp = 'F';
+      }
+      await axios.post(`${Config.API_URL}/board/post`, {
+        id: userID,
+        c_id: categorySelected,
+        q_id: Number(questId),
+        is_qna: temp,
+        title: title,
+        content: content,
+      });
+      navigation.goBack();
+    };
+
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={upload}>
+          <Text style={styles.upLoad}>업로드</Text>
+        </Pressable>
+      ),
     });
-    navigation.goBack();
-  };
+  }, [
+    categorySelected,
+    content,
+    filterSelected,
+    navigation,
+    questId,
+    title,
+    userID,
+  ]);
+
+  useEffect(() => {}, [categorySelected, filterSelected]);
 
   return (
     <KeyboardAwareScrollView>
       <SafeAreaView style={styles.Background}>
-        <View style={styles.topContainer}>
-          <Pressable style={styles.backBt} onPress={() => navigation.goBack()}>
-            <Icon name="left" color="#346627" size={18} />
-            <Text style={styles.back}>뒤로</Text>
-          </Pressable>
-          <Text style={styles.titleHeader}>글쓰기</Text>
-          <Pressable style={styles.upLoadBt} onPress={upload}>
-            <Text style={styles.upLoad}>업로드</Text>
-          </Pressable>
-        </View>
         <View>
           <SelectDropdown
             data={categoryDATA}
@@ -131,34 +151,41 @@ const NewPost = ({navigation}: BoardScreenProps) => {
           />
         </View>
         <View style={styles.board}>
-          <View style={styles.boardTitle}>
-            <TextInput
-              style={styles.titleInput}
-              placeholder="제목을 입력하세요"
-              placeholderTextColor="#B7CBB2"
-              multiline={true}
-              value={title}
-              onChangeText={onChangeTitle}
-            />
-            <Pressable
-              android_ripple={{
-                color: '#ffffff',
-              }}
-              style={styles.circle}
-              onPress={selectImage}>
-              <Icon name="camera-alt" color="white" size={24} />
-            </Pressable>
-          </View>
-          <View style={styles.contentBoard}>
-            <TextInput
-              style={styles.contentInput}
-              placeholder="내용을 입력하세요"
-              placeholderTextColor="#B7CBB2"
-              multiline={true}
-              value={content}
-              onChangeText={onChangeContent}
-            />
-          </View>
+          <Pressable
+            android_ripple={{
+              color: '#ffffff',
+            }}
+            style={styles.circle}
+            onPress={selectImage}>
+            <Icon name="camera-alt" color="white" size={24} />
+          </Pressable>
+          <TextInput
+            style={styles.questInput}
+            placeholder="퀘스트 번호를 입력하세요"
+            placeholderTextColor="#829B89"
+            multiline={false}
+            value={questId}
+            onChangeText={onChangeQuest}
+            keyboardType="number-pad"
+          />
+          <TextInput
+            style={styles.titleInput}
+            placeholder="제목을 입력하세요"
+            placeholderTextColor="#B7CBB2"
+            multiline={true}
+            value={title}
+            onChangeText={onChangeTitle}
+            maxLength={100}
+          />
+          <TextInput
+            style={styles.contentInput}
+            placeholder="내용을 입력하세요"
+            placeholderTextColor="#B7CBB2"
+            multiline={true}
+            value={content}
+            onChangeText={onChangeContent}
+            maxLength={5000}
+          />
         </View>
       </SafeAreaView>
     </KeyboardAwareScrollView>
@@ -172,41 +199,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  topContainer: {
-    width: 350,
-    height: 24,
-    marginTop: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  titleHeader: {
-    flex: 1,
-    color: '#1F6733',
-    fontSize: 20,
-    marginTop: 1,
-    textAlign: 'center',
-  },
-  upLoadBt: {
-    flex: 1,
-    heigth: 18,
-    alignItems: 'flex-end',
-    marginTop: 3,
-  },
-  backBt: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginTop: 3,
-  },
   upLoad: {
     color: '#1F6733',
     fontSize: 18,
-  },
-  back: {
-    color: '#1F6733',
-    fontSize: 18,
-    marginLeft: 5,
+    fontWeight: '700',
+    marginRight: 10,
   },
   listBt: {
     width: 350,
@@ -226,52 +223,44 @@ const styles = StyleSheet.create({
   categoryRow: {
     backgroundColor: 'white',
   },
-  /*
-  filter: {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },*/
   board: {
-    height: 572,
+    minHeight: 570,
     width: 350,
     borderRadius: 10,
     flexDirection: 'column',
-    backgroundColor: 'green',
-  },
-  boardTitle: {
-    flex: 1.5,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     backgroundColor: 'white',
   },
-  contentBoard: {
-    flex: 13,
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    backgroundColor: 'white',
+  questInput: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    paddingHorizontal: 21,
+    paddingTop: 10,
+    paddingBottom: 5,
   },
   titleInput: {
-    marginLeft: 5,
     fontWeight: 'bold',
     fontSize: 20,
+    paddingHorizontal: 21,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   contentInput: {
-    marginLeft: 5,
     fontSize: 17,
+    paddingHorizontal: 21,
+    paddingTop: 10,
+    paddingBottom: 5,
   },
   circle: {
     backgroundColor: '#B7CBB2',
     borderRadius: 27,
-    height: 48,
-    width: 48,
+    height: 49,
+    width: 49,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 7,
-    marginTop: 7,
+    position: 'absolute',
+    top: 19,
+    right: 10,
   },
-  imageBt: {},
 });
 
 export default NewPost;
