@@ -4,19 +4,29 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigations/BoardNavigation';
+import { BoardStackParamList } from '../navigations/BoardNavigation';
+import { useRoute } from '@react-navigation/native';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 
 // npm install react-native-select-dropdown
 // 참고 https://www.npmjs.com/package/react-native-select-dropdown#onSelect
 import SelectDropdown from 'react-native-select-dropdown';
 
-type BoardScreenProps = NativeStackScreenProps<RootStackParamList, 'Board'>;
-type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
+type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'Board'>;
+type ItemProps = {
+  incr: number;
+  c_id: number;
+  title: string;
+  like: number;
+  comment: number;
+};
 
 function Board({navigation}: BoardScreenProps) {
-  const toSearchPost = useCallback(() => {navigation.navigate('SearchPost')}, [navigation])
+  const userID = useSelector((state: RootState) => state.user.id);
+  const toSearchPost = useCallback(() => {navigation.navigate('SearchPost', {goBackToBoard: 'T'})}, [navigation])
   const toNewPost = useCallback(() => {
     navigation.navigate('NewPost');
   }, [navigation])
@@ -50,12 +60,12 @@ function Board({navigation}: BoardScreenProps) {
             let temp = undefined;
             if (filterSelected == 1) {temp = `F`}
             else {temp = `T`}
-            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}&is_qna='${temp}'`);
+            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}&is_qna='${temp}'&id='${userID}'`);
             setDATA(response.data.post);
             setBestPost(false);
           }
           else {
-            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}`);
+            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}&id='${userID}'`);
             setDATA(response.data.post);
             setBestPost(false);
           }
@@ -65,12 +75,12 @@ function Board({navigation}: BoardScreenProps) {
             let temp = undefined;
             if (filterSelected == 1) {temp = `F`}
             else {temp = `T`}
-            const response = await axios.get(`${Config.API_URL}/board/post?is_qna='${temp}'`);
+            const response = await axios.get(`${Config.API_URL}/board/post?is_qna='${temp}'&id='${userID}'`);
             setDATA(response.data.post);
             setBestPost(false);
           }
           else {
-            const response = await axios.get(`${Config.API_URL}/board/post`);
+            const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
             setDATA(response.data.post);
             setBestPost(true);
           }
@@ -85,12 +95,12 @@ function Board({navigation}: BoardScreenProps) {
       }
     }
     filterPost();
-  }, [categorySelected, filterSelected, refreshing]);
+  }, [categorySelected, filterSelected, refreshing, userID]);
   
   useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post`);
+        const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
         setDATA(response.data.post);
         console.log(response.data.bestPost)
         setBestPostDATA(response.data.bestPost);
@@ -219,7 +229,6 @@ function Board({navigation}: BoardScreenProps) {
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.header}>
-        <View><Text>게시판</Text></View>
         <View style={styles.headerSearchingArea}>
           <View style={styles.headerSearch}>
             <FontAwesomeIcon
