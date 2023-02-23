@@ -39,7 +39,7 @@ type CommentItemProps = {
   like: number;
 };
 
-function PostDetail({route}: PostDetailScreenProps) {
+function PostDetail({navigation, route}: PostDetailScreenProps) {
   const idCurrent = route.params.postID;
 
   const [postDATA, setPostDATA] = useState<PostItemProps>({
@@ -64,6 +64,10 @@ function PostDetail({route}: PostDetailScreenProps) {
       setRefreshing(false);
     }, 1000);
   }, []);
+
+  navigation.setOptions({
+    headerTitle: postDATA.is_qna === 'T' ? '질문' : '노하우',
+  });
 
   useEffect(() => {
     const getBoardAndRefresh = async () => {

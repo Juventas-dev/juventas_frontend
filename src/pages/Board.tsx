@@ -18,9 +18,6 @@ import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
-
-// npm install react-native-select-dropdown
-// 참고 https://www.npmjs.com/package/react-native-select-dropdown#onSelect
 import SelectDropdown from 'react-native-select-dropdown';
 import PostItem from '../components/PostItem';
 
@@ -70,29 +67,45 @@ function Board({navigation}: BoardScreenProps) {
       try {
         if (categorySelected) {
           if (filterSelected) {
-            let temp = undefined;
-            if (filterSelected == 1) {temp = `F`}
-            else {temp = `T`}
-            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}&is_qna='${temp}'&id='${userID}'`);
+            let temp;
+            if (filterSelected === 1) {
+              temp = 'F';
+            } else {
+              temp = 'T';
+            }
+            const response = await axios.get(
+              `${Config.API_URL}/board/post?c_id=${
+                categorySelected - 1
+              }&is_qna='${temp}'&id='${userID}'`,
+            );
             setDATA(response.data.post);
-            // setBestPost(false);
-          }
-          else {
-            const response = await axios.get(`${Config.API_URL}/board/post?c_id=${categorySelected}&id='${userID}'`);
+            setBestPostDATA([]);
+          } else {
+            const response = await axios.get(
+              `${Config.API_URL}/board/post?c_id=${
+                categorySelected - 1
+              }&id='${userID}'`,
+            );
             setDATA(response.data.post);
             setBestPostDATA([]);
           }
         } else {
           if (filterSelected) {
-            let temp = undefined;
-            if (filterSelected == 1) {temp = `F`}
-            else {temp = `T`}
-            const response = await axios.get(`${Config.API_URL}/board/post?is_qna='${temp}'&id='${userID}'`);
+            let temp;
+            if (filterSelected === 1) {
+              temp = 'F';
+            } else {
+              temp = 'T';
+            }
+            const response = await axios.get(
+              `${Config.API_URL}/board/post?is_qna='${temp}'&id='${userID}'`,
+            );
             setDATA(response.data.post);
-            // setBestPost(false);
-          }
-          else {
-            const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
+            setBestPostDATA([]);
+          } else {
+            const response = await axios.get(
+              `${Config.API_URL}/board/post?id='${userID}'`,
+            );
             setDATA(response.data.post);
             setBestPostDATA(response.data.bestPost);
           }
@@ -107,11 +120,13 @@ function Board({navigation}: BoardScreenProps) {
     };
     filterPost();
   }, [categorySelected, filterSelected, refreshing, userID]);
-  
+
   useEffect(() => {
     const getBoardAndRefresh = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
+        const response = await axios.get(
+          `${Config.API_URL}/board/post?id='${userID}'`,
+        );
         setDATA(response.data.post);
         setBestPostDATA(response.data.bestPost);
       } catch (error) {

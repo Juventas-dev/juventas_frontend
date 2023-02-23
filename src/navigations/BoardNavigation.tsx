@@ -38,10 +38,7 @@ import NewPost from '../pages/NewPost';
 import PostDetail from '../pages/PostDetail';
 import SearchPost from '../pages/SearchPost';
 import {RouteProp} from '@react-navigation/native';
-<<<<<<< HEAD
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-=======
->>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
 
 export type BoardStackParamList = {
   Board: undefined;
@@ -60,7 +57,6 @@ const Stack = createNativeStackNavigator<BoardStackParamList>();
 export default function BoardNavigation() {
   return (
     <Stack.Navigator>
-<<<<<<< HEAD
       <Stack.Screen
         name="Board"
         component={Board}
@@ -77,15 +73,11 @@ export default function BoardNavigation() {
           ),
         }}
       />
-=======
-      <Stack.Screen name="Board" component={Board} />
->>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
       <Stack.Screen
         name="SearchPost"
         component={SearchPost}
         options={{headerShown: false}}
       />
-<<<<<<< HEAD
       <Stack.Screen
         name="NewPost"
         component={NewPost}
@@ -112,10 +104,6 @@ export default function BoardNavigation() {
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
       />
-=======
-      <Stack.Screen name="NewPost" component={NewPost} />
-      <Stack.Screen name="PostDetail" component={PostDetail} />
->>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
     </Stack.Navigator>
   );
 }

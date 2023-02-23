@@ -1,9 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, Pressable, Alert } from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackParamList } from '../navigations/HomeNavigation';
-// import { BoardStackParamList } from '../navigations/BoardNavigation';
+import {ProgressViewIOSBase} from 'react-native/Libraries/Components/ProgressViewIOS/ProgressViewIOS';
+import {HomeStackParamList} from '../navigations/HomeNavigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import axios, { AxiosError } from 'axios';
@@ -278,7 +287,7 @@ function Home({navigation}: HomeScreenProps) {
         <Pressable style={styles.boardBody}>
           <View style={styles.boardHeader}>
             <View style={styles.boardProfile}>
-              <Pressable style={styles.profile}></Pressable>
+              <Pressable style={styles.profile} />
               <View>
                 <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardContent.userID}</Text>
                 <Text style={styles.boardProfileTitle} numberOfLines={1}>{boardData[whichPost].title}</Text>
@@ -290,7 +299,7 @@ function Home({navigation}: HomeScreenProps) {
                   name="thumbs-up"
                   size={39}
                   color={myPostRecommend ? '#1F6733' : '#DAE2D8'}
-						    />
+                />
               </Pressable>
               <Text style={styles.boardRecommendTxt}>{boardData[whichPost].like}</Text>
             </View>
@@ -334,7 +343,7 @@ const styles = StyleSheet.create({
     flex: 4,
     justifyContent: 'space-around',
     marginBottom: 10,
-    marginTop: 20
+    marginTop: 20,
   },
   attendanceDetail: {
     flex: 1,
@@ -343,7 +352,7 @@ const styles = StyleSheet.create({
   },
   attendanceDetailTxt: {
     color: '#1F6733',
-    fontSize: 30
+    fontSize: 30,
   },
   quest: {
     flex: 15,
@@ -352,19 +361,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     paddingTop: 8,
-    paddingBottom: 3
+    paddingBottom: 3,
   },
   questBody: {
     flex: 10,
     alignItems: 'center',
     paddingHorizontal: 15,
-    width: '100%'
+    width: '100%',
   },
   questBodyDecided: {
     flex: 10,
     alignItems: 'center',
     paddingHorizontal: 15,
-    width: '100%'
+    width: '100%',
   },
   myQuest: {
     backgroundColor: 'white',
@@ -373,22 +382,25 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     flex: 15,
     marginTop: 5,
-    width: '100%'
+    width: '100%',
   },
   questNum: {
     color: '#1F6733',
     fontSize: 12,
-    marginBottom: 2
+    marginBottom: 2,
+    fontWeight: '800',
   },
   questName: {
     color: 'black',
     fontSize: 24,
-    marginBottom: 5
+    marginBottom: 5,
+    fontWeight: '800',
   },
   howManyPeopleInQuest: {
     color: '#8D8D8D',
     fontSize: 12,
-    marginBottom: 8
+    marginBottom: 8,
+    fontWeight: '600',
   },
   submitQuestTodayBtn: {
     backgroundColor: '#1F6733',
@@ -396,11 +408,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 125,
-    height: 35
+    height: 35,
   },
   submitQuestTodayTxt: {
     color: 'white',
-    fontSize: 14
+    fontSize: 14,
+    fontWeight: '700',
   },
   reselect: {
     flex: 4,
@@ -410,7 +423,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 30,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   questBtn: {
     flex: 1,
@@ -419,10 +432,10 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     width: '100%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   questBtnTxt: {
-    fontSize: 15
+    fontSize: 15,
   },
   questRandomBtn: {
     flex: 1,
@@ -431,17 +444,17 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     width: '100%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   questFooter: {
     flex: 1,
     width: '100%',
     paddingHorizontal: 20,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   questFooterTxt: {
     color: '#1F6733',
-    fontSize: 11
+    fontSize: 11,
   },
   board: {
     flex: 15,
@@ -449,7 +462,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   boardSearch: {
     flex: 4,
@@ -457,12 +470,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAF8',
     borderRadius: 10,
     alignItems: 'center',
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   searchTxt: {
     fontSize: 18,
     color: '#DAE2D8',
-    marginLeft: 8
+    marginLeft: 8,
   },
   boardBody: {
     flex: 15,
@@ -471,7 +484,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     paddingHorizontal: 10,
-    paddingBottom: 8
+    paddingBottom: 8,
   },
   boardHeader: {
     flexDirection: 'row',
@@ -481,44 +494,44 @@ const styles = StyleSheet.create({
   },
   boardProfile: {
     flexDirection: 'row',
-    width: '82%'
+    width: '82%',
   },
-  profile:{
+  profile: {
     width: 40,
     height: 40,
     borderRadius: 20,
     backgroundColor: 'black',
-    marginRight: 10
+    marginRight: 10,
   },
   boardProfileUsername: {
-    fontSize: 12
+    fontSize: 12,
   },
   boardProfileTitle: {
-    fontSize: 17
+    fontSize: 17,
   },
   boardRecommend: {
     width: '18%',
     alignItems: 'center',
-    marginLeft: 3
+    marginLeft: 3,
   },
   boardRecommendTxt: {
     color: '#B7CBB2',
-    fontSize: 15
+    fontSize: 15,
   },
   boardContentTxt: {
-    fontSize: 12
+    fontSize: 12,
   },
   boardFooter: {
     flexDirection: 'row',
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   boardFooterBtn: {
-     width: 13,
-     height: 13,
-     borderRadius: 7,
-     backgroundColor: '#F9FAF8',
-     marginHorizontal: 5
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    backgroundColor: '#F9FAF8',
+    marginHorizontal: 5,
   },
   boardFooterBtnActive: {
     width: 13,
