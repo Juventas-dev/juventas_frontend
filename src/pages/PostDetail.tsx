@@ -11,6 +11,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { useRoute } from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
