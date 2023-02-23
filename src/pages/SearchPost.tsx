@@ -9,39 +9,58 @@ import {
   FlatList,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import axios from 'axios';
+import { useRoute } from '@react-navigation/native';
+import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 import SearchPostItem from '../components/SearchPostItem';
 
-type SearchPostScreenProps = NativeStackScreenProps<
-  BoardStackParamList,
-  'SearchPost'
->;
-type ItemProps = {
-  incr: number;
-  c_id: number;
-  title: string;
-};
+// const DATA = [
+//   {
+//     id: '1234',
+//     c_id: '0',
+//     q_id: '0',
+//     Is_qna: 'F',
+//     title: '줄넘기 하는 법',
+//     content: '줄넘기는 이렇게!',
+//     img_path: '',
+//   },
+//   {
+//     id: '12345',
+//     c_id: '1',
+//     q_id: '0',
+//     Is_qna: 'F',
+//     title: '서핑보드 중심 잡기',
+//     content: '어려워요',
+//     img_path: '',
+//   },
+// ];
+
+type SearchPostScreenProps = NativeStackScreenProps<BoardStackParamList, 'SearchPost'>;
+type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
 
 function SearchPost({navigation}: SearchPostScreenProps) {
-  const [keyword, setKeyword] = useState('');
-  const [DATA, setDATA] = useState<ItemProps[]>([]);
+  const goWhere = useRoute().params.goBackToBoard;
+	// 이게 그 선언부 날아갔다는...밑에 쓰길래 일단 선언해봄
+	const [DATA, setDATA] = useState();
+
+  const toBoard = useCallback(() => {
+		navigation.pop();
+		if (goWhere == 'T') {navigation.navigate('Board');}
+		else {navigation.navigate('Home');}
+	}, [navigation]);
+	const SearchRef = useRef<TextInput | null>(null);
+	const [keyword, setKeyword] = useState('');
 
   const searchKeyword = useRef<string>('');
-  const SearchRef = useRef<TextInput | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       SearchRef.current?.focus();
     }, []),
   );
-
-  const toBoard = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
 
   const onChangeSearch = useCallback((text: string) => {
     setKeyword(text);
