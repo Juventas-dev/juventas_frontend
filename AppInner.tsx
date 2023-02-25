@@ -21,6 +21,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
+import SplashScreen from 'react-native-splash-screen';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -58,6 +59,7 @@ function AppInner() {
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
 
   useEffect(() => {
+    SplashScreen.hide();
     const getTokenAndRefresh = async () => {
       try {
         const token = await EncryptedStorage.getItem('refreshToken');
