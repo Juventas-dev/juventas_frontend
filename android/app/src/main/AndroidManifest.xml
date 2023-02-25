@@ -1,16 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.juventas">
 
     <uses-permission android:name="android.permission.INTERNET" />
-<<<<<<< HEAD
-    <!-- <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
-
-=======
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
->>>>>>> fdc9cf66124221b54ebd0590195b18c3127a911f
     <application
       android:usesCleartextTraffic="true"
       android:name=".MainApplication"

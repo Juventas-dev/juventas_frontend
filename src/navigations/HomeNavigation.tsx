@@ -6,10 +6,12 @@ import {
 import Home from '../pages/Home';
 import TodayChk from '../pages/TodayChk';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import SearchPost from '../pages/SearchPost';
 
 export type HomeStackParamList = {
   Home: undefined;
   TodayChk: undefined;
+  SearchPostHome: undefined;
 };
 
 export type HomeStackNavigationProp =
@@ -48,6 +50,11 @@ export default function HomeNavigation() {
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
+      />
+      <Stack.Screen
+        name="SearchPostHome"
+        component={SearchPost}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

@@ -44,7 +44,7 @@ export type BoardStackParamList = {
   Board: undefined;
   NewPost: undefined;
   PostDetail: {postID: number};
-  SearchPost: {goBackToBoard: string};
+  SearchPost: undefined;
 };
 
 export type BoardStackNavigationProp =
