@@ -9,13 +9,13 @@ import {
   FlatList,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { useRoute } from '@react-navigation/native';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
 import SearchPostItem from '../components/SearchPostItem';
+import {HomeStackParamList} from '../navigations/HomeNavigation';
 
 // const DATA = [
 //   {
@@ -38,21 +38,18 @@ import SearchPostItem from '../components/SearchPostItem';
 //   },
 // ];
 
-type SearchPostScreenProps = NativeStackScreenProps<BoardStackParamList, 'SearchPost'>;
-type ItemProps = {incr: number, c_id: number, title: string, like: number, comment: number};
+type SearchPostScreenProps =
+  | NativeStackScreenProps<BoardStackParamList, 'SearchPost'>
+  | NativeStackScreenProps<HomeStackParamList, 'SearchPostHome'>;
 
 function SearchPost({navigation}: SearchPostScreenProps) {
-  const goWhere = useRoute().params.goBackToBoard;
-	// 이게 그 선언부 날아갔다는...밑에 쓰길래 일단 선언해봄
-	const [DATA, setDATA] = useState();
+  const [DATA, setDATA] = useState();
 
   const toBoard = useCallback(() => {
-		navigation.pop();
-		if (goWhere == 'T') {navigation.navigate('Board');}
-		else {navigation.navigate('Home');}
-	}, [navigation]);
-	const SearchRef = useRef<TextInput | null>(null);
-	const [keyword, setKeyword] = useState('');
+    navigation.goBack();
+  }, [navigation]);
+  const SearchRef = useRef<TextInput | null>(null);
+  const [keyword, setKeyword] = useState('');
 
   const searchKeyword = useRef<string>('');
 
