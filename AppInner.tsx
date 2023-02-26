@@ -17,6 +17,7 @@ import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
 import Setting from './src/pages/Setting';
+import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
@@ -39,6 +40,7 @@ export type RootStackParamList = {
   Board: undefined;
   Knowhow: undefined;
   Quest: undefined;
+  FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -176,6 +178,11 @@ function AppInner() {
         name="FindPassword"
         component={FindPassword}
         options={{title: 'FindPassword'}}
+      />
+      <Stack.Screen
+        name="FirstSetting"
+        component={FirstSetting}
+        options={{title: 'FirstSetting'}}
       />
     </Stack.Navigator>
   );
