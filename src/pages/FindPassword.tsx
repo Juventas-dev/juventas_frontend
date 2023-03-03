@@ -161,7 +161,7 @@ function FindPassword({navigation}: FindPassScreenProps) {
           />}
           <Pressable
             style={!AfterFinding ? styles.findBtn : styles.goBackToLogin}
-            onPress={onSubmit}
+            onPress={!AfterFinding ? onSubmit : () => (navigation.navigate('SignIn'))}
             disabled={!Name || !ID || !PhoneNum || !CheckNum}>
             {!AfterFinding
               ? <Text style={styles.btnText}>확인</Text>
