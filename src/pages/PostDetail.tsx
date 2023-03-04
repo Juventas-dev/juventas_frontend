@@ -31,6 +31,7 @@ type PostItemProps = {
   img_path: string;
   user_name: string;
   like: number;
+  myrec: number;
 };
 type CommentItemProps = {
   incr: number;
@@ -49,6 +50,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
     img_path: '',
     user_name: '',
     like: 0,
+    myrec: 0,
   });
   const [commentDATA, setCommentDATA] = useState<CommentItemProps[]>([]);
   const [commentValue, setCommentValue] = useState('');
@@ -76,7 +78,9 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           `${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`,
         );
         setPostDATA(response.data.post[0]);
+        console.log(response.data.post[0])
         console.log(postDATA);
+        setMyPostRecommend(response.data.post[0].myrec);
         setCommentDATA(response.data.comment);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -90,28 +94,30 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   }, []);
 
   const userID = useSelector((state: RootState) => state.user.id);
-  const [myPostRecommend, setMyPostRecommend] = useState(false);
+  const [myPostRecommend, setMyPostRecommend] = useState(0);
   const recommendPost = useCallback(() => {
-    // 추천한 후 누르면 오류 발생!
-    setMyPostRecommend(!myPostRecommend);
-    console.log(userID);
-    const recommendPostWait = async () => {
-      try {
-        const response = await axios.post(`${Config.API_URL}/board/likepost`, {
-          id: userID,
-          w_id: idCurrent,
-        });
-        console.log(response.data);
-        console.log(1);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
+    if (myPostRecommend) { Alert.alert("이미 추천한 게시글입니다."); }
+    else {
+      setMyPostRecommend(1);
+      console.log(userID);
+      const recommendPostWait = async () => {
+        try {
+          const response = await axios.post(`${Config.API_URL}/board/likepost`, {
+            id: userID,
+            w_id: idCurrent,
+          });
+          console.log(response.data);
+          console.log(1);
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.error(errorResponse);
+          if (errorResponse) {
+            return Alert.alert('알림', errorResponse.data?.message);
+          }
         }
-      }
-    };
-    recommendPostWait();
+      };
+      recommendPostWait();
+    }
   }, [idCurrent, myPostRecommend, userID]);
 
   const postComment = useCallback(() => {

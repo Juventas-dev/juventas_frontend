@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useRef} from 'react';
+import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
@@ -61,6 +61,8 @@ function SearchPost({navigation}: SearchPostScreenProps) {
       SearchRef.current?.focus();
     }, []),
   );
+
+  useEffect(() => {onSubmit();}, [keyword]);
 
   const onChangeSearch = useCallback((text: string) => {
     setKeyword(text);

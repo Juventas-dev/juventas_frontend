@@ -37,9 +37,9 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
-  Board: undefined;
-  Knowhow: undefined;
-  Quest: undefined;
+  // Board: undefined;
+  // Knowhow: undefined;
+  // Quest: undefined;
   FirstSetting: undefined;
 };
 
