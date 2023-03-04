@@ -1,29 +1,54 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, SafeAreaView, Alert } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
 const IconWelcome = require('../../assets/image/welcome.png');
 const IconLoading = require('../../assets/image/loading.png');
 
 type FirstSettingScreenProps = NativeStackScreenProps<RootStackParamList, 'FirstSetting'>;
 
 function FirstSetting({navigation}: FirstSettingScreenProps) {
+	const userID = useSelector((state:RootState)=>state.user.id);
+
 	const [firstScreen, setFirstScreen] = useState(0);
 	const nextScreen = useCallback(() => {
 		setFirstScreen(firstScreen + 1);
+		if (firstScreen >= 1) {setUserData();}
 	}, [firstScreen]);
+
+	const setUserData = useCallback(() => {
+		const setUserDataWait = async () => {
+		  try {
+			const response = await axios.patch(`${Config.API_URL}/quest/first`, {id: userID});
+			// 홈화면으로 이동
+			navigation.pop();
+			console.log('pop')
+		  } catch (error) {
+			const errorResponse = (error as AxiosError<{message: string}>).response;
+			console.error(errorResponse);
+			if (errorResponse) {
+			  return Alert.alert('알림', errorResponse.data?.message);
+			}
+		  };
+		};
+		setUserDataWait();
+	  }, []);
 	return <SafeAreaView style={styles.entire}>
 		{!firstScreen && <View style={styles.header}>
 			<Image source={IconWelcome} style={styles.image} />
-			<Text style={styles.headerText}>환영합니다 <Text style={styles.headerTextBold}>동글이</Text> 님!</Text>
+			<Text style={styles.headerText}>환영합니다 <Text style={styles.headerTextBold}>{userID}</Text> 님!</Text>
 		</View>}
 		{firstScreen == 1 && <Text>카테고리 블라블라</Text>}
 		{firstScreen == 2 && <View style={styles.header}>
 			<Image source={IconLoading} style={styles.imageSmall} />
-			<Text style={styles.headerTextSmall}>동글이님의 취향에 맞게 설정하고 있어요</Text>
+			<Text style={styles.headerTextSmall}>{userID}님의 취향에 맞게 설정하고 있어요</Text>
 		</View>}
 		<View style={styles.body}>
-			{!firstScreen && <Text style={styles.bodyText}>도전을 시작하기 위해 동글이님에 대해 알려주세요</Text>}
+			{!firstScreen && <Text style={styles.bodyText}>도전을 시작하기 위해 {userID}님에 대해 알려주세요</Text>}
 			{firstScreen <= 1 && <Pressable style={styles.setUpBtn} onPress={nextScreen}>
 				<Text style={styles.setUpBtnText}>기본 사항 설정하기</Text>
 			</Pressable>}
