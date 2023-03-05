@@ -6,6 +6,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import android.os.Bundle;
 import com.dooboolab.naverlogin.RNNaverLoginModule;
+// import org.devio.rn.splashscreen.Splashscreen;
 
 public class MainActivity extends ReactActivity {
 
@@ -23,6 +24,12 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     RNNaverLoginModule.initialize(this);
   }
+
+  // @Override
+  // protected void onCreate(Bundle savedInstanceState) {
+  //   Splashscreen.show(this);
+  //   super.onCreate(savedInstanceState);
+  // }
 
   /**
    * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
