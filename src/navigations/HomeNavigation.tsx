@@ -9,13 +9,14 @@ import FirstSetting from '../pages/FirstSetting';
 import PostDetail from '../pages/PostDetail';
 import SearchPost from '../pages/SearchPost';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import SearchPost from '../pages/SearchPost';
 
 export type HomeStackParamList = {
   Home: undefined;
   TodayChk: undefined;
   FirstSetting: undefined;
   PostDetail: {postID: number};
-  SearchPost: {goBackToBoard: string};
+  SearchPostHome: undefined;
 };
 
 export type HomeStackNavigationProp =
@@ -79,6 +80,11 @@ export default function HomeNavigation() {
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
+      />
+      <Stack.Screen
+        name="SearchPostHome"
+        component={SearchPost}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

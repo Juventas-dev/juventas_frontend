@@ -11,10 +11,9 @@ import {
 } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BoardStackParamList } from '../navigations/BoardNavigation';
-import { useRoute } from '@react-navigation/native';
-import axios, { AxiosError } from 'axios';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {BoardStackParamList} from '../navigations/BoardNavigation';
+import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
@@ -41,7 +40,7 @@ const FlatListHeader = (bestPostDATA: ItemProps[]) => (
 function Board({navigation}: BoardScreenProps) {
   const userID = useSelector((state: RootState) => state.user.id);
   const toSearchPost = useCallback(() => {
-    navigation.navigate('SearchPost', {goBackToBoard: 'T'});
+    navigation.navigate('SearchPost');
   }, [navigation]);
   const toNewPost = useCallback(() => {
     navigation.navigate('NewPost');
