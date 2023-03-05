@@ -156,9 +156,6 @@ function Home({navigation}: HomeScreenProps) {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
       }
     };
     if (questSelected === 'F' && recommendAgain) { getAllQuestData(); }
@@ -168,7 +165,9 @@ function Home({navigation}: HomeScreenProps) {
   const getBoardData = useCallback(() => {
     const getBoardDataWait = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
+        const response = await axios.get(
+          `${Config.API_URL}/board/post?id='${userID}'`,
+        );
         setBoardData(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -310,8 +309,12 @@ function Home({navigation}: HomeScreenProps) {
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
               <View>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardContent.userID}</Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={1}>{boardData[whichPost].title}</Text>
+                <Text style={styles.boardProfileUsername} numberOfLines={1}>
+                  {boardContent.userID}
+                </Text>
+                <Text style={styles.boardProfileTitle} numberOfLines={1}>
+                  {boardData[whichPost].title}
+                </Text>
               </View>
             </View>
             <View style={styles.boardRecommend}>
@@ -322,15 +325,40 @@ function Home({navigation}: HomeScreenProps) {
                   color={myPostRecommend ? '#1F6733' : '#DAE2D8'}
                 />
               </Pressable>
-              <Text style={styles.boardRecommendTxt}>{boardData[whichPost].like}</Text>
+              <Text style={styles.boardRecommendTxt}>
+                {boardData[whichPost].like}
+              </Text>
             </View>
           </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>{boardContent.content}</Text> 
+          <Text style={styles.boardContentTxt} numberOfLines={3}>
+            {boardContent.content}
+          </Text>
         </Pressable>
         <View style={styles.boardFooter}>
-          {boardData.length > 0 && <Pressable onPress={() => {nextPost(0)}} style={styles.boardFooterBtnActive}></Pressable>}
-          {boardData.length > 1 && <Pressable onPress={() => {nextPost(1)}} style={styles.boardFooterBtn}></Pressable>}
-          {boardData.length > 2 && <Pressable onPress={() => {nextPost(2)}} style={styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 0 && (
+            <Pressable
+              onPress={() => {
+                nextPost(0);
+              }}
+              style={styles.boardFooterBtnActive}
+            />
+          )}
+          {boardData.length > 1 && (
+            <Pressable
+              onPress={() => {
+                nextPost(1);
+              }}
+              style={styles.boardFooterBtn}
+            />
+          )}
+          {boardData.length > 2 && (
+            <Pressable
+              onPress={() => {
+                nextPost(2);
+              }}
+              style={styles.boardFooterBtn}
+            />
+          )}
         </View>
       </View>
       {modal && (
@@ -511,7 +539,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
-    marginBottom: 5
+    marginBottom: 5,
   },
   boardProfile: {
     flexDirection: 'row',
@@ -559,8 +587,8 @@ const styles = StyleSheet.create({
     height: 13,
     borderRadius: 7,
     backgroundColor: '#B7CBB2',
-    marginHorizontal: 5
- },
+    marginHorizontal: 5,
+  },
   modalBG: {
     position: 'absolute',
     top: 0,
@@ -590,7 +618,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     // paddingVertical: 3,
-    justifyContent: 'center'
-  }
-
+    justifyContent: 'center',
+  },
 });
