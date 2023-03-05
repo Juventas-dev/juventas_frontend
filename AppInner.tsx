@@ -17,10 +17,12 @@ import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
 import Setting from './src/pages/Setting';
+import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
+import SplashScreen from 'react-native-splash-screen';
 import useSocket from './src/hooks/useSockets';
 
 export type LoggedInParamList = {
@@ -36,9 +38,10 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
-  Board: undefined;
-  Knowhow: undefined;
-  Quest: undefined;
+  // Board: undefined;
+  // Knowhow: undefined;
+  // Quest: undefined;
+  FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -60,6 +63,7 @@ function AppInner() {
   const [socket, disconnect] = useSocket();
 
   useEffect(() => {
+    SplashScreen.hide();
     const getTokenAndRefresh = async () => {
       try {
         const token = await EncryptedStorage.getItem('refreshToken');
@@ -195,6 +199,11 @@ function AppInner() {
         name="FindPassword"
         component={FindPassword}
         options={{title: 'FindPassword'}}
+      />
+      <Stack.Screen
+        name="FirstSetting"
+        component={FirstSetting}
+        options={{title: 'FirstSetting'}}
       />
     </Stack.Navigator>
   );
