@@ -21,6 +21,8 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
+import MypageNavigation from './src/navigations/MypageNavigation';
+import SettingNavigation from './src/navigations/SettingNavigation';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -129,8 +131,8 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Mypage"
-        component={Mypage}
+        name="MypageNav"
+        component={MypageNavigation}
         options={{
           title: 'Mypage',
           headerShown: false,
@@ -142,13 +144,13 @@ function AppInner() {
       />
       <Tab.Screen
         name="Setting"
-        component={Setting}
+        component={SettingNavigation}
         options={{
           title: 'Setting',
           headerShown: false,
           tabBarLabel: '설정',
-          tabBarIcon: ({color, size}) => (
-            <IoniconsIcon name="settings" color={color} size={size} />
+          tabBarIcon: ({color}) => (
+            <IoniconsIcon name="settings" color={color} size={40} />
           ),
         }}
       />
