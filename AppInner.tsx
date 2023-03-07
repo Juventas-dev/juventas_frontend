@@ -17,12 +17,15 @@ import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Message from './src/pages/Message';
 import Setting from './src/pages/Setting';
+import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
 import MypageNavigation from './src/navigations/MypageNavigation';
 import SettingNavigation from './src/navigations/SettingNavigation';
+import SplashScreen from 'react-native-splash-screen';
+import useSocket from './src/hooks/useSockets';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -37,9 +40,10 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
-  Board: undefined;
-  Knowhow: undefined;
-  Quest: undefined;
+  // Board: undefined;
+  // Knowhow: undefined;
+  // Quest: undefined;
+  FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -58,8 +62,10 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
+  const [socket, disconnect] = useSocket();
 
   useEffect(() => {
+    SplashScreen.hide();
     const getTokenAndRefresh = async () => {
       try {
         const token = await EncryptedStorage.getItem('refreshToken');
@@ -91,6 +97,25 @@ function AppInner() {
     };
     getTokenAndRefresh();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (socket && isLoggedIn) {
+      console.log(socket);
+      // 로그인 했을 때 방 목록 불러오기
+    }
+    return () => {
+      if (socket) {
+        console.log('소켓 연결 완료');
+      }
+    };
+  }, [isLoggedIn, socket]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      console.log('!isLoggedIn', !isLoggedIn);
+      disconnect();
+    }
+  }, [isLoggedIn, disconnect]);
 
   return isLoggedIn ? (
     <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
@@ -176,6 +201,11 @@ function AppInner() {
         name="FindPassword"
         component={FindPassword}
         options={{title: 'FindPassword'}}
+      />
+      <Stack.Screen
+        name="FirstSetting"
+        component={FirstSetting}
+        options={{title: 'FirstSetting'}}
       />
     </Stack.Navigator>
   );

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
+  Image
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -23,6 +24,10 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import babelConfig from '../../babel.config';
+const IconBasic = require('../../assets/image/fund.png');
+const kakao = require('../../assets/image/KakaoTalk.png');
+const naver = require('../../assets/image/Naver.png');
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -145,13 +150,14 @@ function SignIn({navigation}: SignInScreenProps) {
     }
   };
 
-  // const canGoNext = ID && Pass;
   return (
     <KeyboardAwareScrollView
       style={styles.keyboardAwareScrollView}
       showsVerticalScrollIndicator={false}>
       <SafeAreaView style={styles.entire}>
-        <Text style={styles.logo}>juventas</Text>
+        <View style={styles.header}>
+        <Image source={IconBasic} style={styles.logo} />
+        </View>
         <View style={styles.finding}>
           {/* 아이디찾기 비밀번호 찾기 */}
           <Pressable onPress={toFindID} style={styles.findBtn}>
@@ -162,9 +168,10 @@ function SignIn({navigation}: SignInScreenProps) {
           </Pressable>
         </View>
         {/* 아이디 비밀번호 입력 */}
-        <Text style={styles.typingText}>아이디</Text>
         <TextInput
-          selectionColor={'#DE7878'}
+          placeholder='아이디'
+          placeholderTextColor={"#B7CBB2"}
+          selectionColor={'#346627'}
           style={styles.typingInput}
           autoCapitalize="none"
           onChangeText={onChangeID}
@@ -178,9 +185,10 @@ function SignIn({navigation}: SignInScreenProps) {
           onSubmitEditing={() => PassRef.current?.focus()}
           blurOnSubmit={false}
         />
-        <Text style={styles.typingText}>비밀번호</Text>
         <TextInput
-          selectionColor={'#DE7878'}
+          placeholder='비밀번호'
+          placeholderTextColor={"#B7CBB2"}
+          selectionColor={'#346627'}
           secureTextEntry={true}
           style={styles.typingInput}
           autoCapitalize="none"
@@ -195,19 +203,22 @@ function SignIn({navigation}: SignInScreenProps) {
           onSubmitEditing={onSubmit}
         />
         <View style={styles.btn}>
-          <Pressable style={styles.signUpBtn} onPress={toSignUp}>
-            <Text style={styles.btnText}>회원가입</Text>
-          </Pressable>
           <Pressable style={styles.signInBtn} onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
+        <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
+          <Image source={kakao} style={styles.kakaoLogo} />
+          <Text style={styles.btnTextKakao}>카카오 로그인</Text>
+        </Pressable>
+        <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
+          <Image source={naver} style={styles.naverLogo} />
+          <Text style={styles.btnTextNaver}>네이버 로그인</Text>
+        </Pressable>
+          <Pressable style={styles.signUpBtn} onPress={toSignUp}>
+            <Text style={styles.btnText}>회원가입</Text>
+          </Pressable>
         </View>
-        <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
-          <Text style={styles.btnText}>카카오 로그인</Text>
-        </Pressable>
-        <Pressable style={styles.signInBtn} onPress={signInWithNaver}>
-          <Text style={styles.btnText}>네이버 로그인</Text>
-        </Pressable>
+        {/* <Pressable style={{position:'absolute', backgroundColor: 'black', top:300, bottom: 300, right:100, left:100}} onPress={() => (navigation.navigate('FirstSetting'))}></Pressable> */}
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -215,22 +226,22 @@ function SignIn({navigation}: SignInScreenProps) {
 
 const styles = StyleSheet.create({
   keyboardAwareScrollView: {
-    backgroundColor: '#0E1D0A',
+    backgroundColor: '#F5F5F5',
   },
   entire: {
     flex: 1,
-    backgroundColor: '#0E1D0A',
     marginHorizontal: 25,
   },
+  header: {
+    alignItems: 'center',
+    marginTop: 50
+  },
   logo: {
-    fontSize: 60,
-    marginTop: 170,
-    color: '#94EE3A',
-    fontFamily: 'PurplePurse-Regular',
-    textAlign: 'center',
+    width: 220,
+    height: 270
   },
   finding: {
-    marginTop: 122,
+    marginTop: 40,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
@@ -238,50 +249,95 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   findText: {
-    color: 'rgba(235, 225, 225, 0.8)',
+    color: '#346627',
     fontSize: 10,
   },
   typingText: {
     color: '#FFE3E3',
     fontSize: 13,
+    fontWeight: '700'
   },
   typingInput: {
-    color: 'white',
+    color: '#346627',
     fontSize: 15,
-    padding: 0,
+    padding: 5,
+    paddingLeft: 10,
     marginTop: 7,
-    marginBottom: 18,
-    borderBottomColor: '#EBAAAA',
-    borderBottomWidth: 2,
+    marginBottom: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
   },
   btn: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    columnGap: 20,
     marginTop: 10,
   },
   signUpBtn: {
     flex: 1,
-    height: 43,
-    backgroundColor: '#E6CCCA',
+    height: 35,
+    backgroundColor: '#B7CBB2',
     marginBottom: 20,
-    borderRadius: 30,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   signInBtn: {
     flex: 1,
-    height: 43,
-    backgroundColor: '#94EE3A',
+    height: 35,
+    backgroundColor: '#346627',
     marginBottom: 20,
-    borderRadius: 30,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  signInKakaoBtn: {
+    flex: 1,
+    height: 35,
+    borderRadius: 10,
+    backgroundColor: '#FFE812',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    flexDirection: 'row'
+  },
+  signInNaverBtn: {
+    flex: 1,
+    height: 35,
+    borderRadius: 10,
+    backgroundColor: '#00BF18',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    flexDirection: 'row'
+  },
+  kakaoLogo: {
+    width: 25,
+    height: 25,
+    marginLeft: 8,
+    marginTop: 5
+  },
+  naverLogo: {
+    width: 25,
+    height: 25,
+    marginLeft: 8
+  },
   btnText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  btnTextKakao: {
     color: 'black',
     fontSize: 13,
     fontWeight: '500',
+    width: '88%',
+    textAlign:'center'
+  },
+  btnTextNaver: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '500',
+    width: '88%',
+    textAlign:'center'
   },
 });
 
