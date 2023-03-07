@@ -52,6 +52,8 @@ function SignIn({navigation}: SignInScreenProps) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
+      console.log('1');
+      console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
         id: ID,
         pwd: Pass,
