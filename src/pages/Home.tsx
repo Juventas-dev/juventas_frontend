@@ -1,5 +1,5 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState, useEffect} from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   View,
   Text,
@@ -8,129 +8,159 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import { ProgressViewIOSBase } from 'react-native/Libraries/Components/ProgressViewIOS/ProgressViewIOS';
+import { HomeStackParamList } from '../navigations/HomeNavigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {HomeStackParamList} from '../navigations/HomeNavigation';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
-import axios, {AxiosError} from 'axios';
+import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ClipPath } from 'react-native-svg';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 
 function Home({navigation}: HomeScreenProps) {
-  const [myPostRecommend, setMyPostRecommend] = useState(false);
-  const [questDecided, setQuestDecided] = useState(false);
-  const [firstSetting, notFirstSetting] = useState(true);
-  // 0세트 1세트 2세트
+  const [date, setDate] = useState(0);
+  const [seqCount, setSeqCount] = useState(0);
+  const [questSelected, setQuestSelected] = useState('F');
+  const [allQuestData, setAllQuestData] = useState([
+    {"incr":0, "q_name":"q_name"}, {"incr":1, "q_name":"q_name"}, {"incr":2, "q_name":"q_name"},
+    {"incr":3, "q_name":"q_name"}, {"incr":4, "q_name":"q_name"}, {"incr":5, "q_name":"q_name"},
+    {"incr":6, "q_name":"q_name"}, {"incr":7, "q_name":"q_name"}, {"incr":8, "q_name":"q_name"}
+  ]);
+  const [recommendAgain, setRecommendAgain] = useState(true);
   const [questNum, setQuestNum] = useState(0);
-  const [questData, setQuestData] = useState([
-    {incr: 1, q_name: 'q_name'},
-    {incr: 2, q_name: 'q_name'},
-    {incr: 3, q_name: 'q_name'},
-    {incr: 4, q_name: 'q_name'},
-    {incr: 5, q_name: 'q_name'},
-    {incr: 6, q_name: 'q_name'},
-    {incr: 7, q_name: 'q_name'},
-    {incr: 8, q_name: 'q_name'},
-    {incr: 9, q_name: 'q_name'},
-  ]);
-  const [myQuest, setMyQuest] = useState({
-    quest_name: 'quest_name',
-    quest_id: 1,
-    num_people: 1,
-  });
-  const [boardData, setBoardData] = useState([
-    {incr: 1, c_id: 0, title: 'title', like: 0, comment: 0},
-  ]);
-  const [boardContent, setBoardContent] = useState({
-    title: 'title',
-    content: 'content',
-    userID: 'userID',
-  });
-  const [whichPost, setWhichPost] = useState(0);
   const [modal, showModal] = useState(false);
+  const [myQuest, setMyQuest] = useState({"quest_name":"quest_name", "quest_id":0, "num_people":0});
+  const [boardData, setBoardData] = useState([{"incr":0, "c_id":0, "title":"title", "like":0, "comment":0, "myrec":0}]);
+  const [boardContent, setBoardContent] = useState({"content":"content", "userID":"userID"});
+  const [whichPost, setWhichPost] = useState(0);
+  const [myPostRecommend, setMyPostRecommend] = useState(0);
 
-  const [questSelected, setQuestSelected] = useState('T');
-
-  const userID = useSelector((state: RootState) => state.user.id);
+  const userID = useSelector((state:RootState)=>state.user.id);
 
   useEffect(() => {
-    const setHomeQuestDecided = async () => {
+    const getFirstHomeData = async () => {
       try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/questselected/${userID}`,
-        );
-        console.log(response.data);
+        const response = await axios.get(`${Config.API_URL}/quest/questselected/${userID}`);
+        setDate(response.data.date);
+        setSeqCount(response.data.seq_count);
+        if (response.data.is_first === 'T') {navigation.navigate('FirstSetting');}
         setQuestSelected(response.data.is_selected);
+        whichScreen();
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
       }
-      // console.log('setHomeQuestDecided called')
-    };
-
-    setHomeQuestDecided();
-    whichScreen();
+    }
+    getFirstHomeData();
     getBoardData();
   }, [questSelected, whichPost]);
 
   useEffect(() => {
-    console.log(boardData);
-    console.log('lookatThis');
+    setMyPostRecommend(boardData[0].myrec);
   }, [boardData]);
 
+  const storeData = async (value: any) => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      if (keys.includes('now')) {
+        await AsyncStorage.removeItem('now');
+        await AsyncStorage.removeItem('quest');
+      }
+      const now = new Date();
+      console.log('abcde')
+      // console.log(new Date(String(now)).getDate());
+      // const stringValue = String(now);
+      await AsyncStorage.setItem('now', String(now));
+      await AsyncStorage.setItem('quest', JSON.stringify(value));
+    } catch (e: any) {
+      console.error(e.message);
+    }
+  };
+
+  const getDateData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('now');
+      if (value !== null) {
+        // const data = new Date(value);
+        // console.log('stored data: ' + data)
+        return value;
+      }
+    } catch (e: any) {
+      console.log(e.message);
+    }
+  };
+
+  const getQuestData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('quest');
+      if (value !== null) {
+        const data = JSON.parse(value);
+        return data;
+      }
+    } catch (e: any) {
+      console.log(e.message);
+    }
+  };
+
   const whichScreen = useCallback(() => {
-    // console.log(questSelected);
-    if (questSelected === 'F') {
-      setQuestDecided(false);
-      setHome();
-    } else {
-      setQuestDecided(true);
-      setWithHowMany();
-    }
-    // console.log('whichScreen called')
-  }, [questSelected]);
-
-  const nextQuestList = useCallback(() => {
-    if (questNum === 2) {
-      setQuestNum(0);
-    } else {
-      setQuestNum(questNum + 1);
-    }
-  }, [questNum]);
-
-  const setHome = useCallback(() => {
-    const setHomeWait = async () => {
+    const getAllQuestData = async () => {
       try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/recommend/${userID}`,
-        );
-        console.log(response.data.recommend);
-        setQuestData(response.data.recommend);
+        // // await AsyncStorage.removeItem('now');
+        // let temp = false;
+        // let keys = await AsyncStorage.getAllKeys();
+        // if (keys.includes('now')) {
+        //   await AsyncStorage.setItem('now', String(new Date()));
+        //   let check = new Date(String(new Date()));
+        //   let today = new Date();
+        //   console.log('check: ' + check)
+        //   console.log('today: ' + today)
+        //   temp = (check.getDate() == today.getDate());
+        // }
+        // console.log(temp);
+        // if (!temp) {
+        //   const response = await axios.get(`${Config.API_URL}/quest/recommend/${userID}`);
+        //   setAllQuestData(response.data.recommend);
+        //   console.log(response.data.recommend);
+        //   storeData(JSON.stringify(response.data.recommend));
+        //   // setRecommendAgain(false);
+        // }
+        // else {
+        //   console.log('error')
+        //   let data = getQuestData(); // 가공 필요
+        //   console.log(data)
+        //   // setAllQuestData([data]);
+        // }
+
+        const response = await axios.get(`${Config.API_URL}/quest/recommend/${userID}`);
+        setAllQuestData(response.data.recommend);
+        setRecommendAgain(false);
+
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
       }
     };
-    setHomeWait();
-  }, [questData]);
-
-  const setWithHowMany = useCallback(() => {
-    const getWithHowMany = async () => {
-      console.log('abcd');
+    const getMyQuestData = async () => {
       try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/userquest/${userID}`,
-        );
-        console.log(response.data);
+        const response = await axios.get(`${Config.API_URL}/quest/userquest/${userID}`);
         setMyQuest(response.data);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
       }
     };
-    getWithHowMany();
-  }, []);
+    if (questSelected === 'F' && recommendAgain) { getAllQuestData(); }
+    else { getMyQuestData(); }
+  }, [allQuestData, myQuest, questSelected, recommendAgain]);
 
   const getBoardData = useCallback(() => {
     const getBoardDataWait = async () => {
@@ -138,9 +168,7 @@ function Home({navigation}: HomeScreenProps) {
         const response = await axios.get(
           `${Config.API_URL}/board/post?id='${userID}'`,
         );
-        // console.log('herererererere');
         setBoardData(response.data.bestPost);
-        // console.log(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -148,95 +176,15 @@ function Home({navigation}: HomeScreenProps) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
       }
-      // console.log(boardData);
-      getBoardContent(whichPost); // 얘가 원래 133번째줄에 있었음
     };
     getBoardDataWait();
-    // console.log('getBoardData called')
-    // console.log(whichPost);
-    // console.log('whichPost')
-  }, [boardData]);
-
-  const getBoardContent = useCallback(
-    (num: number) => {
-      const getBoardContentWait = async () => {
-        try {
-          // console.log('what data');
-          // console.log(boardData[num])
-          const response = await axios.get(
-            `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
-          );
-          setBoardContent({
-            title: response.data.post[whichPost].title,
-            content: response.data.post[whichPost].content,
-            userID: response.data.post[whichPost].user_name,
-          });
-          // console.log(response.data)
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-          if (errorResponse) {
-            return Alert.alert('알림', errorResponse.data?.message);
-          }
-        }
-      };
-      console.log('getBoardContent called');
-      getBoardContentWait();
-    },
-    [boardContent],
-  );
-
-  const selectMyQuest = useCallback(
-    (num: number) => {
-      const postMyQuest = async () => {
-        try {
-          if (firstSetting) {
-            const response = await axios.post(
-              `${Config.API_URL}/quest/userquest`,
-              {
-                id: userID,
-                q_id: questData[num].incr,
-              },
-            );
-            console.log(response.data);
-          } else {
-            const response = await axios.patch(
-              `${Config.API_URL}/quest/updatequest`,
-              {
-                id: userID,
-                q_id: questData[num].incr,
-              },
-            );
-            console.log(response.data);
-          }
-        } catch (error) {
-          const response = await axios.get(
-            `${Config.API_URL}/quest/recommend/${userID}`,
-          );
-          console.log(response.data);
-        }
-      };
-
-      postMyQuest();
-      setQuestDecided(true);
-      // setMyQuestNum(num);
-      // selectMyQuest()
-      setWithHowMany();
-    },
-    [questData, firstSetting, questDecided],
-  );
-
-  const resetMyQuest = useCallback(() => {
-    const resetMyQuestWait = async () => {
+    getBoardContent(whichPost);
+  }, [boardData, boardContent]);
+  const getBoardContent = useCallback((num: number) => {
+    const getBoardContentWait = async () => {
       try {
-        const response = await axios.patch(
-          `${Config.API_URL}/quest/questreselect`,
-          {
-            id: userID,
-          },
-        );
-        console.log(response.data);
+        const response = await axios.get(`${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`);
+        setBoardContent({"content":response.data.post[whichPost].content, "userID":response.data.post[whichPost].user_name});
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -245,19 +193,56 @@ function Home({navigation}: HomeScreenProps) {
         }
       }
     };
-    setQuestDecided(false);
-    notFirstSetting(false);
-    resetMyQuestWait();
-    setHome();
-  }, []);
+    getBoardContentWait();
+  }, [boardContent]);
 
-  const nextPost = useCallback(
-    (num: number) => {
-      setWhichPost(num);
-      getBoardData();
-    },
-    [whichPost],
-  );
+  const selectQuest = useCallback((num: number) => {
+    const selectQuestWait = async () => {
+      try {
+        const response = await axios.post(`${Config.API_URL}/quest/userquest`, {
+          id: userID,
+          q_id: allQuestData[num].incr
+        });
+        setQuestSelected('T');
+        whichScreen();
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
+      }
+    };
+    selectQuestWait();
+  }, [questSelected]);
+  const resetQuest = useCallback(() => {
+    const resetQuestWait = async () => {
+      try {
+        const response = await axios.patch(`${Config.API_URL}/quest/questreselect`, {
+          id: userID
+        });
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
+      }
+    };
+    resetQuestWait();
+    setQuestSelected('F');
+    setMyQuest({"quest_name":"quest_name", "quest_id":0, "num_people":0})
+  }, [questSelected, myQuest]);
+
+  const nextQuestList = useCallback(() => {
+    if (questNum == 2) {setQuestNum(0);}
+    else {setQuestNum(questNum + 1);}
+  }, [questNum]);
+  
+  const nextPost = useCallback((num: number) => {
+    setWhichPost(num);
+    getBoardData();
+  }, [whichPost, boardData, boardContent]);
 
   const toDaychk = useCallback(() => {
     navigation.navigate('TodayChk');
@@ -268,80 +253,58 @@ function Home({navigation}: HomeScreenProps) {
       <View style={styles.attendance}>
         <View style={styles.attendanceDetail}>
           <Text>연속으로 출석했어요</Text>
-          <Text style={styles.attendanceDetailTxt}>6회</Text>
+          <Text style={styles.attendanceDetailTxt}>{seqCount}회</Text>
         </View>
         <View style={styles.attendanceDetail}>
           <Text>이번달 이만큼 출석했어요</Text>
-          <Text style={styles.attendanceDetailTxt}>14회</Text>
+          <Text style={styles.attendanceDetailTxt}>{date}회</Text>
         </View>
       </View>
       <View style={styles.quest}>
-        {!questDecided ? (
-          <View style={styles.questBody}>
-            <Pressable
-              style={styles.questBtn}
-              onPress={() => selectMyQuest(questNum * 3)}>
-              <Text style={styles.questBtnTxt}>
-                {questData[questNum * 3].q_name}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={styles.questBtn}
-              onPress={() => selectMyQuest(questNum * 3 + 1)}>
-              <Text style={styles.questBtnTxt}>
-                {questData[questNum * 3 + 1].q_name}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={styles.questBtn}
-              onPress={() => selectMyQuest(questNum * 3 + 2)}>
-              <Text style={styles.questBtnTxt}>
-                {questData[questNum * 3 + 2].q_name}
-              </Text>
-            </Pressable>
-            <Pressable style={styles.questRandomBtn} onPress={nextQuestList}>
-              <Text style={styles.questBtnTxt}>랜덤</Text>
+        { questSelected === 'F'
+        ? (<View style={styles.questBody}>
+          <Pressable style={styles.questBtn} onPress={() => selectQuest(questNum*3)}>
+            <Text style={styles.questBtnTxt}>{allQuestData[questNum*3].q_name}</Text>
+          </Pressable>
+          <Pressable style={styles.questBtn} onPress={() => selectQuest(questNum*3+1)}>
+            <Text style={styles.questBtnTxt}>{allQuestData[questNum*3+1].q_name}</Text>
+          </Pressable>
+          <Pressable style={styles.questBtn} onPress={() => selectQuest(questNum*3+2)}>
+            <Text style={styles.questBtnTxt}>{allQuestData[questNum*3+2].q_name}</Text>
+          </Pressable>
+          <Pressable style={styles.questRandomBtn} onPress={nextQuestList}>
+            <Text style={styles.questBtnTxt}>랜덤</Text>
+          </Pressable>
+        </View>)
+        : (<View style={styles.questBodyDecided}>
+          <View style={styles.myQuest}>
+            <Text style={styles.questNum}>{myQuest.quest_id}</Text>
+            <Text style={styles.questName}>{myQuest.quest_name}</Text>
+            <Text style={styles.howManyPeopleInQuest}>{myQuest.num_people}명이 이 퀘스트에 참여중입니다</Text>
+            <Pressable onPress={toDaychk} style={styles.submitQuestTodayBtn}>
+              <Text style={styles.submitQuestTodayTxt}>오늘의 인증</Text>
             </Pressable>
           </View>
-        ) : (
-          <View style={styles.questBodyDecided}>
-            <View style={styles.myQuest}>
-              <Text style={styles.questNum}>{myQuest.quest_id}</Text>
-              <Text style={styles.questName}>{myQuest.quest_name}</Text>
-              <Text style={styles.howManyPeopleInQuest}>
-                {myQuest.num_people}명이 이 퀘스트에 참여중입니다
-              </Text>
-              <Pressable onPress={toDaychk} style={styles.submitQuestTodayBtn}>
-                <Text style={styles.submitQuestTodayTxt}>오늘의 인증</Text>
-              </Pressable>
-            </View>
-            <Pressable style={styles.reselect} onPress={resetMyQuest}>
-              <Text>다시 선택하기</Text>
-            </Pressable>
-          </View>
-        )}
-        {!questDecided && (
-          <View style={styles.questFooter}>
-            <Pressable>
-              <Text
-                style={styles.questFooterTxt}
-                onPress={() => showModal(true)}>
-                전체 퀘스트 보기
-              </Text>
-            </Pressable>
-          </View>
-        )}
+          <Pressable style={styles.reselect} onPress={resetQuest}><Text>다시 선택하기</Text></Pressable>
+          </View>)}
+        {questSelected === 'F' && <View style={styles.questFooter}>
+          <Pressable>
+            <Text style={styles.questFooterTxt} onPress={() => showModal(true)}>전체 퀘스트 보기</Text>
+          </Pressable>
+        </View>}
       </View>
       <View style={styles.board}>
         <View style={styles.boardSearch}>
-          <FontAwesomeIcon name="search" size={25} color="#DAE2D8" />
-          {/*  onPress={() => navigation.navigate('SearchPost', {goBackToBoard: 'F'})} */}
-          <Pressable onPress={() => navigation.navigate('SearchPostHome')}>
+          <FontAwesomeIcon
+						name="search"
+						size={25}
+						color='#DAE2D8'
+					/>
+          <Pressable onPress={() => navigation.navigate('SearchPost', {goBackToBoard: 'F'})}>
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
         </View>
-        {/*  onPress={() => navigation.navigate('PostDetail', {postID: boradData[0].incr})} */}
-        <Pressable style={styles.boardBody}>
+        <Pressable style={styles.boardBody} onPress={() => navigation.navigate('PostDetail', {postID: boardData[0].incr})}>
           <View style={styles.boardHeader}>
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
@@ -355,7 +318,7 @@ function Home({navigation}: HomeScreenProps) {
               </View>
             </View>
             <View style={styles.boardRecommend}>
-              <Pressable onPress={() => console.log(questData)}>
+              <Pressable onPress={() => console.log(allQuestData)}>
                 <FontAwesomeIcon
                   name="thumbs-up"
                   size={39}
@@ -401,78 +364,15 @@ function Home({navigation}: HomeScreenProps) {
       {modal && (
         <Pressable style={styles.modalBG} onPress={() => showModal(false)}>
           <View style={styles.modal}>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(0);
-                showModal(false);
-              }}>
-              <Text>{questData[0].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(1);
-                showModal(false);
-              }}>
-              <Text>{questData[1].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(2);
-                showModal(false);
-              }}>
-              <Text>{questData[2].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(3);
-                showModal(false);
-              }}>
-              <Text>{questData[3].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(4);
-                showModal(false);
-              }}>
-              <Text>{questData[4].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(5);
-                showModal(false);
-              }}>
-              <Text>{questData[5].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(6);
-                showModal(false);
-              }}>
-              <Text>{questData[6].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(7);
-                showModal(false);
-              }}>
-              <Text>{questData[7].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectMyQuest(8);
-                showModal(false);
-              }}>
-              <Text>{questData[8].q_name}</Text>
-            </Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(0); showModal(false);}}><Text>{allQuestData[0].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(1); showModal(false);}}><Text>{allQuestData[1].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(2); showModal(false);}}><Text>{allQuestData[2].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(3); showModal(false);}}><Text>{allQuestData[3].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(4); showModal(false);}}><Text>{allQuestData[4].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(5); showModal(false);}}><Text>{allQuestData[5].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(6); showModal(false);}}><Text>{allQuestData[6].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(7); showModal(false);}}><Text>{allQuestData[7].q_name}</Text></Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => {selectQuest(8); showModal(false);}}><Text>{allQuestData[8].q_name}</Text></Pressable>
           </View>
         </Pressable>
       )}
