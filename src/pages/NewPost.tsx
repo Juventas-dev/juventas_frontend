@@ -186,34 +186,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
             onChangeText={onChangeContent}
             maxLength={5000}
           />
-          <View style={styles.boardTitle}>
-            <TextInput
-              style={styles.titleInput}
-              placeholder="제목을 입력하세요"
-              placeholderTextColor="#B7CBB2"
-              multiline={true}
-              value={title}
-              onChangeText={onChangeTitle}
-            />
-            <Pressable
-              android_ripple={{
-                color: '#ffffff',
-              }}
-              style={styles.circle}
-              onPress={selectImage}>
-              <Icon name="camera-alt" color="white" size={24} />
-            </Pressable>
-          </View>
-          <View style={styles.contentBoard}>
-            <TextInput
-              style={styles.contentInput}
-              placeholder="내용을 입력하세요"
-              placeholderTextColor="#B7CBB2"
-              multiline={true}
-              value={content}
-              onChangeText={onChangeContent}
-            />
-          </View>
         </View>
       </SafeAreaView>
     </KeyboardAwareScrollView>
