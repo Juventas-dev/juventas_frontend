@@ -23,6 +23,7 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
 import SplashScreen from 'react-native-splash-screen';
+import MessageNavigation from './src/navigations/MessageNavigation';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -40,7 +41,7 @@ export type RootStackParamList = {
   // Board: undefined;
   // Knowhow: undefined;
   // Quest: undefined;
-  FirstSetting: undefined;
+  // FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -109,8 +110,8 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Message"
-        component={Message}
+        name="MessageNavigation"
+        component={MessageNavigation}
         options={{
           title: 'Message',
           headerShown: false,
@@ -152,7 +153,7 @@ function AppInner() {
           headerShown: false,
           tabBarLabel: '설정',
           tabBarIcon: ({color, size}) => (
-            <IoniconsIcon name="settings" color={color} size={size} />
+            <IoniconsIcon name="settings" color={color} size={40} />
           ),
         }}
       />
@@ -179,11 +180,11 @@ function AppInner() {
         component={FindPassword}
         options={{title: 'FindPassword'}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="FirstSetting"
         component={FirstSetting}
         options={{title: 'FirstSetting'}}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }

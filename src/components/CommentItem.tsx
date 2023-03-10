@@ -1,5 +1,9 @@
-import React from 'react';
-import {Text, View, Pressable, StyleSheet} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import {Text, View, Pressable, StyleSheet, Modal} from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import { MessageStackNavigationProp } from '../navigations/MessageNavigation';
+import { useNavigation } from '@react-navigation/native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -17,17 +21,23 @@ const CommentItem = ({
   item: ItemProps;
   likeComment: Function;
 }) => {
+  const [showProfile, setShowProfile] = useState(false);
+  const userID = useSelector((state:RootState)=>state.user.id);
+  const navigation = useNavigation<MessageStackNavigationProp>();
+  
+  
   return (
     <Pressable style={styles.eachComment}>
       <View style={styles.commentProfile}>
-        <Pressable style={styles.profile} />
+        {/* setProfile(item.user_name) */}
+        <Pressable style={styles.profile} onPress={() => {setShowProfile(true)}}/>
         <View style={styles.commentContent}>
           <Text style={styles.commentContentIDTxt}>{item.user_name}</Text>
           <Text style={styles.commentContentBodyTxt}>{item.c_content}</Text>
         </View>
       </View>
       <View style={styles.commentInfo}>
-        {/* onPress시 incr이용해서 like 눌러주는 기능 */}
+        {/* onPress시 incr이용해서 like 눌러주는 기능 + axios get 해서 댓글 추천 수 새로고침하는 기능*/}
         <Pressable
           style={styles.recommend}
           onPress={() => likeComment(item.incr)}>
@@ -46,6 +56,18 @@ const CommentItem = ({
           style={styles.commentIcon}
         />
       </View>
+      <Modal transparent={true} visible={showProfile}>
+        <Pressable style={styles.modalBG} onPress={() => {setShowProfile(false);}}>
+          <View style={styles.modal}>
+            
+            <View style={{width: 130, height: 130, borderRadius: 70, backgroundColor: 'black'}} ></View>
+            <Text style={styles.modalID}>{item.user_name}</Text>
+            <Pressable style={styles.modalBtn} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: item.user_name})}>
+              <Text style={styles.modalBtnTxt}>쪽지 보내기</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
     </Pressable>
   );
 };
@@ -159,6 +181,40 @@ const styles = StyleSheet.create({
     color: '#878787',
     paddingHorizontal: 20,
   },
+  modalBG: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modal: {
+    width: 300,
+    height: 330,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalID:{
+    color: '#3D3C3C',
+    fontWeight: '800',
+    fontSize: 30,
+    marginTop: 10
+  },
+  modalBtn:{
+    backgroundColor: '#346627',
+    borderRadius: 30,
+    width: 120,
+    height: 30,
+    marginTop: 20,
+    justifyContent: 'center'
+  },
+  modalBtnTxt:{
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 14,
+    textAlign: 'center'
+    }
 });
 
 export default CommentItem;
