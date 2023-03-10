@@ -9,6 +9,8 @@ import {
   StyleSheet,
   Alert,
   RefreshControl,
+  Modal,
+  Image
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import { useRoute } from '@react-navigation/native';
@@ -55,6 +57,8 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const [commentDATA, setCommentDATA] = useState<CommentItemProps[]>([]);
   const [commentValue, setCommentValue] = useState('');
   const [needReset, setNeedReset] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
   const onChangeComment = useCallback((text: string) => {
     setCommentValue(text);
   }, []);
@@ -78,7 +82,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           `${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`,
         );
         setPostDATA(response.data.post[0]);
-        console.log(response.data.post[0])
+        console.log(response.data.comment)
         console.log(postDATA);
         setMyPostRecommend(response.data.post[0].myrec);
         setCommentDATA(response.data.comment);
@@ -123,8 +127,6 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const postComment = useCallback(() => {
     const postCommentWait = async () => {
       try {
-        console.log(1);
-        // c_date를 넣어줘야 할듯 그거 디폴트 값 없다고 백엔드 서버에서 에러남
         const response = await axios.post(`${Config.API_URL}/board/comment`, {
           id: userID,
           w_id: idCurrent,
@@ -177,16 +179,19 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       <View style={styles.post}>
         <View style={styles.postHeader}>
           <View style={styles.postTitle}>
-            <Pressable style={styles.postProfile} />
-            <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
+            <Pressable style={styles.postProfile} onPress={() => {setShowProfile(true)}}/>
+            <View style={styles.postProfileTxt} >
+              <Text style={styles.postProfileNameTxt} >{postDATA.user_name}</Text>
+              <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
+            </View>
           </View>
           <Pressable onPress={recommendPost}>
-            {/* 추천 수 올라가기 + 내가 추천 눌렀음을 저장 */}
             <FontAwesomeIcon
               name="thumbs-up"
               size={40}
               color={myPostRecommend ? '#1F6733' : '#DAE2D8'}
             />
+            <Text style={styles.likeTxt}>{postDATA.like}</Text>
           </Pressable>
         </View>
         <View style={styles.postContent}>
@@ -206,14 +211,28 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         />
       </View>
       <View style={styles.myComment}>
-        <Pressable style={styles.myProfile} />
+        <Pressable style={styles.myProfile}/>
         <TextInput
           style={styles.myCommentContent}
           onChangeText={onChangeComment}
           placeholder="댓글을 입력하세요"
           onSubmitEditing={postComment}
         />
+        <Pressable onPress={postComment} style={styles.commentBtn}>
+          <Text style={styles.commentBtnTxt}>입력</Text>
+        </Pressable>
       </View>
+      <Modal transparent={true} visible={showProfile}>
+        <Pressable style={styles.modalBG} onPress={() => {setShowProfile(false);}}>
+          <View style={styles.modal}>
+            <View style={{width: 130, height: 130, borderRadius: 70, backgroundColor: 'black'}} ></View>
+            <Text style={styles.modalID}>{userID}</Text>
+            <Pressable style={styles.modalBtn} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: postDATA.user_name})}>
+              <Text style={styles.modalBtnTxt}>쪽지 보내기</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -287,10 +306,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     top: 1,
   },
+  postProfileTxt:{
+    // flexDirection: 'row'
+  },
+  postProfileNameTxt:{
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 10
+  },
   postHeaderTxt: {
     fontSize: 17,
-    marginLeft: 20,
+    fontWeight: '800',
+    marginLeft: 10,
     width: '85%',
+  },
+  likeTxt:{
+    color: '#B7CBB2',
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center'
   },
   postContent: {
     paddingVertical: 10,
@@ -329,4 +363,47 @@ const styles = StyleSheet.create({
     color: '#878787',
     paddingHorizontal: 20,
   },
+  commentBtn:{
+    marginLeft: 10
+  },
+  commentBtnTxt:{
+    textAlign: 'center',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#B7CBB2'
+  },
+  modalBG: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modal: {
+    width: 300,
+    height: 330,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalID:{
+    color: '#3D3C3C',
+    fontWeight: '800',
+    fontSize: 30,
+    marginTop: 10
+  },
+  modalBtn:{
+    backgroundColor: '#346627',
+    borderRadius: 30,
+    width: 120,
+    height: 30,
+    marginTop: 20,
+    justifyContent: 'center'
+  },
+  modalBtnTxt:{
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 14,
+    textAlign: 'center'
+    }
 });
