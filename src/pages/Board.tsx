@@ -188,6 +188,7 @@ function Board({navigation}: BoardScreenProps) {
           }}
           dropdownOverlayColor="transparent"
           rowStyle={styles.categoryRow}
+          rowTextStyle={styles.RowTxtSt}
         />
         <SelectDropdown
           data={filterDATA}
@@ -217,6 +218,7 @@ function Board({navigation}: BoardScreenProps) {
           }}
           dropdownOverlayColor="transparent"
           rowStyle={styles.categoryRow}
+          rowTextStyle={styles.RowTxtSt}
         />
       </View>
 
@@ -287,6 +289,7 @@ const styles = StyleSheet.create({
   },
   categoryTxt: {
     fontSize: 18,
+    fontWeight: 'bold',
     color: '#DAE2D8',
     marginLeft: 20,
   },
@@ -294,7 +297,11 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   categoryRow: {
-    backgroundColor: 'white',
+    backgroundColor: '#B7CBB2',
+    alignContent: 'space-around',
+  },
+  RowTxtSt: {
+    color: 'white',
   },
   newPostBtn: {
     backgroundColor: '#1F6733',

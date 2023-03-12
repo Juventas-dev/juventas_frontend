@@ -4,10 +4,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackParamList} from '../navigations/MypageNavigation';
 
-type MypageScreenProps = NativeStackScreenProps<
-  MypageStackParamList,
-  'MyGrade'
->;
+type MypageScreenProps = NativeStackScreenProps<MypageStackParamList>;
 
 const MyGrade = ({navigation}: MypageScreenProps) => {
   return (
