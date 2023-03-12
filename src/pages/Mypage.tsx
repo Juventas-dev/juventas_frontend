@@ -1,14 +1,29 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Pressable, Text, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackParamList} from '../navigations/MypageNavigation';
 import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MultipleImagePicker, {
+  ImageResults,
+  MediaType,
+} from '@baronha/react-native-multiple-image-picker';
 
 type MypageScreenProps = NativeStackScreenProps<MypageStackParamList, 'Mypage'>;
 
 function Mypage({navigation}: MypageScreenProps) {
+  const [images, setImages] = useState<ImageResults[]>([]);
+  const selectImage = async () => {
+    const response = await MultipleImagePicker.openPicker({
+      mediaType: MediaType.IMAGE,
+      maxSelectedAssets: 3,
+      doneTitle: '완료',
+      cancelTitle: '취소',
+      selectedAssets: images,
+    });
+    setImages(response);
+  };
   const toSetCategory = useCallback(() => {
     navigation.navigate('SetCategory');
   }, [navigation]);
@@ -25,7 +40,7 @@ function Mypage({navigation}: MypageScreenProps) {
     <SafeAreaView style={styles.entire}>
       <View style={styles.profile}>
         <View style={styles.Image}>
-          <Pressable /*onPress={selectImage} */>
+          <Pressable onPress={selectImage}>
             <Icon name="md-person-circle-outline" color="gray" size={70} />
           </Pressable>
         </View>
