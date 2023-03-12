@@ -372,7 +372,7 @@ function Home({navigation}: HomeScreenProps) {
           <FontAwesomeIcon name="search" size={25} color="#DAE2D8" />
           <Pressable
             onPress={() =>
-              navigation.navigate('SearchPost', {goBackToBoard: 'F'})
+              navigation.navigate('SearchPostHome', {goBackToBoard: 'F'})
             }>
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
