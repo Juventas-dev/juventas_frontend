@@ -1,51 +1,36 @@
 import React from 'react';
 import {
-  NativeStackScreenProps,
   createNativeStackNavigator,
+  NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import Setting from '../pages/Setting';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import Notice from '../pages/Notice';
 import Complain from '../pages/Complain';
-import ComplainNavigation from './ComplainNavigation';
-export type SettingStackParamList = {
-  Setting: undefined;
-  Notice: undefined;
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import ComplainAnswer from '../pages/ComplainAnswer';
+import NewComplain from '../pages/NewComplain';
+
+export type ComplainStackParamList = {
   Complain: undefined;
+  ComplainAnswer: undefined;
+  NewComplain: undefined;
 };
-export type SettingStackNavigationProp =
-  NativeStackScreenProps<SettingStackParamList>;
 
-const Stack = createNativeStackNavigator<SettingStackParamList>();
+export type ComplainStackNavigationProp =
+  NativeStackNavigationProp<ComplainStackParamList>;
 
-export default function SettingNavigation() {
+const Stack = createNativeStackNavigator<ComplainStackParamList>();
+
+export default function ComplainNavigation() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Setting"
-        component={Setting}
-        options={{
-          headerBackVisible: false,
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
-          headerTitleAlign: 'center',
-          headerTitle: '설정',
-          headerTintColor: '#346627',
-          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="Notice"
-        component={Notice}
+        name="Complain"
+        component={Complain}
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '공지사항',
+          headerTitle: '문의 게시판',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (
@@ -54,11 +39,32 @@ export default function SettingNavigation() {
         }}
       />
       <Stack.Screen
-        name="Complain"
-        component={ComplainNavigation}
+        name="ComplainAnswer"
+        component={ComplainAnswer}
         options={{
-          title: 'Complain',
-          headerShown: false,
+          headerBackTitle: '뒤로',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerTitleAlign: 'center',
+          headerTitle: '문의 게시판',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+          headerRight: () => (
+            <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="NewComplain"
+        component={NewComplain}
+        options={{
+          headerBackTitle: '뒤로',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerTitleAlign: 'center',
+          headerTitle: '문의 작성',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
       />
     </Stack.Navigator>

@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
-  Modal
+  Modal,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -124,7 +124,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
           </View>
           <View style={styles.typing}>
             <TextInput
-              placeholder='이름'
+              placeholder="이름"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               style={styles.typingInput}
@@ -138,7 +138,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               blurOnSubmit={false}
             />
             <TextInput
-              placeholder='아이디'
+              placeholder="아이디"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               style={styles.typingInput}
@@ -152,7 +152,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               blurOnSubmit={false}
             />
             <TextInput
-              placeholder='비밀번호'
+              placeholder="비밀번호"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               secureTextEntry={true}
@@ -168,7 +168,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               blurOnSubmit={false}
             />
             <TextInput
-              placeholder='비밀번호 확인'
+              placeholder="비밀번호 확인"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               secureTextEntry={true}
@@ -182,46 +182,46 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               blurOnSubmit={false}
             />
             <View style={styles.checkNumContainer}>
+              <TextInput
+                placeholder="전화번호"
+                placeholderTextColor={'#B7CBB2'}
+                selectionColor={'#346627'}
+                style={styles.typingInput}
+                autoCapitalize="none"
+                onChangeText={onChangePhoneNum}
+                value={PhoneNum}
+                clearButtonMode="while-editing"
+                returnKeyType="next"
+                ref={PhoneNumRef}
+                onSubmitEditing={() => CheckNumRef.current?.focus()}
+                keyboardType="number-pad"
+              />
+              <Pressable onPress={getCheckNum} style={styles.checkNumBtn}>
+                <Text style={styles.checkNumText}>인증</Text>
+              </Pressable>
+            </View>
             <TextInput
-              placeholder='전화번호'
+              placeholder="인증번호 입력"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               style={styles.typingInput}
               autoCapitalize="none"
-              onChangeText={onChangePhoneNum}
-              value={PhoneNum}
-              clearButtonMode="while-editing"
-              returnKeyType="next"
-              ref={PhoneNumRef}
-              onSubmitEditing={() => CheckNumRef.current?.focus()}
+              onChangeText={onChangeCheckNum}
               keyboardType="number-pad"
+              value={CheckNum}
+              clearButtonMode="while-editing"
+              returnKeyType="done"
+              ref={CheckNumRef}
+              onSubmitEditing={onSubmit}
             />
-            <Pressable onPress={getCheckNum} style={styles.checkNumBtn}>
-              <Text style={styles.checkNumText}>인증</Text>
-            </Pressable>
-          </View>
-          <TextInput
-            placeholder='인증번호 입력'
-            placeholderTextColor={'#B7CBB2'}
-            selectionColor={'#346627'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangeCheckNum}
-            keyboardType="number-pad"
-            value={CheckNum}
-            clearButtonMode="while-editing"
-            returnKeyType="done"
-            ref={CheckNumRef}
-            onSubmitEditing={onSubmit}
-          />
           </View>
           <View style={styles.btn}>
             <Pressable
-              style={ !canGoNext || loading ? styles.startBtn : styles.startBtnActive}
+              style={
+                !canGoNext || loading ? styles.startBtn : styles.startBtnActive
+              }
               disabled={!canGoNext || loading}
               onPress={onSubmit}>
-              
-                
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
@@ -232,53 +232,53 @@ export default function SignUp({navigation}: SignUpScreenProps) {
         </View>
       </View>
       <Modal transparent={true} visible={showModal}>
-          <Pressable style={styles.modalBG} onPress={() => setShowModal(false)}>
-            <View style={styles.modal}>
-              <CheckIcon
-                name="check-circle"
-                size={50}
-                color="#F6DD55"
-                style={styles.modalImg}
-              />
-              <Text style={styles.modalTextHeader}>인증번호 발송</Text>
-              <Text style={styles.modalTextBody}>
-                입력하신 번호로 인증번호가 발송되었습니다
-              </Text>
-            </View>
-          </Pressable>
-        </Modal>
+        <Pressable style={styles.modalBG} onPress={() => setShowModal(false)}>
+          <View style={styles.modal}>
+            <CheckIcon
+              name="check-circle"
+              size={50}
+              color="#F6DD55"
+              style={styles.modalImg}
+            />
+            <Text style={styles.modalTextHeader}>인증번호 발송</Text>
+            <Text style={styles.modalTextBody}>
+              입력하신 번호로 인증번호가 발송되었습니다
+            </Text>
+          </View>
+        </Pressable>
+      </Modal>
     </DismissKeyboardView>
   );
 }
 
 const styles = StyleSheet.create({
   entire: {
-    flex: 1, 
-    backgroundColor: '#F5F5F5', 
-    justifyContent: 'center'
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
   },
   body: {
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   title: {
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   image: {
     width: 140,
     height: 170,
-    marginBottom: 15
+    marginBottom: 15,
   },
   titleHeader: {
     color: '#346627',
     fontSize: 25,
-    fontWeight: '900'
+    fontWeight: '900',
   },
   titleBody: {
     color: '#346627',
     fontSize: 14,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   typing: {marginHorizontal: 5},
   typingText: {
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: 'white',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   modalBG: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',

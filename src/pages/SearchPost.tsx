@@ -16,6 +16,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import SearchPostItem from '../components/SearchPostItem';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
+import MyKnowhow, {MyKnowhowStackParamList} from './MyKnowhow';
 
 // const DATA = [
 //   {
@@ -41,6 +42,7 @@ import {HomeStackParamList} from '../navigations/HomeNavigation';
 type SearchPostScreenProps =
   | NativeStackScreenProps<BoardStackParamList, 'SearchPost'>
   | NativeStackScreenProps<HomeStackParamList, 'SearchPostHome'>;
+ /* | NativeStackScreenProps<MyKnowhowStackParamList, 'SearchMyPost'>; */
 
 function SearchPost({navigation}: SearchPostScreenProps) {
   const [DATA, setDATA] = useState();
@@ -59,7 +61,9 @@ function SearchPost({navigation}: SearchPostScreenProps) {
     }, []),
   );
 
-  useEffect(() => {onSubmit();}, [keyword]);
+  useEffect(() => {
+    onSubmit();
+  }, [keyword]);
 
   const onChangeSearch = useCallback((text: string) => {
     setKeyword(text);

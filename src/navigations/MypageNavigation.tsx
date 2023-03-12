@@ -110,37 +110,3 @@ export default function MypageNavigation() {
     </Stack.Navigator>
   );
 }
-
-/* <Stack.Screen
-        name="Profile"
-        component={{Profile}}
-        options={{
-          headerBackTitle: '뒤로',
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
-          headerTitleAlign: 'center',
-          headerTitle: '퀘스트',
-          headerTintColor: '#346627',
-          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-        }}
-      />
-      <Stack.Screen
-        name="SetCategory"
-        component={SetCategory}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="MyGrade"
-        component={MyGrade}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="MyCertification"
-        component={MyCertification}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="MyKnowhow"
-        component={MyKnowhow}
-        options={{headerShown: false}}
-      /> */
