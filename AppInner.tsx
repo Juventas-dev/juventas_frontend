@@ -24,6 +24,7 @@ import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
 import SplashScreen from 'react-native-splash-screen';
 import MessageNavigation from './src/navigations/MessageNavigation';
+import useSocket from './src/hooks/useSockets';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -38,10 +39,6 @@ export type RootStackParamList = {
   SignUp: undefined;
   FindID: undefined;
   FindPassword: undefined;
-  // Board: undefined;
-  // Knowhow: undefined;
-  // Quest: undefined;
-  // FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -60,6 +57,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
+  const [socket, disconnect] = useSocket();
 
   useEffect(() => {
     SplashScreen.hide();
@@ -94,6 +92,25 @@ function AppInner() {
     };
     getTokenAndRefresh();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (socket && isLoggedIn) {
+      console.log(socket);
+      // 로그인 했을 때 방 목록 불러오기
+    }
+    return () => {
+      if (socket) {
+        console.log('소켓 연결 완료');
+      }
+    };
+  }, [isLoggedIn, socket]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      console.log('!isLoggedIn', !isLoggedIn);
+      disconnect();
+    }
+  }, [isLoggedIn, disconnect]);
 
   return isLoggedIn ? (
     <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
