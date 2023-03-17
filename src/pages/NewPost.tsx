@@ -186,7 +186,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
             onChangeText={onChangeContent}
             maxLength={5000}
           />
-          <View style={styles.boardTitle}>
+          {/* <View style={styles.boardTitle}>
             <TextInput
               style={styles.titleInput}
               placeholder="제목을 입력하세요"
@@ -213,7 +213,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
               value={content}
               onChangeText={onChangeContent}
             />
-          </View>
+          </View> */}
         </View>
       </SafeAreaView>
     </KeyboardAwareScrollView>
