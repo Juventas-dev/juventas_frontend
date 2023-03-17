@@ -226,7 +226,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         <Pressable style={styles.modalBG} onPress={() => {setShowProfile(false);}}>
           <View style={styles.modal}>
             <View style={{width: 130, height: 130, borderRadius: 70, backgroundColor: 'black'}} ></View>
-            <Text style={styles.modalID}>{userID}</Text>
+            <Text style={styles.modalID}>{postDATA.user_name}</Text>
             <Pressable style={styles.modalBtn} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: postDATA.user_name})}>
               <Text style={styles.modalBtnTxt}>쪽지 보내기</Text>
             </Pressable>
