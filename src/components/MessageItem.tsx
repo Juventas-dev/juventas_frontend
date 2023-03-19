@@ -2,34 +2,31 @@ import React from 'react';
 import {View, Text, Pressable, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import { MessageStackNavigationProp } from '../navigations/MessageNavigation';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
 
 type ItemProps = {
-    incr: number;
-    id: string;
-    content: string;
-    when: string;
-  };
+  incr: number;
+  user_name: string;
+  last_chat: string;
+};
 
 const MessageItem = ({item}: {item: ItemProps}) => {
   const navigation = useNavigation<MessageStackNavigationProp>();
-  const userID = useSelector((state: RootState) => state.user.id);
-
 
   return (
-    <Pressable style={styles.eachMessage} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: item.id})}>
-			<View style={styles.profile}></View>
-			<View style={styles.body}>
-				<Text style={styles.id} numberOfLines={1}>{item.id}</Text>
-				<Text style={styles.content}  numberOfLines={2}>{item.content}</Text>
-			</View>
-			<View style={styles.when}>
-				<Text style={styles.whenTxt}>{item.when}</Text>
-			</View>
+    <Pressable style={styles.eachMessage} onPress={() => (navigation.navigate('MessageDetail', {incr:String(item.incr)}))}>
+      <View style={styles.profile}></View>
+      <View style={styles.body}>
+        <Text style={styles.id} numberOfLines={1}>{item.user_name}</Text>
+        <Text style={styles.content}  numberOfLines={2}>{item.incr}</Text>
+      </View>
+      <View style={styles.when}>
+        <Text style={styles.whenTxt}>{item.last_chat.split('.')[0].slice(-8,-3)}</Text>
+      </View>
     </Pressable>
   );
 };
+
+export default MessageItem;
 
 const styles = StyleSheet.create({
   eachMessage:{
@@ -70,4 +67,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MessageItem;

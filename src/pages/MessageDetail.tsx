@@ -3,55 +3,19 @@ import { View, Text, SafeAreaView, FlatList, Pressable, StyleSheet, RefreshContr
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessageStackParamList } from '../navigations/MessageNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-
-
-const messageDATA = [
-  {
-  'incr':1,
-  'who': 'me',
-  'content':'어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구구저쩌구어쩌구저쩌구구저쩌구어쩌구저쩌구구저쩌구어쩌구저쩌구구저쩌구어쩌구저쩌구',
-  'when':'오전 12:01'
-  },
-  {
-  'incr':2,
-  'who': 'me',
-  'content':'샬라샤락',
-  'when':'오전 12:01'
-  },
-  {
-  'incr':3,
-  'who': 'you',
-  'content':'콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠콘텐츠',
-  'when':'오전 12:01'
-  },
-];
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import useSocket from '../hooks/useSockets';
 
 type MessageDetailScreenProps = NativeStackScreenProps<
   MessageStackParamList,
   'MessageDetail'
 >;
 
-type ItemProps = {
-  incr: number;
-  who: string;
-  content: string;
-  when: string;
-};
-
-const MessageDetailItem = ({
-  item,
-}: {
-  item: ItemProps;
-}) => {
-  return (
-		<View style={styles.eachMessage}>
-			{(item.who === 'me') && <View style={{flex:1, height: 5}}></View>}
-			<View style={(item.who === 'me') ? styles.sendByMe : styles.sendByYou}>
-					<Text style={(item.who === 'me') ? styles.sendByMeTxt : styles.sendByYouTxt}>{item.content}</Text>
-			</View>
-			{(item.who === 'you') && <View style={{flex:1, height: 5}}></View>}
-		</View>
-  );
+type ChatProps = {
+  user_id: string;
+  message: string;
+  timestamp: string;
 };
 
 function MessageDetail({route}: MessageDetailScreenProps) {
@@ -62,39 +26,62 @@ function MessageDetail({route}: MessageDetailScreenProps) {
       setRefreshing(false);
     }, 1000);
   }, []);
-  const myID = route.params.me;
-  const yourID = route.params.you;
-	const [messageValue, setMessageValue] = useState('');
+  const [socket, disconnect] = useSocket();
+  const roomID = route.params.incr;
+  const [myMessage, setMyMessage] = useState('');
+  const [chats, setChats] = useState<ChatProps[]>([]);
+
+  useEffect(() => {
+    if (socket && roomID !== '') {
+      socket.emit('join room', roomID);
+      socket.on('messages', results => setChats(results));
+      socket.on('new message', (userId, message, timestamp) => {
+        setChats([
+          {user_id: userId, message: message, timestamp: timestamp},
+          ...chats,
+        ]);
+      });
+    }
+  }, [roomID]);
 
   const onChangeMessage = useCallback((text: string) => {
-    setMessageValue(text);
+    setMyMessage(text);
   }, []);
 
-	const sendMessage = useCallback(() => {
-    const sendMessageWait = async () => {
-      try {
-        
-      } catch (error) {
-        
-      }
-    };
-    sendMessageWait();
-  }, [messageValue]);
+	const onSend = () => {
+    socket?.emit('send message', userID, roomID, myMessage);
+    setChats(prev => [
+      {
+        user_id: userID,
+        message: myMessage,
+        timestamp: new Date().toTimeString(),
+      },
+      ...prev,
+    ]);
+    setMyMessage('');
+  };
+
+  const userID = useSelector((state: RootState) => state.user.id);
 
   return (
     <SafeAreaView style={styles.entire}>
       <FlatList
-				data={messageDATA}
+       style={styles.chatBody}
+				data={chats}
 				renderItem={({item}) => (
-					<MessageDetailItem item={item} />
+					<View style={styles.eachMessages}>
+            {(item.user_id === userID) && <View style={{flex:1, height: 5}}></View>}
+            <View style={(item.user_id === userID) ? styles.sendByMe : styles.sendByYou}>
+                <Text style={(item.user_id === userID) ? styles.sendByMeTxt : styles.sendByYouTxt}>{item.message}</Text>
+            </View>
+            {(item.user_id != userID) && <View style={{flex:1, height: 5}}></View>}
+          </View>
 				)}
-				keyExtractor={Item => String(Item.incr)}
+				keyExtractor={Item => Item.timestamp}
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}
 			/>
-			<Text>{myID}</Text>
-			<Text>{yourID}</Text>
 
 			<View style={styles.myMessage}>
         <Pressable style={styles.cameraBtn}>
@@ -107,15 +94,16 @@ function MessageDetail({route}: MessageDetailScreenProps) {
         <TextInput
           style={styles.myMessageContent}
           onChangeText={onChangeMessage}
-          onSubmitEditing={sendMessage}
+          onSubmitEditing={onSend}
         />
-        <Pressable onPress={sendMessage} style={styles.sendBtn}>
+        <Pressable onPress={onSend} style={styles.sendBtn}>
           <Text style={styles.sendBtnTxt}>전송</Text>
         </Pressable>
       </View>
     </SafeAreaView>
   );
 }
+
 export default MessageDetail;
 
 const styles = StyleSheet.create({
@@ -123,9 +111,13 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		flex: 1,
 	},
-	eachMessage:{
+  chatBody:{
+    flex:1,
+    marginBottom: 80
+  },
+	eachMessages:{
 		flexDirection: 'row',
-		marginTop: 10
+		marginTop: 10,
 	},
   sendByMe:{
 		backgroundColor: '#346627',

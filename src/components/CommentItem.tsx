@@ -63,6 +63,7 @@ const CommentItem = ({
             <View style={{width: 130, height: 130, borderRadius: 70, backgroundColor: 'black'}} ></View>
             <Text style={styles.modalID}>{item.user_name}</Text>
             <Pressable style={styles.modalBtn} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: item.user_name})}>
+              {/* navigate할때 전달해주는 정보 수정 필요! roomID 찾아보고 있으면 string으로 전달해줘야함 (없으면 만들면서 전달) */}
               <Text style={styles.modalBtnTxt}>쪽지 보내기</Text>
             </Pressable>
           </View>
