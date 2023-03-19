@@ -10,7 +10,7 @@ import { RouteProp } from '@react-navigation/native';
 
 export type MessageStackParamList = {
   Message: undefined;
-  MessageDetail: {me: string, you: string};
+  MessageDetail: {incr: string};
 };
 
 export type MessageStackNavigationProp =
@@ -48,7 +48,7 @@ export default function MessageNavigation() {
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '바나나님과의 쪽지', // 여기에 상대방 이름을 뜨게 할 수 있나?
+          headerTitle: '쪽지', // 여기에 상대방 이름을 뜨게 할 수 있나?
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
 					headerRight: () => (

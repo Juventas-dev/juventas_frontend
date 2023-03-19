@@ -33,10 +33,13 @@ function Home({navigation}: HomeScreenProps) {
   const [questNum, setQuestNum] = useState(0);
   const [modal, showModal] = useState(false);
   const [myQuest, setMyQuest] = useState({"quest_name":"quest_name", "quest_id":0, "num_people":0});
-  const [boardData, setBoardData] = useState([{"incr":0, "c_id":0, "title":"title", "like":0, "comment":0, "myrec":0}]);
-  const [boardContent, setBoardContent] = useState({"content":"content", "userID":"userID"});
+  const [boardData, setBoardData] = useState([{"incr":0, "c_id":0, "title":"title", "like":0, "comment":0, "myrec":0, "user_name":"user_name", "content":"content"}]);
+  // let boardContent = [{"content":"content", "userID":"userID"}, {"content":"content", "userID":"userID"}, {"content":"content", "userID":"userID"}]
+  // const [boardContent0, setBoardContent0] = useState({"content":"content", "userID":"userID"});
+  // const [boardContent1, setBoardContent1] = useState({"content":"content", "userID":"userID"});
+  // const [boardContent2, setBoardContent2] = useState({"content":"content", "userID":"userID"});
+
   const [whichPost, setWhichPost] = useState(0);
-  const [myPostRecommend, setMyPostRecommend] = useState(0);
 
   const userID = useSelector((state:RootState)=>state.user.id);
 
@@ -61,9 +64,9 @@ function Home({navigation}: HomeScreenProps) {
     getBoardData();
   }, [questSelected, whichPost]);
 
-  useEffect(() => {
-    setMyPostRecommend(boardData[0].myrec);
-  }, [boardData]);
+  // useEffect(() => {
+  //   setMyPostRecommend(boardData[0].myrec);
+  // }, [boardData]);
 
   const storeData = async (value: any) => {
     try {
@@ -168,8 +171,9 @@ function Home({navigation}: HomeScreenProps) {
   const getBoardData = useCallback(() => {
     const getBoardDataWait = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/board/post?id='${userID}'`);
+        const response = await axios.get(`${Config.API_URL}/board/bestpost?id='${userID}'`);
         setBoardData(response.data.bestPost);
+        console.log(response.data.bestPost)
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -179,23 +183,53 @@ function Home({navigation}: HomeScreenProps) {
       }
     };
     getBoardDataWait();
-    getBoardContent(whichPost);
-  }, [boardData, boardContent]);
-  const getBoardContent = useCallback((num: number) => {
-    const getBoardContentWait = async () => {
-      try {
-        const response = await axios.get(`${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`);
-        setBoardContent({"content":response.data.post[whichPost].content, "userID":response.data.post[whichPost].user_name});
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
-      }
-    };
-    getBoardContentWait();
-  }, [boardContent]);
+    // getBoardContent();
+  }, [boardData]);
+  // const getBoardContent = useCallback(() => {
+  //   const getBoardContentWait0 = async () => {
+  //     try {
+  //       const response = await axios.get(`${Config.API_URL}/board/post/${boardData[0].incr}?id='${userID}'`);
+  //       boardContent[0] = {"content":response.data.post[0].content, "userID":response.data.post[0].user_name};
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   };
+  //   const getBoardContentWait1 = async () => {
+  //     try {
+  //       const response = await axios.get(`${Config.API_URL}/board/post/${boardData[1].incr}?id='${userID}'`);
+  //       // setBoardContent0({"content":response.data.post[0].content, "userID":response.data.post[0].user_name});
+  //       boardContent[1] = {"content":response.data.post[0].content, "userID":response.data.post[0].user_name};
+
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   };
+  //   const getBoardContentWait2 = async () => {
+  //     try {
+  //       const response = await axios.get(`${Config.API_URL}/board/post/${boardData[2].incr}?id='${userID}'`);
+  //       // setBoardContent0({"content":response.data.post[0].content, "userID":response.data.post[0].user_name});
+  //       boardContent[2] = {"content":response.data.post[0].content, "userID":response.data.post[0].user_name};
+
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   };
+  //   getBoardContentWait0();
+  //   getBoardContentWait1();
+  //   getBoardContentWait2();
+  // }, [boardContent]);
 
   const selectQuest = useCallback((num: number) => {
     const selectQuestWait = async () => {
@@ -242,8 +276,9 @@ function Home({navigation}: HomeScreenProps) {
   
   const nextPost = useCallback((num: number) => {
     setWhichPost(num);
-    getBoardData();
-  }, [whichPost, boardData, boardContent]);
+    // getBoardContent();
+    // console.log(boardContent)
+  }, [whichPost, boardData]);
 
   const toDaychk = useCallback(() => {
     navigation.navigate('TodayChk');
@@ -305,12 +340,12 @@ function Home({navigation}: HomeScreenProps) {
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
         </View>
-        <Pressable style={styles.boardBody} onPress={() => navigation.navigate('PostDetail', {postID: boardData[0].incr})}>
+        <Pressable style={styles.boardBody} onPress={() => navigation.navigate('PostDetail', {postID: boardData[whichPost].incr})}>
           <View style={styles.boardHeader}>
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
               <View>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardContent.userID}</Text>
+                <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardData[whichPost].user_name}</Text>
                 <Text style={styles.boardProfileTitle} numberOfLines={1}>{boardData[whichPost].title}</Text>
               </View>
             </View>
@@ -319,18 +354,18 @@ function Home({navigation}: HomeScreenProps) {
                 <FontAwesomeIcon
                   name="thumbs-up"
                   size={39}
-                  color={myPostRecommend ? '#1F6733' : '#DAE2D8'}
+                  color={boardData[whichPost].myrec ? '#1F6733' : '#DAE2D8'}
                 />
               </Pressable>
               <Text style={styles.boardRecommendTxt}>{boardData[whichPost].like}</Text>
             </View>
           </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>{boardContent.content}</Text> 
+          <Text style={styles.boardContentTxt} numberOfLines={3}>{boardData[whichPost].content}</Text> 
         </Pressable>
         <View style={styles.boardFooter}>
-          {boardData.length > 0 && <Pressable onPress={() => {nextPost(0)}} style={styles.boardFooterBtnActive}></Pressable>}
-          {boardData.length > 1 && <Pressable onPress={() => {nextPost(1)}} style={styles.boardFooterBtn}></Pressable>}
-          {boardData.length > 2 && <Pressable onPress={() => {nextPost(2)}} style={styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 0 && <Pressable onPress={() => {nextPost(0)}} style={whichPost == 0 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 1 && <Pressable onPress={() => {nextPost(1)}} style={whichPost == 1 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 2 && <Pressable onPress={() => {nextPost(2)}} style={whichPost == 2 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
         </View>
       </View>
       {modal && (
