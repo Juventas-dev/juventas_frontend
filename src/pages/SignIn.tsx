@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Image
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -52,6 +52,8 @@ function SignIn({navigation}: SignInScreenProps) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
+      console.log('1');
+      console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
         id: ID,
         pwd: Pass,
@@ -154,7 +156,7 @@ function SignIn({navigation}: SignInScreenProps) {
       showsVerticalScrollIndicator={false}>
       <SafeAreaView style={styles.entire}>
         <View style={styles.header}>
-        <Image source={IconBasic} style={styles.logo} />
+          <Image source={IconBasic} style={styles.logo} />
         </View>
         <View style={styles.finding}>
           {/* 아이디찾기 비밀번호 찾기 */}
@@ -167,8 +169,8 @@ function SignIn({navigation}: SignInScreenProps) {
         </View>
         {/* 아이디 비밀번호 입력 */}
         <TextInput
-          placeholder='아이디'
-          placeholderTextColor={"#B7CBB2"}
+          placeholder="아이디"
+          placeholderTextColor={'#B7CBB2'}
           selectionColor={'#346627'}
           style={styles.typingInput}
           autoCapitalize="none"
@@ -184,8 +186,8 @@ function SignIn({navigation}: SignInScreenProps) {
           blurOnSubmit={false}
         />
         <TextInput
-          placeholder='비밀번호'
-          placeholderTextColor={"#B7CBB2"}
+          placeholder="비밀번호"
+          placeholderTextColor={'#B7CBB2'}
           selectionColor={'#346627'}
           secureTextEntry={true}
           style={styles.typingInput}
@@ -204,14 +206,14 @@ function SignIn({navigation}: SignInScreenProps) {
           <Pressable style={styles.signInBtn} onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
-        <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
-          <Image source={kakao} style={styles.kakaoLogo} />
-          <Text style={styles.btnTextKakao}>카카오 로그인</Text>
-        </Pressable>
-        <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
-          <Image source={naver} style={styles.naverLogo} />
-          <Text style={styles.btnTextNaver}>네이버 로그인</Text>
-        </Pressable>
+          <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
+            <Image source={kakao} style={styles.kakaoLogo} />
+            <Text style={styles.btnTextKakao}>카카오 로그인</Text>
+          </Pressable>
+          <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
+            <Image source={naver} style={styles.naverLogo} />
+            <Text style={styles.btnTextNaver}>네이버 로그인</Text>
+          </Pressable>
           <Pressable style={styles.signUpBtn} onPress={toSignUp}>
             <Text style={styles.btnText}>회원가입</Text>
           </Pressable>
@@ -231,11 +233,11 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 50
+    marginTop: 50,
   },
   logo: {
     width: 220,
-    height: 270
+    height: 270,
   },
   finding: {
     marginTop: 40,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
   typingText: {
     color: '#FFE3E3',
     fontSize: 13,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   typingInput: {
     color: '#346627',
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   signInNaverBtn: {
     flex: 1,
@@ -304,18 +306,18 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   kakaoLogo: {
     width: 25,
     height: 25,
     marginLeft: 8,
-    marginTop: 5
+    marginTop: 5,
   },
   naverLogo: {
     width: 25,
     height: 25,
-    marginLeft: 8
+    marginLeft: 8,
   },
   btnText: {
     color: 'white',
@@ -327,14 +329,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
   btnTextNaver: {
     color: 'white',
     fontSize: 13,
     fontWeight: '500',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
 });
 
