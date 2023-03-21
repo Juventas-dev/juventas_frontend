@@ -3,38 +3,34 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import Home from '../pages/Home';
-import TodayChk from '../pages/TodayChk';
-import FirstSetting from '../pages/FirstSetting';
-import PostDetail from '../pages/PostDetail';
-import SearchPost from '../pages/SearchPost';
+import Complain from '../pages/Complain';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import ComplainAnswer from '../pages/ComplainAnswer';
+import NewComplain from '../pages/NewComplain';
 
-export type HomeStackParamList = {
-  Home: undefined;
-  TodayChk: undefined;
-  FirstSetting: undefined;
-  PostDetail: {postID: number};
-  SearchPostHome: undefined;
+export type ComplainStackParamList = {
+  Complain: undefined;
+  ComplainAnswer: undefined;
+  NewComplain: undefined;
 };
 
-export type HomeStackNavigationProp =
-  NativeStackNavigationProp<HomeStackParamList>;
+export type ComplainStackNavigationProp =
+  NativeStackNavigationProp<ComplainStackParamList>;
 
-const Stack = createNativeStackNavigator<HomeStackParamList>();
+const Stack = createNativeStackNavigator<ComplainStackParamList>();
 
-export default function HomeNavigation() {
+export default function ComplainNavigation() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Home"
-        component={Home}
+        name="Complain"
+        component={Complain}
         options={{
-          headerBackVisible: false,
+          headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '홈',
+          headerTitle: '문의 게시판',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (
@@ -43,42 +39,33 @@ export default function HomeNavigation() {
         }}
       />
       <Stack.Screen
-        name="FirstSetting"
-        component={FirstSetting}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="PostDetail"
-        component={PostDetail}
+        name="ComplainAnswer"
+        component={ComplainAnswer}
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '',
+          headerTitle: '문의 게시판',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+          headerRight: () => (
+            <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          ),
         }}
       />
       <Stack.Screen
-        name="TodayChk"
-        component={TodayChk}
+        name="NewComplain"
+        component={NewComplain}
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '퀘스트',
+          headerTitle: '문의 작성',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
-      />
-      <Stack.Screen
-        name="SearchPostHome"
-        component={SearchPost}
-        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
