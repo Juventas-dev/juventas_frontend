@@ -23,6 +23,7 @@ import HomeNavigation from './src/navigations/HomeNavigation';
 import MypageNavigation from './src/navigations/MypageNavigation';
 import SettingNavigation from './src/navigations/SettingNavigation';
 import SplashScreen from 'react-native-splash-screen';
+import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
 
 export type LoggedInParamList = {
@@ -127,8 +128,8 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Message"
-        component={Message}
+        name="MessageNavigation"
+        component={MessageNavigation}
         options={{
           title: 'Message',
           headerShown: false,
@@ -197,11 +198,11 @@ function AppInner() {
         component={FindPassword}
         options={{title: 'FindPassword'}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="FirstSetting"
         component={FirstSetting}
         options={{title: 'FirstSetting'}}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
