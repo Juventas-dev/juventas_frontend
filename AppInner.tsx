@@ -1,11 +1,12 @@
 import React, {useEffect} from 'react';
-import {Alert} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import axios, {AxiosError} from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
+import Term from './src/pages/Term';
+import Mypage from './src/pages/Mypage';
 import FindID from './src/pages/FindID';
 import {useAppDispatch} from './src/store';
 import {RootState} from './src/store/reducer';
@@ -14,6 +15,7 @@ import userSlice from './src/slices/user';
 import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
+import Setting from './src/pages/Setting';
 import Message from './src/pages/Message';
 import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
@@ -37,7 +39,7 @@ export type LoggedInParamList = {
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
-  FindID: undefined;
+  Term: undefined;
   FindPassword: undefined;
   FirstSetting: undefined;
 };
@@ -60,39 +62,39 @@ function AppInner() {
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
   const [socket, disconnect] = useSocket();
 
-  useEffect(() => {
-    SplashScreen.hide();
-    const getTokenAndRefresh = async () => {
-      try {
-        const token = await EncryptedStorage.getItem('refreshToken');
-        if (!token) {
-          return;
-        }
-        const response = await axios.get(
-          `${Config.API_URL}/user/refreshToken`,
-          {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          },
-        );
-        dispatch(
-          userSlice.actions.setUser({
-            id: response.data.id,
-            name: response.data.name,
-            accessToken: response.data.accessToken,
-          }),
-        );
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
-      }
-    };
-    getTokenAndRefresh();
-  }, [dispatch]);
+  // useEffect(() => {
+  //   SplashScreen.hide();
+  //   const getTokenAndRefresh = async () => {
+  //     try {
+  //       const token = await EncryptedStorage.getItem('refreshToken');
+  //       if (!token) {
+  //         return;
+  //       }
+  //       const response = await axios.get(
+  //         `${Config.API_URL}/user/refreshToken`,
+  //         {
+  //           headers: {
+  //             authorization: `Bearer ${token}`,
+  //           },
+  //         },
+  //       );
+  //       dispatch(
+  //         userSlice.actions.setUser({
+  //           id: response.data.id,
+  //           name: response.data.name,
+  //           accessToken: response.data.accessToken,
+  //         }),
+  //       );
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   };
+  //   getTokenAndRefresh();
+  // }, [dispatch]);
 
   useEffect(() => {
     if (socket && isLoggedIn) {
@@ -189,8 +191,8 @@ function AppInner() {
         options={{title: 'SignUp'}}
       />
       <Stack.Screen
-        name="FindID"
-        component={FindID}
+        name="Term"
+        component={Term}
         options={{title: 'FindID'}}
       />
       <Stack.Screen

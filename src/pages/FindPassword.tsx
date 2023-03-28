@@ -36,14 +36,13 @@ function FindPassword({navigation}: FindPassScreenProps) {
   const PhoneNumRef = useRef<TextInput | null>(null);
   const CheckNumRef = useRef<TextInput | null>(null);
 
+  const [focused, setFocused] = useState(false);
+  const [set, setSet] = useState(false);
   const [AfterFinding, setAfterFinding] = useState(false);
   const [userPassword, setUserPassword] = useState('');
 
   const onChangeName = useCallback((text: string) => {
     setName(text.trim());
-  }, []);
-  const onChangeID = useCallback((text: string) => {
-    setID(text.trim());
   }, []);
   const onChangePhoneNum = useCallback((text: string) => {
     setPhoneNum(text.trim());
@@ -63,6 +62,7 @@ function FindPassword({navigation}: FindPassScreenProps) {
 
   const onSubmit = useCallback(async () => {
     try {
+      // 인증번호 확인하는 단계 필요 => 인증번호 틀렸습니다 or 인증이 완료되었습니다 구현 필요
       const response = await axios.patch(`${Config.API_URL}/user/findPwd`, {
         id: ID,
         name: Name,
@@ -88,13 +88,13 @@ function FindPassword({navigation}: FindPassScreenProps) {
           <View style={styles.header}>
             {AfterFinding
             ? (<Image source={IconExclamatation} style={styles.image}/>)
-            : (<Image source={IconQuestion} style={styles.image}/>)}
+            : (<Image source={IconQuestion} style={!focused ? styles.image : styles.imageFocused}/>)}
             {AfterFinding
             ? (<View style={styles.typing}><Text style={styles.typingText}>회원님의 임시 비밀번호는</Text>
             <Text style={styles.typingTextBold}>{userPassword}</Text>
             <Text style={styles.typingText}>입니다</Text>
             <Text style={styles.typingText}>꼭 비밀번호를 다시 설정해주세요</Text></View>)
-            : (<Text style={styles.typingText}>비밀번호를 잊으셨나요?</Text>)}
+            : (<Text style={!focused ? styles.typingText : styles.typingTextFocused}>비밀번호를 잊으셨나요?</Text>)}
           </View>
           {!AfterFinding && <TextInput
             placeholder='이름'
@@ -110,21 +110,8 @@ function FindPassword({navigation}: FindPassScreenProps) {
             returnKeyType="next"
             ref={NameRef}
             onSubmitEditing={() => IDRef.current?.focus()}
-          />}
-          {!AfterFinding && <TextInput
-            placeholder='아이디'
-            placeholderTextColor={'#B7CBB2'}
-            selectionColor={'#346627'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangeID}
-            textContentType="username"
-            value={ID}
-            clearButtonMode="while-editing"
-            returnKeyType="next"
-            ref={IDRef}
-            onSubmitEditing={() => PhoneNumRef.current?.focus()}
-            blurOnSubmit={false}
+            onFocus={() => setFocused(true)}
+            onBlur={() => {setFocused(false)}}
           />}
           {!AfterFinding && <View style={styles.checkNumContainer}>
             <TextInput
@@ -140,15 +127,17 @@ function FindPassword({navigation}: FindPassScreenProps) {
               ref={PhoneNumRef}
               onSubmitEditing={() => CheckNumRef.current?.focus()}
               keyboardType="number-pad"
+              onFocus={() => setFocused(true)}
+              onBlur={() => {setFocused(false)}}
             />
             <Pressable onPress={getCheckNum} style={styles.checkNumBtn}>
-              <Text style={styles.checkNumText}>인증</Text>
+              <Text style={styles.checkNumText}>인증번호 발송</Text>
             </Pressable>
           </View>}
           {!AfterFinding && <TextInput
-           placeholder='인증번호 입력'
-           placeholderTextColor={'#B7CBB2'}
-           selectionColor={'#346627'}
+            placeholder='인증번호 입력'
+            placeholderTextColor={'#B7CBB2'}
+            selectionColor={'#346627'}
             style={styles.typingInput}
             autoCapitalize="none"
             onChangeText={onChangeCheckNum}
@@ -158,11 +147,17 @@ function FindPassword({navigation}: FindPassScreenProps) {
             returnKeyType="done"
             ref={CheckNumRef}
             onSubmitEditing={onSubmit}
+            onFocus={() => setFocused(true)}
+            onBlur={() => {setFocused(false)}}
           />}
           <Pressable
-            style={!AfterFinding ? styles.findBtn : styles.goBackToLogin}
+            style={
+              !AfterFinding 
+              ? (!Name || !PhoneNum || !CheckNum ? styles.findBtn : styles.findBtnSet)
+              : styles.goBackToLogin
+            }
             onPress={!AfterFinding ? onSubmit : () => (navigation.navigate('SignIn'))}
-            disabled={!Name || !ID || !PhoneNum || !CheckNum}>
+            disabled={!Name || !PhoneNum || !CheckNum}>
             {!AfterFinding
               ? <Text style={styles.btnText}>확인</Text>
               : <Text style={styles.btnText}>로그인으로 돌아가기</Text>}
@@ -179,7 +174,7 @@ function FindPassword({navigation}: FindPassScreenProps) {
               />
               <Text style={styles.modalTextHeader}>인증번호 발송</Text>
               <Text style={styles.modalTextBody}>
-                입력하신 번호로 인증번호가 발송되었습니다
+                인증번호가 카카오톡으로 발송되었습니다
               </Text>
             </View>
           </Pressable>
@@ -201,21 +196,38 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 50,
+  },
+  headerFocused: {
+    alignItems: 'center',
+    marginTop: 0,
+    top: -30
   },
   image: {
     width: 220,
     height: 270,
     marginBottom: 15
   },
+  imageFocused: {
+    width: 180,
+    height: 220,
+    marginBottom: 15,
+  },
   typing:{
-    alignItems: 'center'
+    alignItems: 'center',
+    // marginTop: 50
   },
   typingText: {
     fontSize: 16,
     fontWeight: '800',
     color: '#346627',
-    marginBottom: 15
+    marginBottom: 60
+  },
+  typingTextFocused: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#346627',
+    marginBottom: 20
   },
   typingTextBold: {
     fontSize: 20,
@@ -223,7 +235,8 @@ const styles = StyleSheet.create({
     color: '#346627'
   },
   typingInput: {
-    fontSize: 15,
+    fontSize: 18,
+    fontWeight: '400',
     color: '#346627',
     padding: 5,
     paddingLeft: 10,
@@ -233,6 +246,16 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   findBtn: {
+    backgroundColor: '#B7CBB2',
+    height: 35,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 16,
+    marginBottom: 20,
+  },
+  findBtnSet: {
     backgroundColor: '#346627',
     height: 35,
     width: '100%',
@@ -240,10 +263,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     marginTop: 16,
+    marginBottom: 20,
   },
   btnText: {
-    fontSize: 13,
+    fontSize: 18,
     color: 'white',
+    fontWeight: '400'
   },
   checkNumContainer: {
     width: '100%',
@@ -251,7 +276,7 @@ const styles = StyleSheet.create({
   checkNumBtn: {
     position: 'absolute',
     height: 24,
-    width: 60,
+    width: 120,
     right: 10,
     top: 13,
     backgroundColor: '#B7CBB2',
@@ -260,7 +285,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkNumText: {
-    fontSize: 10,
+    fontSize: 15,
+    fontWeight: '400',
     color: 'white',
   },
   goBackToLogin: {
