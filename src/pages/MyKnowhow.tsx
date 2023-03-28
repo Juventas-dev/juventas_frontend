@@ -1,53 +1,36 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
-  SafeAreaView,
-  FlatList,
   Pressable,
+  Text,
   StyleSheet,
-  TextInput,
-  RefreshControl,
   Alert,
+  TextInput,
 } from 'react-native';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {BoardStackParamList} from '../navigations/BoardNavigation';
-import axios, {AxiosError} from 'axios';
-import Config from 'react-native-config';
+import {MypageStackParamList} from '../navigations/MypageNavigation';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
 import SelectDropdown from 'react-native-select-dropdown';
-import PostItem from '../components/PostItem';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'Board'>;
-type ItemProps = {
-  incr: number;
-  c_id: number;
-  title: string;
-  like: number;
-  comment: number;
+export type MyKnowhowStackParamList = {
+  SearchMyPost: undefined;
 };
+export type MyKnowhowScreenProps =
+  NativeStackScreenProps<MyKnowhowStackParamList>;
 
-const FlatListHeader = (bestPostDATA: ItemProps[]) => (
-  <View>
-    {bestPostDATA.map(item => (
-      <PostItem item={item} />
-    ))}
-  </View>
-);
-
-function Board({navigation}: BoardScreenProps) {
+const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
   const userID = useSelector((state: RootState) => state.user.id);
-  const toSearchPost = useCallback(() => {
-    navigation.navigate('SearchPost');
+  const toSearchMyPost = useCallback(() => {
+    navigation.navigate('SearchMyPost');
   }, [navigation]);
-  const toNewPost = useCallback(() => {
-    navigation.navigate('NewPost');
-  }, [navigation]);
-  const [DATA, setDATA] = useState<ItemProps[]>([]);
-  const [bestPostDATA, setBestPostDATA] = useState<ItemProps[]>([]);
 
+  const [DATA, setDATA] = useState<ItemProps[]>([]);
   const [categorySelected, setCategorySelected] = useState(0);
   const [filterSelected, setFilterSelected] = useState(0);
   const categoryDATA = ['전체', '건강', '여가', '학습', '관계'];
@@ -73,20 +56,18 @@ function Board({navigation}: BoardScreenProps) {
               temp = 'T';
             }
             const response = await axios.get(
-              `${Config.API_URL}/board/post?c_id=${
+              `${Config.API_URL}/mypage/mywriting?c_id=${
                 categorySelected - 1
               }&is_qna='${temp}'&id='${userID}'`,
             );
             setDATA(response.data.post);
-            setBestPostDATA([]);
           } else {
             const response = await axios.get(
-              `${Config.API_URL}/board/post?c_id=${
+              `${Config.API_URL}/mypage/mywriting?c_id=${
                 categorySelected - 1
               }&id='${userID}'`,
             );
             setDATA(response.data.post);
-            setBestPostDATA([]);
           }
         } else {
           if (filterSelected) {
@@ -97,16 +78,14 @@ function Board({navigation}: BoardScreenProps) {
               temp = 'T';
             }
             const response = await axios.get(
-              `${Config.API_URL}/board/post?is_qna='${temp}'&id='${userID}'`,
+              `${Config.API_URL}/mypage/mywriting?is_qna='${temp}'&id='${userID}'`,
             );
             setDATA(response.data.post);
-            setBestPostDATA([]);
           } else {
             const response = await axios.get(
-              `${Config.API_URL}/board/post?id='${userID}'`,
+              `${Config.API_URL}/mypage/mywriting?id='${userID}'`,
             );
             setDATA(response.data.post);
-            setBestPostDATA(response.data.bestPost);
           }
         }
       } catch (error) {
@@ -124,10 +103,9 @@ function Board({navigation}: BoardScreenProps) {
     const getBoardAndRefresh = async () => {
       try {
         const response = await axios.get(
-          `${Config.API_URL}/board/post?id='${userID}'`,
+          `${Config.API_URL}/mypage/mywriting?id='${userID}'`,
         );
         setDATA(response.data.post);
-        setBestPostDATA(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -154,7 +132,7 @@ function Board({navigation}: BoardScreenProps) {
               style={styles.headerSearchInput}
               placeholder="노하우 검색"
               placeholderTextColor={'#DAE2D8'}
-              onFocus={toSearchPost}
+              onFocus={toSearchMyPost}
             />
           </View>
         </View>
@@ -221,28 +199,10 @@ function Board({navigation}: BoardScreenProps) {
           rowTextStyle={styles.RowTxtSt}
         />
       </View>
-
-      <FlatList
-        data={DATA}
-        renderItem={({item}) => <PostItem item={item} />}
-        keyExtractor={Item => String(Item.incr)} // incr을 무식하게 String으로 바꿔서 하는 게 맞나?
-        ListHeaderComponent={FlatListHeader(bestPostDATA)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-      <Pressable style={styles.newPostBtn}>
-        <FontAwesome5Icon
-          name="pen-nib"
-          size={40}
-          color="white"
-          onPress={toNewPost}
-        />
-      </Pressable>
     </SafeAreaView>
   );
-}
-export default Board;
+};
+export default MyKnowhow;
 
 const styles = StyleSheet.create({
   entire: {
@@ -315,3 +275,13 @@ const styles = StyleSheet.create({
     right: 20,
   },
 });
+
+/*<FlatList
+        data={DATA}
+        renderItem={({item}) => <PostItem item={item} />}
+        keyExtractor={Item => String(Item.incr)} // incr을 무식하게 String으로 바꿔서 하는 게 맞나?
+        ListHeaderComponent={FlatListHeader(bestPostDATA)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      /> */
