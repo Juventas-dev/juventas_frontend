@@ -7,6 +7,7 @@ import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import Term from './src/pages/Term';
 import Mypage from './src/pages/Mypage';
+import FindID from './src/pages/FindID';
 import {useAppDispatch} from './src/store';
 import {RootState} from './src/store/reducer';
 import {useSelector} from 'react-redux';
@@ -15,10 +16,14 @@ import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
 import Setting from './src/pages/Setting';
+import Message from './src/pages/Message';
+import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import HomeNavigation from './src/navigations/HomeNavigation';
+import MypageNavigation from './src/navigations/MypageNavigation';
+import SettingNavigation from './src/navigations/SettingNavigation';
 import SplashScreen from 'react-native-splash-screen';
 import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
@@ -36,6 +41,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   Term: undefined;
   FindPassword: undefined;
+  FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -148,8 +154,8 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Mypage"
-        component={Mypage}
+        name="MypageNav"
+        component={MypageNavigation}
         options={{
           title: 'Mypage',
           headerShown: false,
@@ -161,12 +167,12 @@ function AppInner() {
       />
       <Tab.Screen
         name="Setting"
-        component={Setting}
+        component={SettingNavigation}
         options={{
           title: 'Setting',
           headerShown: false,
           tabBarLabel: '설정',
-          tabBarIcon: ({color, size}) => (
+          tabBarIcon: ({color}) => (
             <IoniconsIcon name="settings" color={color} size={40} />
           ),
         }}
