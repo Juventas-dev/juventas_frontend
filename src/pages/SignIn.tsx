@@ -218,7 +218,6 @@ function SignIn({navigation}: SignInScreenProps) {
             <Text style={styles.btnText}>회원가입</Text>
           </Pressable>
         </View>
-        {/* <Pressable style={{position:'absolute', backgroundColor: 'black', top:300, bottom: 300, right:100, left:100}} onPress={() => (navigation.navigate('FirstSetting'))}></Pressable> */}
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
