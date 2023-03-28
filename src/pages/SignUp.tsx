@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
-  Modal
+  Modal,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -127,7 +127,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
           </View>
           <View style={styles.typing}>
             <TextInput
-              placeholder='이름'
+              placeholder="이름"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               style={styles.typingInput}
@@ -160,7 +160,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
             />
             <Text style={styles.noticeTxt}>• 숫자 4자리로 입력해주세요</Text>
             <TextInput
-              placeholder='비밀번호 확인'
+              placeholder="비밀번호 확인"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               secureTextEntry={true}
@@ -229,7 +229,9 @@ export default function SignUp({navigation}: SignUpScreenProps) {
           </View>
           <View style={styles.btn}>
             <Pressable
-              style={ !canGoNext || loading ? styles.startBtn : styles.startBtnActive}
+              style={
+                !canGoNext || loading ? styles.startBtn : styles.startBtnActive
+              }
               disabled={!canGoNext || loading}
               onPress={onSubmit}>
               {loading ? (
@@ -268,12 +270,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   body: {
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   title: {
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   image: {
     width: 50,
@@ -283,12 +285,12 @@ const styles = StyleSheet.create({
   titleHeader: {
     color: '#346627',
     fontSize: 25,
-    fontWeight: '900'
+    fontWeight: '900',
   },
   titleBody: {
     color: '#346627',
     fontSize: 14,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   typing: {marginHorizontal: 5},
   typingText: {
@@ -392,7 +394,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: 'white',
     fontWeight: '400',
-    fontSize: 18
+    fontSize: 18,
   },
   modalBG: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',

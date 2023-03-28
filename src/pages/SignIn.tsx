@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Image
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -53,6 +53,8 @@ function SignIn({navigation}: SignInScreenProps) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
     try {
+      console.log('1');
+      console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
         id: ID,
         pwd: Pass,
@@ -180,8 +182,8 @@ function SignIn({navigation}: SignInScreenProps) {
           onBlur={() => setFocused(false)}
         />
         <TextInput
-          placeholder='비밀번호'
-          placeholderTextColor={"#B7CBB2"}
+          placeholder="비밀번호"
+          placeholderTextColor={'#B7CBB2'}
           selectionColor={'#346627'}
           secureTextEntry={true}
           style={styles.typingInput}
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 50
+    marginTop: 50,
   },
   headerFocused: {
     alignItems: 'center',
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 220,
-    height: 270
+    height: 270,
   },
   focusedLogo: {
     width: 180,
@@ -266,7 +268,7 @@ const styles = StyleSheet.create({
   typingText: {
     color: '#FFE3E3',
     fontSize: 13,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   typingInput: {
     color: '#346627',
@@ -309,7 +311,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   signInNaverBtn: {
     flex: 1,
@@ -319,18 +321,18 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   kakaoLogo: {
     width: 25,
     height: 25,
     marginLeft: 8,
-    marginTop: 5
+    marginTop: 5,
   },
   naverLogo: {
     width: 25,
     height: 25,
-    marginLeft: 8
+    marginLeft: 8,
   },
   btnText: {
     color: 'white',
@@ -342,14 +344,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
   btnTextNaver: {
     color: 'white',
     fontSize: 18,
     fontWeight: '400',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
 });
 
