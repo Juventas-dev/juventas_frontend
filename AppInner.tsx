@@ -37,6 +37,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   Term: undefined;
   FindPassword: undefined;
+  FirstSetting: undefined;
 };
 
 const screenoptions = () => {

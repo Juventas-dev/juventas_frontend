@@ -51,7 +51,6 @@ function Home({navigation}: HomeScreenProps) {
     userID: 'userID',
   });
   const [whichPost, setWhichPost] = useState(0);
-  const [myPostRecommend, setMyPostRecommend] = useState(0);
 
   const userID = useSelector((state: RootState) => state.user.id);
 
@@ -80,9 +79,9 @@ function Home({navigation}: HomeScreenProps) {
     getBoardData();
   }, [questSelected, whichPost]);
 
-  useEffect(() => {
-    setMyPostRecommend(boardData[0].myrec);
-  }, [boardData]);
+  // useEffect(() => {
+  //   setMyPostRecommend(boardData[0].myrec);
+  // }, [boardData]);
 
   const storeData = async (value: any) => {
     try {
@@ -194,6 +193,7 @@ function Home({navigation}: HomeScreenProps) {
           `${Config.API_URL}/board/post?id='${userID}'`,
         );
         setBoardData(response.data.bestPost);
+        console.log(response.data.bestPost)
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -372,7 +372,7 @@ function Home({navigation}: HomeScreenProps) {
           <FontAwesomeIcon name="search" size={25} color="#DAE2D8" />
           <Pressable
             onPress={() =>
-              navigation.navigate('SearchPost', {goBackToBoard: 'F'})
+              navigation.navigate('SearchPostHome', {goBackToBoard: 'F'})
             }>
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
@@ -386,12 +386,8 @@ function Home({navigation}: HomeScreenProps) {
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
               <View>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>
-                  {boardContent.userID}
-                </Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={1}>
-                  {boardData[whichPost].title}
-                </Text>
+                <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardData[whichPost].user_name}</Text>
+                <Text style={styles.boardProfileTitle} numberOfLines={1}>{boardData[whichPost].title}</Text>
               </View>
             </View>
             <View style={styles.boardRecommend}>
@@ -399,7 +395,7 @@ function Home({navigation}: HomeScreenProps) {
                 <FontAwesomeIcon
                   name="thumbs-up"
                   size={39}
-                  color={myPostRecommend ? '#1F6733' : '#DAE2D8'}
+                  color={boardData[whichPost].myrec ? '#1F6733' : '#DAE2D8'}
                 />
               </Pressable>
               <Text style={styles.boardRecommendTxt}>
@@ -407,35 +403,12 @@ function Home({navigation}: HomeScreenProps) {
               </Text>
             </View>
           </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>
-            {boardContent.content}
-          </Text>
+          <Text style={styles.boardContentTxt} numberOfLines={3}>{boardData[whichPost].content}</Text> 
         </Pressable>
         <View style={styles.boardFooter}>
-          {boardData.length > 0 && (
-            <Pressable
-              onPress={() => {
-                nextPost(0);
-              }}
-              style={styles.boardFooterBtnActive}
-            />
-          )}
-          {boardData.length > 1 && (
-            <Pressable
-              onPress={() => {
-                nextPost(1);
-              }}
-              style={styles.boardFooterBtn}
-            />
-          )}
-          {boardData.length > 2 && (
-            <Pressable
-              onPress={() => {
-                nextPost(2);
-              }}
-              style={styles.boardFooterBtn}
-            />
-          )}
+          {boardData.length > 0 && <Pressable onPress={() => {nextPost(0)}} style={whichPost == 0 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 1 && <Pressable onPress={() => {nextPost(1)}} style={whichPost == 1 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 2 && <Pressable onPress={() => {nextPost(2)}} style={whichPost == 2 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
         </View>
       </View>
       {modal && (
