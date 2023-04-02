@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Image
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -24,7 +24,6 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import babelConfig from '../../babel.config';
 const IconBasic = require('../../assets/image/fund.png');
 const kakao = require('../../assets/image/KakaoTalk.png');
 const naver = require('../../assets/image/Naver.png');
@@ -33,20 +32,21 @@ type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignIn({navigation}: SignInScreenProps) {
   const dispatch = useAppDispatch();
-  const [ID, setID] = useState('');
+  const [phone, setPhone] = useState('');
   const [Pass, setPass] = useState('');
-  const IDRef = useRef<TextInput | null>(null);
+  const [focused, setFocused] = useState(false);
+  const PhoneRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
 
-  const onChangeID = useCallback((text: string) => {
-    setID(text.trim());
+  const onChangePhone = useCallback((text: string) => {
+    setPhone(text.trim());
   }, []);
   const onChangePass = useCallback((text: string) => {
     setPass(text.trim());
   }, []);
   const onSubmit = useCallback(async () => {
-    if (!ID || !ID.trim()) {
-      return Alert.alert('알림', '아이디를 입력해주세요.');
+    if (!phone || !phone.trim()) {
+      return Alert.alert('알림', '전화번호를 입력해주세요.');
     }
     if (!Pass || !Pass.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
@@ -55,14 +55,14 @@ function SignIn({navigation}: SignInScreenProps) {
       console.log('1');
       console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
-        id: ID,
+        phone: phone,
         pwd: Pass,
       });
       console.log(response);
       dispatch(
         userSlice.actions.setUser({
           name: response.data.name,
-          id: ID,
+          id: response.data.id,
           loginType: 'custom',
           accessToken: response.data.accessToken,
         }),
@@ -79,14 +79,10 @@ function SignIn({navigation}: SignInScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, [dispatch, ID, Pass]);
+  }, [dispatch, phone, Pass]);
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
-  }, [navigation]);
-
-  const toFindID = useCallback(() => {
-    navigation.navigate('FindID');
   }, [navigation]);
 
   const toFindPass = useCallback(() => {
@@ -155,39 +151,41 @@ function SignIn({navigation}: SignInScreenProps) {
       style={styles.keyboardAwareScrollView}
       showsVerticalScrollIndicator={false}>
       <SafeAreaView style={styles.entire}>
-        <View style={styles.header}>
-        <Image source={IconBasic} style={styles.logo} />
+        <View style={!focused ? styles.header : styles.headerFocused}>
+          <Image
+            source={IconBasic}
+            style={!focused ? styles.logo : styles.focusedLogo}
+          />
         </View>
-        <View style={styles.finding}>
-          {/* 아이디찾기 비밀번호 찾기 */}
-          <Pressable onPress={toFindID} style={styles.findBtn}>
-            <Text style={styles.findText}>아이디 찾기</Text>
-          </Pressable>
+        <View style={!focused ? styles.finding : styles.findingFocused}>
+          {/* 비밀번호 찾기 */}
           <Pressable onPress={toFindPass} style={styles.findBtn}>
             <Text style={styles.findText}>비밀번호 찾기</Text>
           </Pressable>
         </View>
-        {/* 아이디 비밀번호 입력 */}
+        {/* 비밀번호 입력 */}
         <TextInput
-          placeholder='아이디'
-          placeholderTextColor={"#B7CBB2"}
+          placeholder="전화번호"
+          placeholderTextColor={'#B7CBB2'}
           selectionColor={'#346627'}
           style={styles.typingInput}
           autoCapitalize="none"
-          onChangeText={onChangeID}
+          onChangeText={onChangePhone}
           importantForAutofill="yes"
           autoComplete="username"
           textContentType="username"
-          value={ID}
+          value={phone}
           clearButtonMode="while-editing"
           returnKeyType="next"
-          ref={IDRef}
+          ref={PhoneRef}
           onSubmitEditing={() => PassRef.current?.focus()}
           blurOnSubmit={false}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         <TextInput
-          placeholder='비밀번호'
-          placeholderTextColor={"#B7CBB2"}
+          placeholder="비밀번호"
+          placeholderTextColor={'#B7CBB2'}
           selectionColor={'#346627'}
           secureTextEntry={true}
           style={styles.typingInput}
@@ -201,24 +199,27 @@ function SignIn({navigation}: SignInScreenProps) {
           returnKeyType="done"
           ref={PassRef}
           onSubmitEditing={onSubmit}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         <View style={styles.btn}>
-          <Pressable style={styles.signInBtn} onPress={onSubmit}>
+          <Pressable
+            style={focused ? styles.signInBtn : styles.signUpBtn}
+            onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
-        <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
-          <Image source={kakao} style={styles.kakaoLogo} />
-          <Text style={styles.btnTextKakao}>카카오 로그인</Text>
-        </Pressable>
-        <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
-          <Image source={naver} style={styles.naverLogo} />
-          <Text style={styles.btnTextNaver}>네이버 로그인</Text>
-        </Pressable>
-          <Pressable style={styles.signUpBtn} onPress={toSignUp}>
+          <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
+            <Image source={kakao} style={styles.kakaoLogo} />
+            <Text style={styles.btnTextKakao}>카카오 로그인</Text>
+          </Pressable>
+          <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
+            <Image source={naver} style={styles.naverLogo} />
+            <Text style={styles.btnTextNaver}>네이버 로그인</Text>
+          </Pressable>
+          <Pressable style={styles.signInBtn} onPress={toSignUp}>
             <Text style={styles.btnText}>회원가입</Text>
           </Pressable>
         </View>
-        {/* <Pressable style={{position:'absolute', backgroundColor: 'black', top:300, bottom: 300, right:100, left:100}} onPress={() => (navigation.navigate('FirstSetting'))}></Pressable> */}
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -234,14 +235,27 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 50
+    marginTop: 50,
+  },
+  headerFocused: {
+    alignItems: 'center',
+    marginTop: 40,
   },
   logo: {
     width: 220,
-    height: 270
+    height: 270,
+  },
+  focusedLogo: {
+    width: 180,
+    height: 220,
   },
   finding: {
     marginTop: 40,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  findingFocused: {
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
@@ -250,21 +264,23 @@ const styles = StyleSheet.create({
   },
   findText: {
     color: '#346627',
-    fontSize: 10,
+    fontSize: 15,
+    fontWeight: '400',
   },
   typingText: {
     color: '#FFE3E3',
     fontSize: 13,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   typingInput: {
     color: '#346627',
-    fontSize: 15,
+    fontSize: 18,
     padding: 5,
     paddingLeft: 10,
     marginTop: 7,
     marginBottom: 10,
     backgroundColor: 'white',
+    fontWeight: '400',
     borderRadius: 10,
   },
   btn: {
@@ -297,7 +313,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   signInNaverBtn: {
     flex: 1,
@@ -307,37 +323,37 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   kakaoLogo: {
     width: 25,
     height: 25,
     marginLeft: 8,
-    marginTop: 5
+    marginTop: 5,
   },
   naverLogo: {
     width: 25,
     height: 25,
-    marginLeft: 8
+    marginLeft: 8,
   },
   btnText: {
     color: 'white',
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '400',
   },
   btnTextKakao: {
     color: 'black',
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '400',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
   btnTextNaver: {
     color: 'white',
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '400',
     width: '88%',
-    textAlign:'center'
+    textAlign: 'center',
   },
 });
 

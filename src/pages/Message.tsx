@@ -67,7 +67,7 @@ function Message() {
   };
 
   const onLeave = () => {
-    socket?.emit('leave room', roomID);
+    socket?.emit('leave room', userID, roomID);
     setRoomID('');
   };
 
