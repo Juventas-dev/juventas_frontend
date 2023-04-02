@@ -1,12 +1,11 @@
 import React, {useEffect} from 'react';
-import {Alert} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import axios, {AxiosError} from 'axios';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
-import FindID from './src/pages/FindID';
+import Term from './src/pages/Term';
 import {useAppDispatch} from './src/store';
 import {RootState} from './src/store/reducer';
 import {useSelector} from 'react-redux';
@@ -14,8 +13,6 @@ import userSlice from './src/slices/user';
 import FindPassword from './src/pages/FindPassword';
 import Config from 'react-native-config';
 import BoardNavigation from './src/navigations/BoardNavigation';
-import Message from './src/pages/Message';
-import FirstSetting from './src/pages/FirstSetting';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
@@ -23,7 +20,9 @@ import HomeNavigation from './src/navigations/HomeNavigation';
 import MypageNavigation from './src/navigations/MypageNavigation';
 import SettingNavigation from './src/navigations/SettingNavigation';
 import SplashScreen from 'react-native-splash-screen';
+import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
+import {Alert} from 'react-native';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -36,12 +35,8 @@ export type LoggedInParamList = {
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
-  FindID: undefined;
+  Term: undefined;
   FindPassword: undefined;
-  // Board: undefined;
-  // Knowhow: undefined;
-  // Quest: undefined;
-  FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -49,7 +44,7 @@ const screenoptions = () => {
     tabBarStyle: {height: 80},
     tabBarHideOnKeyboard: true,
     tabBarActiveTintColor: '#1F6733',
-    tabBarInactiveTintColof: '#DAE2D8',
+    tabBarInactiveTintColor: '#DAE2D8',
     tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
   };
 };
@@ -70,7 +65,7 @@ function AppInner() {
         if (!token) {
           return;
         }
-        const response = await axios.get(
+        const response = await axios.patch(
           `${Config.API_URL}/user/refreshToken`,
           {
             headers: {
@@ -130,8 +125,8 @@ function AppInner() {
         }}
       />
       <Tab.Screen
-        name="Message"
-        component={Message}
+        name="MessageNavigation"
+        component={MessageNavigation}
         options={{
           title: 'Message',
           headerShown: false,
@@ -183,27 +178,37 @@ function AppInner() {
       <Stack.Screen
         name="SignIn"
         component={SignIn}
-        options={{title: 'SignIn', headerShown: false}}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="SignUp"
         component={SignUp}
-        options={{title: 'SignUp'}}
+        options={{
+          headerTitle: '',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#F5F5F5'},
+        }}
       />
       <Stack.Screen
-        name="FindID"
-        component={FindID}
-        options={{title: 'FindID'}}
+        name="Term"
+        component={Term}
+        options={{
+          headerTitle: '이용약관',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+          headerTitleAlign: 'center',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#F5F5F5'},
+        }}
       />
       <Stack.Screen
         name="FindPassword"
         component={FindPassword}
-        options={{title: 'FindPassword'}}
-      />
-      <Stack.Screen
-        name="FirstSetting"
-        component={FirstSetting}
-        options={{title: 'FirstSetting'}}
+        options={{
+          title: '',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#F5F5F5'},
+        }}
       />
     </Stack.Navigator>
   );
