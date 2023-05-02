@@ -11,10 +11,15 @@ import {RootState} from '../store';
 type RoomProps = {
   incr: number;
   user_name: string;
-  last_chat: string;
+  message: string;
+  timestamp: string;
+  not_read: number;
 };
 
 function Message() {
+  const userID = useSelector((state: RootState) => state.user.id);
+  const [roomlist, setRoomlist] = useState<RoomProps[]>([]);
+
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -22,9 +27,6 @@ function Message() {
       setRefreshing(false);
     }, 1000);
   }, []);
-
-  const userID = useSelector((state: RootState) => state.user.id);
-  const [roomlist, setRoomlist] = useState<RoomProps[]>([]);
 
   useEffect(() => {
     const getRoomlist = async () => {
@@ -35,7 +37,7 @@ function Message() {
       console.log(response.data.roomlist);
     };
     getRoomlist();
-  }, []);
+  }, [refreshing, userID]);
 
   return (
     <SafeAreaView style={styles.entire}>

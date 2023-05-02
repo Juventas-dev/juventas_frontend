@@ -10,7 +10,7 @@ import {RouteProp} from '@react-navigation/native';
 
 export type MessageStackParamList = {
   Message: undefined;
-  MessageDetail: {incr: string};
+  MessageDetail: {incr: number};
 };
 
 export type MessageStackNavigationProp =

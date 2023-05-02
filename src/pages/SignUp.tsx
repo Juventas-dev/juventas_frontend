@@ -29,13 +29,16 @@ export default function SignUp({navigation}: SignUpScreenProps) {
   const [PassCheck, setPassCheck] = useState('');
   const [PhoneNum, setPhoneNum] = useState('');
   const [CheckNum, setCheckNum] = useState('');
+  const [CheckNumAns, setCheckNumAns] = useState('134679');
   const NameRef = useRef<TextInput | null>(null);
   const IDRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
   const PassCheckRef = useRef<TextInput | null>(null);
   const PhoneNumRef = useRef<TextInput | null>(null);
   const CheckNumRef = useRef<TextInput | null>(null);
+  const [alertCheckNum, setAlertCheckNum] = useState(false);
 
+  const [AfterCheckNum, setAfterCheckNum] = useState(false);
   const [checked, setChecked] = useState(false);
 
   const onChangeName = useCallback((text: string) => {
@@ -49,28 +52,35 @@ export default function SignUp({navigation}: SignUpScreenProps) {
   }, []);
   const onChangePhoneNum = useCallback((text: string) => {
     setPhoneNum(text.trim());
-    // 숫자만 입력 가능하게 해야 할까?
+    setAfterCheckNum(false);
   }, []);
   const onChangeCheckNum = useCallback((text: string) => {
     setCheckNum(text.trim());
-    // 숫자만 입력 가능하게 해야 할까?
   }, []);
 
   const getCheckNum = useCallback(() => {
-    if (!PhoneNum) {
-      return Alert.alert('알림', '전화번호를 입력해주세요');
-    } else if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
-      return Alert.alert('알림', '올바른 전화번호를 입력해주세요');
+    if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
+      return Alert.alert('알림', '전화번호를 입력하세요');
     } else {
+      // 인증번호 발행
+      setCheckNumAns('1234');
       setShowModal(true);
     }
   }, [PhoneNum]);
-  // 인증번호 발행
-  const canGoNext = Name && Pass && PassCheck;
-  /*PassCheck &&
-    PhoneNum &&
-    CheckNum &&
-    Pass == PassCheck; */ // 인증번호 확인 단계도 거쳐야 함
+
+  const onCheckNum = useCallback(() => {
+    if (!/^\d{4}$/.test(CheckNum)) {
+      return setAlertCheckNum(true);
+    } else if (CheckNum === CheckNumAns) {
+      setAlertCheckNum(false);
+      return setAfterCheckNum(true);
+    } else {
+      return setAlertCheckNum(true);
+    }
+  }, [CheckNum, CheckNumAns]);
+
+  const canGoNext = Name && Pass && PassCheck && AfterCheckNum && checked;
+
   const onSubmit = useCallback(async () => {
     if (loading) {
       return;
@@ -173,10 +183,12 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               keyboardType="number-pad"
               maxLength={4}
             />
-            {PassCheck !== Pass && (
+            {PassCheck !== Pass ? (
               <Text style={styles.noticeTxtRed}>
                 • 비밀번호가 일치하지 않습니다. 다시 확인해주세요.
               </Text>
+            ) : (
+              <Text style={styles.noticeTxtRed} />
             )}
             <View style={styles.checkNumContainer}>
               <TextInput
@@ -197,20 +209,38 @@ export default function SignUp({navigation}: SignUpScreenProps) {
                 <Text style={styles.checkNumText}>인증번호 발송</Text>
               </Pressable>
             </View>
-            <TextInput
-              placeholder="인증번호 입력"
-              placeholderTextColor={'#B7CBB2'}
-              selectionColor={'#346627'}
-              style={styles.typingInput}
-              autoCapitalize="none"
-              onChangeText={onChangeCheckNum}
-              keyboardType="number-pad"
-              value={CheckNum}
-              clearButtonMode="while-editing"
-              returnKeyType="done"
-              ref={CheckNumRef}
-              onSubmitEditing={onSubmit}
-            />
+            <View style={styles.checkNumContainer}>
+              <TextInput
+                placeholder="인증번호 입력"
+                placeholderTextColor={'#B7CBB2'}
+                selectionColor={'#346627'}
+                style={styles.typingInput}
+                autoCapitalize="none"
+                onChangeText={onChangeCheckNum}
+                keyboardType="number-pad"
+                value={CheckNum}
+                clearButtonMode="while-editing"
+                returnKeyType="done"
+                ref={CheckNumRef}
+                onSubmitEditing={onSubmit}
+              />
+              <Pressable onPress={onCheckNum} style={styles.checkNumBtn}>
+                <Text style={styles.checkNumText}>인증</Text>
+              </Pressable>
+            </View>
+            {alertCheckNum ? (
+              <Text style={styles.wrong}>
+                • 인증번호가 틀렸습니다. 다시 확인해주세요.
+              </Text>
+            ) : (
+              <>
+                {AfterCheckNum ? (
+                  <Text style={styles.right}>• 인증이 완료되었습니다.</Text>
+                ) : (
+                  <Text style={styles.wrong} />
+                )}
+              </>
+            )}
             <View>
               <View style={styles.agree}>
                 <Checkbox
@@ -348,13 +378,13 @@ const styles = StyleSheet.create({
   checkNumBtn: {
     position: 'absolute',
     height: 30,
-    width: 130,
     right: 10,
     top: 11,
     backgroundColor: '#B7CBB2',
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 15,
   },
   checkNumText: {
     fontSize: 18,
@@ -379,27 +409,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   btn: {
-    height: 45,
     width: '100%',
     paddingHorizontal: 5,
     marginTop: 10,
   },
   startBtn: {
     backgroundColor: '#B7CBB2',
-    height: 38,
+    height: 40,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
     marginTop: 10,
+    marginBottom: 50,
   },
   startBtnActive: {
     backgroundColor: '#346627',
-    height: 35,
+    height: 40,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
+    marginBottom: 50,
   },
   btnText: {
     color: 'white',
@@ -432,5 +463,15 @@ const styles = StyleSheet.create({
   modalTextBody: {
     fontSize: 11,
     color: '#8D8D8D',
+  },
+  wrong: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#B74F38',
+  },
+  right: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#346627',
   },
 });
