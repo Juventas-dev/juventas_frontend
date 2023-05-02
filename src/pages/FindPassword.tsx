@@ -54,6 +54,8 @@ function FindPassword({navigation}: FindPassScreenProps) {
   const getCheckNum = useCallback(() => {
     if (!PhoneNum) {
       Alert.alert('알림', '전화번호를 입력해주세요');
+    } else if (!/^\d{3}-\d{3,4}-\d{4}$/.test(PhoneNum)) {
+      return Alert.alert('알림', '올바른 전화번호를 입력해주세요');
     } else {
       setShowModal(true);
     }
