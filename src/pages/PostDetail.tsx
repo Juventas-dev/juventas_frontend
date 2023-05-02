@@ -10,10 +10,10 @@ import {
   Alert,
   RefreshControl,
   Modal,
-  Image
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import { useRoute } from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
@@ -31,6 +31,7 @@ type PostItemProps = {
   title: string;
   content: string;
   img_path: string;
+  user_id: number;
   user_name: string;
   like: number;
   myrec: number;
@@ -38,6 +39,7 @@ type PostItemProps = {
 type CommentItemProps = {
   incr: number;
   c_content: string;
+  user_id: number;
   user_name: string;
   like: number;
 };
@@ -50,6 +52,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
     title: '',
     content: '',
     img_path: '',
+    user_id: 0,
     user_name: '',
     like: 0,
     myrec: 0,
@@ -82,7 +85,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           `${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`,
         );
         setPostDATA(response.data.post[0]);
-        console.log(response.data.comment)
+        console.log(response.data.comment);
         console.log(postDATA);
         setMyPostRecommend(response.data.post[0].myrec);
         setCommentDATA(response.data.comment);
@@ -100,20 +103,25 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const userID = useSelector((state: RootState) => state.user.id);
   const [myPostRecommend, setMyPostRecommend] = useState(0);
   const recommendPost = useCallback(() => {
-    if (myPostRecommend) { Alert.alert("이미 추천한 게시글입니다."); }
-    else {
+    if (myPostRecommend) {
+      Alert.alert('이미 추천한 게시글입니다.');
+    } else {
       setMyPostRecommend(1);
       console.log(userID);
       const recommendPostWait = async () => {
         try {
-          const response = await axios.post(`${Config.API_URL}/board/likepost`, {
-            id: userID,
-            w_id: idCurrent,
-          });
+          const response = await axios.post(
+            `${Config.API_URL}/board/likepost`,
+            {
+              id: userID,
+              w_id: idCurrent,
+            },
+          );
           console.log(response.data);
           console.log(1);
         } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
           console.error(errorResponse);
           if (errorResponse) {
             return Alert.alert('알림', errorResponse.data?.message);
@@ -179,9 +187,16 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       <View style={styles.post}>
         <View style={styles.postHeader}>
           <View style={styles.postTitle}>
-            <Pressable style={styles.postProfile} onPress={() => {setShowProfile(true)}}/>
-            <View style={styles.postProfileTxt} >
-              <Text style={styles.postProfileNameTxt} >{postDATA.user_name}</Text>
+            <Pressable
+              style={styles.postProfile}
+              onPress={() => {
+                setShowProfile(true);
+              }}
+            />
+            <View style={styles.postProfileTxt}>
+              <Text style={styles.postProfileNameTxt}>
+                {postDATA.user_name}
+              </Text>
               <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
             </View>
           </View>
@@ -211,7 +226,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         />
       </View>
       <View style={styles.myComment}>
-        <Pressable style={styles.myProfile}/>
+        <Pressable style={styles.myProfile} />
         <TextInput
           style={styles.myCommentContent}
           onChangeText={onChangeComment}
@@ -223,11 +238,36 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         </Pressable>
       </View>
       <Modal transparent={true} visible={showProfile}>
-        <Pressable style={styles.modalBG} onPress={() => {setShowProfile(false);}}>
+        <Pressable
+          style={styles.modalBG}
+          onPress={() => {
+            setShowProfile(false);
+          }}>
           <View style={styles.modal}>
-            <View style={{width: 130, height: 130, borderRadius: 70, backgroundColor: 'black'}} ></View>
+            <View
+              style={{
+                width: 130,
+                height: 130,
+                borderRadius: 70,
+                backgroundColor: 'black',
+              }}
+            />
             <Text style={styles.modalID}>{postDATA.user_name}</Text>
-            <Pressable style={styles.modalBtn} onPress={() => navigation.navigate('MessageDetail', {me: userID, you: postDATA.user_name})}>
+            <Pressable
+              style={styles.modalBtn}
+              onPress={async () => {
+                const response = await axios.post(
+                  `${Config.API_URL}/message/makeroom`,
+                  {
+                    id: userID,
+                    you: postDATA.user_id,
+                  },
+                );
+                console.log(response?.data.roomlist[0].incr);
+                navigation.navigate('MessageDetail', {
+                  incr: response?.data.roomlist[0].incr,
+                });
+              }}>
               <Text style={styles.modalBtnTxt}>쪽지 보내기</Text>
             </Pressable>
           </View>
@@ -306,13 +346,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     top: 1,
   },
-  postProfileTxt:{
+  postProfileTxt: {
     // flexDirection: 'row'
   },
-  postProfileNameTxt:{
+  postProfileNameTxt: {
     fontSize: 12,
     fontWeight: '700',
-    marginLeft: 10
+    marginLeft: 10,
   },
   postHeaderTxt: {
     fontSize: 17,
@@ -320,11 +360,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     width: '85%',
   },
-  likeTxt:{
+  likeTxt: {
     color: '#B7CBB2',
     fontSize: 15,
     fontWeight: '600',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   postContent: {
     paddingVertical: 10,
@@ -363,14 +403,14 @@ const styles = StyleSheet.create({
     color: '#878787',
     paddingHorizontal: 20,
   },
-  commentBtn:{
-    marginLeft: 10
+  commentBtn: {
+    marginLeft: 10,
   },
-  commentBtnTxt:{
+  commentBtnTxt: {
     textAlign: 'center',
     fontWeight: '400',
     fontSize: 14,
-    color: '#B7CBB2'
+    color: '#B7CBB2',
   },
   modalBG: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
@@ -386,24 +426,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalID:{
+  modalID: {
     color: '#3D3C3C',
     fontWeight: '800',
     fontSize: 30,
-    marginTop: 10
+    marginTop: 10,
   },
-  modalBtn:{
+  modalBtn: {
     backgroundColor: '#346627',
     borderRadius: 30,
     width: 120,
     height: 30,
     marginTop: 20,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  modalBtnTxt:{
+  modalBtnTxt: {
     color: 'white',
     fontWeight: '700',
     fontSize: 14,
-    textAlign: 'center'
-    }
+    textAlign: 'center',
+  },
 });
