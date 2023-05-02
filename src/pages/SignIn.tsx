@@ -37,6 +37,8 @@ function SignIn({navigation}: SignInScreenProps) {
   const [focused, setFocused] = useState(false);
   const PhoneRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
+  const [alertPhoneNum, setAlertPhoneNum] = useState(false);
+  const [alertPass, setAlertPass] = useState(false);
 
   const onChangePhone = useCallback((text: string) => {
     setPhone(text.trim());
@@ -47,9 +49,13 @@ function SignIn({navigation}: SignInScreenProps) {
   const onSubmit = useCallback(async () => {
     if (!phone || !phone.trim()) {
       return Alert.alert('알림', '전화번호를 입력해주세요.');
+    } else if (!/^\d{3}-\d{3,4}-\d{4}$/.test(phone)) {
+      return Alert.alert('알림', '올바른 전화번호를 입력해주세요');
     }
     if (!Pass || !Pass.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
+    } else if (!/^\d{4}$/.test(Pass)) {
+      return Alert.alert('알림', '올바른 비밀번호를 입력해주세요');
     }
     try {
       console.log('1');
@@ -77,6 +83,8 @@ function SignIn({navigation}: SignInScreenProps) {
       console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
+        // setAlertPass나 setAlertPhone true로 바꾸면 됨
+        // 그냥 몇 초 지나면 setAlertPass false로 바꾸게 하는 게 나을 듯? 어디 다른 데 클릭하면 바뀌게 설정하면 복잡하니까
       }
     }
   }, [dispatch, phone, Pass]);
@@ -183,6 +191,9 @@ function SignIn({navigation}: SignInScreenProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
+        {alertPhoneNum 
+        ? <Text style={styles.wrong}>• 사용자 정보가 없습니다. 입력한 전화번호를 다시 확인해주세요.</Text>
+        : <Text style={styles.wrong}></Text>}
         <TextInput
           placeholder="비밀번호"
           placeholderTextColor={'#B7CBB2'}
@@ -202,6 +213,9 @@ function SignIn({navigation}: SignInScreenProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
+        {alertPass 
+        ? <Text style={styles.wrong}>• 비밀번호가 틀렸습니다. 다시 입력해주세요.</Text>
+        : <Text style={styles.wrong}></Text>}
         <View style={styles.btn}>
           <Pressable
             style={focused ? styles.signInBtn : styles.signUpBtn}
@@ -235,19 +249,19 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 40,
   },
   headerFocused: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 30,
   },
   logo: {
     width: 220,
     height: 270,
   },
   focusedLogo: {
-    width: 180,
-    height: 220,
+    width: 172,
+    height: 210,
   },
   finding: {
     marginTop: 40,
@@ -255,7 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   findingFocused: {
-    marginTop: 20,
+    marginTop: 15,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
@@ -278,10 +292,15 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingLeft: 10,
     marginTop: 7,
-    marginBottom: 10,
+    marginBottom: 5,
     backgroundColor: 'white',
     fontWeight: '400',
     borderRadius: 10,
+  },
+  wrong:{
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#B74F38'
   },
   btn: {
     justifyContent: 'space-between',
@@ -300,7 +319,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 35,
     backgroundColor: '#346627',
-    marginBottom: 20,
+    marginBottom: 18,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -312,7 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFE812',
     // justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: 'row',
   },
   signInNaverBtn: {
@@ -322,7 +341,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00BF18',
     // justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: 'row',
   },
   kakaoLogo: {
