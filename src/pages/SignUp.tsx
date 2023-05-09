@@ -29,7 +29,6 @@ export default function SignUp({navigation}: SignUpScreenProps) {
   const [PassCheck, setPassCheck] = useState('');
   const [PhoneNum, setPhoneNum] = useState('');
   const [CheckNum, setCheckNum] = useState('');
-  const [CheckNumAns, setCheckNumAns] = useState('134679');
   const NameRef = useRef<TextInput | null>(null);
   const IDRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
@@ -58,28 +57,36 @@ export default function SignUp({navigation}: SignUpScreenProps) {
     setCheckNum(text.trim());
   }, []);
 
-  const getCheckNum = useCallback(() => {
+  const getCheckNum = useCallback(async () => {
     if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
       return Alert.alert('알림', '전화번호를 입력하세요');
     } else {
-      // 인증번호 발행
-      setCheckNumAns('1234');
+      await axios.post(`${Config.API_URL}/user/postVerifyCode`, {
+        phone: PhoneNum,
+      });
       setShowModal(true);
     }
   }, [PhoneNum]);
 
-  const onCheckNum = useCallback(() => {
-    if (!/^\d{4}$/.test(CheckNum)) {
+  const onCheckNum = useCallback(async () => {
+    if (!/^\d{6}$/.test(CheckNum)) {
       return setAlertCheckNum(true);
-    } else if (CheckNum === CheckNumAns) {
-      setAlertCheckNum(false);
-      return setAfterCheckNum(true);
     } else {
-      return setAlertCheckNum(true);
+      try {
+        await axios.post(`${Config.API_URL}/user/confirmVerifyCode`, {
+          phone: PhoneNum,
+          verifyCode: CheckNum,
+        });
+        setAlertCheckNum(false);
+        return setAfterCheckNum(true);
+      } catch {
+        return setAlertCheckNum(true);
+      }
     }
-  }, [CheckNum, CheckNumAns]);
+  }, [CheckNum, PhoneNum]);
 
-  const canGoNext = Name && Pass && PassCheck && AfterCheckNum && checked;
+  const canGoNext =
+    Name && Pass && Pass === PassCheck && AfterCheckNum && checked;
 
   const onSubmit = useCallback(async () => {
     if (loading) {
@@ -91,10 +98,18 @@ export default function SignUp({navigation}: SignUpScreenProps) {
     if (!Pass || !Pass.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
-    /* if (!PassCheck) {
+    if (!PassCheck && PassCheck !== Pass) {
       return Alert.alert('알림', '비밀번호가 다릅니다.');
-    } // 인증번호 확인 추가 */
-    console.log(Name, Pass, PhoneNum /*PassCheck*/);
+    }
+    if (!PhoneNum || !PhoneNum.trim()) {
+      return Alert.alert('알림', '전화번호를 입력해주세요.');
+    }
+    if (!AfterCheckNum) {
+      return Alert.alert('알림', '전화번호를 인증해주세요.');
+    }
+    if (!checked) {
+      return Alert.alert('알림', '이용약관에 동의해주세요.');
+    }
     try {
       setLoading(true);
       const response = await axios.post(`${Config.API_URL}/user/signup`, {
@@ -115,7 +130,16 @@ export default function SignUp({navigation}: SignUpScreenProps) {
     } finally {
       setLoading(false);
     }
-  }, [navigation, loading, Name, Pass, PhoneNum /*PassCheck*/]);
+  }, [
+    loading,
+    Name,
+    Pass,
+    PassCheck,
+    AfterCheckNum,
+    checked,
+    PhoneNum,
+    navigation,
+  ]);
   return (
     <KeyboardAwareScrollView
       style={styles.keyboardAwareScrollView}

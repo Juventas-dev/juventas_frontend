@@ -30,7 +30,6 @@ function FindPassword({navigation}: FindPassScreenProps) {
   const [Name, setName] = useState('');
   const [PhoneNum, setPhoneNum] = useState('');
   const [CheckNum, setCheckNum] = useState('');
-  const [CheckNumAns, setCheckNumAns] = useState('134679');
   const NameRef = useRef<TextInput | null>(null);
   const PhoneNumRef = useRef<TextInput | null>(null);
   const CheckNumRef = useRef<TextInput | null>(null);
@@ -52,30 +51,45 @@ function FindPassword({navigation}: FindPassScreenProps) {
     setCheckNum(text.trim());
   }, []);
 
-  const getCheckNum = useCallback(() => {
+  const getCheckNum = useCallback(async () => {
     if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
       return Alert.alert('알림', '전화번호를 입력하세요');
     } else {
-      // 인증번호 발행
-      setCheckNumAns('1234');
+      await axios.post(`${Config.API_URL}/user/postVerifyCode`, {
+        phone: PhoneNum,
+      });
       setShowModal(true);
     }
   }, [PhoneNum]);
 
-  const onCheckNum = useCallback(() => {
-    if (!/^\d{4}$/.test(CheckNum)) {
+  const onCheckNum = useCallback(async () => {
+    if (!/^\d{6}$/.test(CheckNum)) {
       return setAlertCheckNum(true);
-    } else if (CheckNum === CheckNumAns) {
-      setAlertCheckNum(false);
-      return setAfterCheckNum(true);
     } else {
-      return setAlertCheckNum(true);
+      try {
+        await axios.post(`${Config.API_URL}/user/confirmVerifyCode`, {
+          phone: PhoneNum,
+          verifyCode: CheckNum,
+        });
+        setAlertCheckNum(false);
+        return setAfterCheckNum(true);
+      } catch {
+        return setAlertCheckNum(true);
+      }
     }
-  }, [CheckNum, CheckNumAns]);
+  }, [CheckNum, PhoneNum]);
 
   const onSubmit = useCallback(async () => {
+    if (!Name || !Name.trim()) {
+      return Alert.alert('알림', '이름을 입력해주세요.');
+    }
+    if (!PhoneNum || !PhoneNum.trim()) {
+      return Alert.alert('알림', '전화번호를 입력해주세요.');
+    }
+    if (!AfterCheckNum) {
+      return Alert.alert('알림', '전화번호를 인증해주세요.');
+    }
     try {
-      // 인증번호 확인하는 단계 필요 => 인증번호 틀렸습니다 or 인증이 완료되었습니다 구현 필요
       const response = await axios.post(`${Config.API_URL}/user/findPwd`, {
         name: Name,
         phone: PhoneNum,
@@ -89,7 +103,7 @@ function FindPassword({navigation}: FindPassScreenProps) {
         Alert.alert('알림', errorResponse.data.message);
       }
     }
-  }, [Name, PhoneNum]);
+  }, [AfterCheckNum, Name, PhoneNum]);
 
   return (
     <KeyboardAwareScrollView
