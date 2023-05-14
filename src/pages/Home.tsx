@@ -62,9 +62,9 @@ function Home({navigation}: HomeScreenProps) {
         );
         setDate(response.data.date);
         setSeqCount(response.data.seq_count);
-        if (response.data.is_first === 'T') {
-          navigation.navigate('FirstSetting');
-        }
+        // if (response.data.is_first === 'T') {
+        //   navigation.navigate('FirstSetting');
+        // }
         setQuestSelected(response.data.is_selected);
         whichScreen();
       } catch (error) {
