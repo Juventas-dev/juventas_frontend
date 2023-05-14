@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import axios, {AxiosError} from 'axios';
@@ -23,6 +23,13 @@ import SplashScreen from 'react-native-splash-screen';
 import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
 import {Alert} from 'react-native';
+import FirstSetting from './src/pages/FirstSetting';
+import { useNavigation } from '@react-navigation/native';
+
+export type Base = {
+  // Tab: undefined;
+  FirstSetting: undefined;
+};
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -37,7 +44,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   Term: undefined;
   FindPassword: undefined;
-  FirstSetting: undefined;
+  // FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -50,6 +57,7 @@ const screenoptions = () => {
   };
 };
 
+const Base = createNativeStackNavigator<Base>();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -57,6 +65,7 @@ function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
   const [socket, disconnect] = useSocket();
+  const [isFirstLogin, setFirstLogin] = useState(false);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -104,76 +113,110 @@ function AppInner() {
     };
   }, [isLoggedIn, socket]);
 
+  const userID = useSelector((state: RootState) => state.user.id);
   useEffect(() => {
     if (!isLoggedIn) {
       console.log('!isLoggedIn', !isLoggedIn);
       disconnect();
     }
-  }, [isLoggedIn, disconnect]);
+    else {
+      console.log('Loggedin', isFirstLogin)
+      const getFirstHomeData = async () => {
+        try {
+          const response = await axios.get(
+            `${Config.API_URL}/quest/questselected/${userID}`,
+          );
+          if (response.data.is_first === 'T') {
+            setFirstLogin(true);
+          }
+          // else {setFirstLogin(false);}
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.error(errorResponse);
+          if (errorResponse) {
+            return Alert.alert('알림', errorResponse.data?.message);
+          }
+        }
+      };
+      getFirstHomeData();
+    }
+  }, [isLoggedIn, disconnect, isFirstLogin, setFirstLogin]);
 
   return isLoggedIn ? (
-    <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
-      <Tab.Screen
-        name="BoardNav"
-        component={BoardNavigation}
-        options={{
-          title: 'Board',
-          headerShown: false,
-          tabBarLabel: '게시판',
-          tabBarIcon: ({color}) => (
-            <FontAwesome5Icon name="bars" color={color} size={40} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="MessageNavigation"
-        component={MessageNavigation}
-        options={{
-          title: 'Message',
-          headerShown: false,
-          tabBarLabel: '쪽지',
-          tabBarIcon: ({color}) => (
-            <AntDesignIcon name="message1" color={color} size={40} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="HomeNav"
-        component={HomeNavigation}
-        options={{
-          title: 'Home',
-          headerShown: false,
-          tabBarLabel: '홈',
-          tabBarIcon: ({color}) => (
-            <FontAwesome5Icon name="home" color={color} size={40} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="MypageNav"
-        component={MypageNavigation}
-        options={{
-          title: 'Mypage',
-          headerShown: false,
-          tabBarLabel: '내정보',
-          tabBarIcon: ({color}) => (
-            <IoniconsIcon name="person" color={color} size={40} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Setting"
-        component={SettingNavigation}
-        options={{
-          title: 'Setting',
-          headerShown: false,
-          tabBarLabel: '설정',
-          tabBarIcon: ({color}) => (
-            <IoniconsIcon name="settings" color={color} size={40} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      !isFirstLogin ? (
+        <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
+          <Tab.Screen
+            name="BoardNav"
+            component={BoardNavigation}
+            options={{
+              title: 'Board',
+              headerShown: false,
+              tabBarLabel: '게시판',
+              tabBarIcon: ({color}) => (
+                <FontAwesome5Icon name="bars" color={color} size={40} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="MessageNavigation"
+            component={MessageNavigation}
+            options={{
+              title: 'Message',
+              headerShown: false,
+              tabBarLabel: '쪽지',
+              tabBarIcon: ({color}) => (
+                <AntDesignIcon name="message1" color={color} size={40} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="HomeNav"
+            component={HomeNavigation}
+            options={{
+              title: 'Home',
+              headerShown: false,
+              tabBarLabel: '홈',
+              tabBarIcon: ({color}) => (
+                <FontAwesome5Icon name="home" color={color} size={40} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="MypageNav"
+            component={MypageNavigation}
+            options={{
+              title: 'Mypage',
+              headerShown: false,
+              tabBarLabel: '내정보',
+              tabBarIcon: ({color}) => (
+                <IoniconsIcon name="person" color={color} size={40} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Setting"
+            component={SettingNavigation}
+            options={{
+              title: 'Setting',
+              headerShown: false,
+              tabBarLabel: '설정',
+              tabBarIcon: ({color}) => (
+                <IoniconsIcon name="settings" color={color} size={40} />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      ) : (
+        // <Base.Navigator>
+        //   <Base.Screen
+        //     name="FirstSetting"
+        //     component={FirstSetting}
+        //     options={{}}
+        //     props={setFirstLogin}
+        //   />
+        // </Base.Navigator>
+        <FirstSetting setState={setFirstLogin}/>
+      )
   ) : (
     <Stack.Navigator>
       <Stack.Screen
