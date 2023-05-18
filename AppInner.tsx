@@ -24,12 +24,6 @@ import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
 import {Alert} from 'react-native';
 import FirstSetting from './src/pages/FirstSetting';
-import { useNavigation } from '@react-navigation/native';
-
-export type Base = {
-  // Tab: undefined;
-  FirstSetting: undefined;
-};
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -44,7 +38,6 @@ export type RootStackParamList = {
   SignUp: undefined;
   Term: undefined;
   FindPassword: undefined;
-  // FirstSetting: undefined;
 };
 
 const screenoptions = () => {
@@ -56,8 +49,6 @@ const screenoptions = () => {
     tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
   };
 };
-
-const Base = createNativeStackNavigator<Base>();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -129,7 +120,6 @@ function AppInner() {
           if (response.data.is_first === 'T') {
             setFirstLogin(true);
           }
-          // else {setFirstLogin(false);}
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.error(errorResponse);
@@ -207,14 +197,6 @@ function AppInner() {
           />
         </Tab.Navigator>
       ) : (
-        // <Base.Navigator>
-        //   <Base.Screen
-        //     name="FirstSetting"
-        //     component={FirstSetting}
-        //     options={{}}
-        //     props={setFirstLogin}
-        //   />
-        // </Base.Navigator>
         <FirstSetting setState={setFirstLogin}/>
       )
   ) : (
