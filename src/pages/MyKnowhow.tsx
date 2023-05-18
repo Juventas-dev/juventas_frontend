@@ -130,7 +130,7 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
             />
             <TextInput
               style={styles.headerSearchInput}
-              placeholder="노하우 검색"
+              placeholder="검색"
               placeholderTextColor={'#DAE2D8'}
               onFocus={toSearchMyPost}
             />
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     // paddingBottom: 100
   },
   header: {
-    backgroundColor: '#F9FAF8',
+    backgroundColor: '#E7EBE4',
   },
   headerSearchingArea: {
     flexDirection: 'row',
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   headerSearch: {
     flexDirection: 'row',
-    backgroundColor: '#EBEFEA',
+    backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
     height: 40,

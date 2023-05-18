@@ -20,16 +20,16 @@ function Complain({navigation}: ComplainScreenProps) {
   }, [navigation]);
   return (
     <SafeAreaView style={styles.entire}>
-      <ScrollView>
-        <Pressable style={styles.QuestionBox} onPress={toComplainAnswer}>
+      <ScrollView style={{paddingHorizontal: 20}}>
+        <Pressable style={styles.QuestionBoxFr} onPress={toComplainAnswer}>
           <Text style={styles.QuestionTxt}>자주 묻는 질문{')'}</Text>
           <Text style={styles.QuestionTxt}>어쩌구 저쩌구 질문</Text>
         </Pressable>
-        <Pressable style={styles.QuestionBox} onPress={toComplainAnswer}>
+        <Pressable style={styles.QuestionBoxFr} onPress={toComplainAnswer}>
           <Text style={styles.QuestionTxt}>자주 묻는 질문{')'}</Text>
           <Text style={styles.QuestionTxt}>어쩌구 저쩌구 질문</Text>
         </Pressable>
-        <Pressable style={styles.QuestionBox} onPress={toComplainAnswer}>
+        <Pressable style={styles.QuestionBoxFr} onPress={toComplainAnswer}>
           <Text style={styles.QuestionTxt}>자주 묻는 질문{')'}</Text>
           <Text style={styles.QuestionTxt}>어쩌구 저쩌구 질문</Text>
         </Pressable>
@@ -61,10 +61,19 @@ function Complain({navigation}: ComplainScreenProps) {
       <Pressable style={styles.newComplainBtn}>
         <FontAwesome5Icon
           name="pen-nib"
-          size={40}
+          size={30}
           color="white"
           onPress={toNewComplain}
         />
+        <Text
+          style={{
+            color: 'white',
+            fontSize: 10,
+            fontWeight: 'bold',
+            marginTop: 3,
+          }}>
+          문의 작성
+        </Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -77,7 +86,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
     paddingTop: 30,
-    paddingHorizontal: 20,
+  },
+  QuestionBoxFr: {
+    backgroundColor: '#346627',
+    flexDirection: 'row',
+    paddingLeft: 5,
+    borderRadius: 5,
+    height: 40,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   QuestionBox: {
     backgroundColor: '#B7CBB2',
@@ -93,7 +110,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   newComplainBtn: {
-    backgroundColor: '#1F6733',
+    backgroundColor: '#346627',
     width: 65,
     height: 65,
     borderRadius: 35,
