@@ -1,6 +1,13 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState} from 'react';
-import {Text, TextInput, View, StyleSheet, Pressable} from 'react-native';
+import {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Pressable,
+  Modal,
+} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ComplainStackParamList} from '../navigations/ComplainNavigation';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -11,6 +18,11 @@ import MultipleImagePicker, {
 } from '@baronha/react-native-multiple-image-picker';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+import Config from 'react-native-config';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 
 type ComplainScreenProps = NativeStackScreenProps<
   ComplainStackParamList,
@@ -19,6 +31,15 @@ type ComplainScreenProps = NativeStackScreenProps<
 
 const NewComplain = ({navigation}: ComplainScreenProps) => {
   const [images, setImages] = useState<ImageResults[]>([]);
+  const ComplainData = ['도전', '노하우', '쪽지', '내 정보', '기타 문의'];
+  const [ComplainSelected, setComplainSelected] = useState<number | null>(null);
+  const [title, Settitle] = useState('');
+  const [content, SetContent] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+  const onChangeTitle = useCallback((text: string) => {
+    Settitle(text);
+  }, []);
   const selectImage = async () => {
     const response = await MultipleImagePicker.openPicker({
       mediaType: MediaType.IMAGE,
@@ -29,20 +50,40 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
     });
     setImages(response);
   };
-  const ComplainData = ['퀘스트', '노하우', '쪽지', '내 정보', '기타 문의'];
-  const [ComplainSelected, setComplainSelected] = useState<number | null>(null);
-  const [title, Settitle] = useState('');
-  const onChangeTitle = useCallback((text: string) => {
-    Settitle(text);
-  }, []);
-  const [content, SetContent] = useState('');
   const onChangeContent = useCallback((text: string) => {
     SetContent(text);
   }, []);
+  const writeDone = useCallback(() => {
+    setShowModal(true);
+  }, []);
+
+  const userID = useSelector((state: RootState) => state.user.id);
+
+  const upload = async () => {
+    await axios.post(`${Config.API_URL}/settings/inquiry`, {
+      id: userID,
+      title: title,
+      content: content,
+      iid: ComplainSelected,
+    });
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAwareScrollView>
       <SafeAreaView style={styles.entire}>
         <View>
+          <View>
+            <TextInput
+              style={styles.ComplainTitle}
+              placeholder="글의 제목"
+              placeholderTextColor="#B7CBB2"
+              multiline={true}
+              value={title}
+              onChangeText={onChangeTitle}
+              maxLength={100}
+            />
+          </View>
           <SelectDropdown
             data={ComplainData}
             onSelect={(_selectedItem, index) => {
@@ -65,17 +106,6 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
             rowTextStyle={styles.RowTxtSt}
           />
         </View>
-        <View>
-          <TextInput
-            style={styles.ComplainTitle}
-            placeholder="글의 제목"
-            placeholderTextColor="#B7CBB2"
-            multiline={true}
-            value={title}
-            onChangeText={onChangeTitle}
-            maxLength={100}
-          />
-        </View>
 
         <View style={styles.board}>
           <Pressable
@@ -96,6 +126,38 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
             maxLength={5000}
           />
         </View>
+        <View style={{alignItems: 'center'}}>
+          <Pressable style={styles.complete} onPress={writeDone}>
+            <Text style={{color: '#346627'}}>문의 작성</Text>
+          </Pressable>
+        </View>
+        <Modal transparent={true} visible={showModal}>
+          <Pressable style={styles.modalBG} onPress={() => setShowModal(false)}>
+            <View style={styles.modal}>
+              <View style={styles.modalHead}>
+                <CheckIcon
+                  name="check-circle"
+                  size={50}
+                  color="#F6DD55"
+                  style={styles.modalImg}
+                />
+                <Text style={styles.modalTextHeader}>
+                  문의 작성을 완료하시겠습니까?
+                </Text>
+              </View>
+              <View style={styles.Choose}>
+                <Pressable style={styles.YesBt} onPress={upload}>
+                  <Text style={styles.ChooseTxt}>예</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.NoBt}
+                  onPress={() => setShowModal(false)}>
+                  <Text style={styles.ChooseTxt}>아니요</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Pressable>
+        </Modal>
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -106,7 +168,7 @@ export default NewComplain;
 const styles = StyleSheet.create({
   entire: {
     flex: 1,
-    backgroundColor: '#F9FAF8',
+    backgroundColor: '#E7EBE4',
     paddingHorizontal: 20,
     paddingTop: 6,
     paddingBottom: 4,
@@ -142,7 +204,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   board: {
-    minHeight: 570,
+    minHeight: 450,
     borderRadius: 10,
     flexDirection: 'column',
     backgroundColor: 'white',
@@ -163,5 +225,72 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 19,
     right: 10,
+  },
+  complete: {
+    backgroundColor: 'white',
+    borderRadius: 7.5,
+    height: 30,
+    width: 160,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#346627',
+    borderWidth: 1,
+    marginTop: 8,
+  },
+  modalBG: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modal: {
+    width: 246,
+    height: 181,
+    backgroundColor: 'white',
+    borderRadius: 30,
+  },
+  modalHead: {
+    flex: 2.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalImg: {
+    marginTop: 3,
+  },
+  modalTextHeader: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: 'black',
+    marginVertical: 10,
+  },
+  modalText: {
+    fontSize: 9,
+    color: '#8D8D8D',
+    paddingHorizontal: 25,
+    textAlign: 'center',
+  },
+  Choose: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  NoBt: {
+    width: '49.5%',
+    backgroundColor: '#346627',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomRightRadius: 30,
+  },
+  YesBt: {
+    width: '49.5%',
+    backgroundColor: '#346627',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomLeftRadius: 30,
+  },
+  ChooseTxt: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

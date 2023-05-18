@@ -2,13 +2,14 @@ import React from 'react';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
+  NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import Mypage from '../pages/Mypage';
 import SetCategory from '../pages/SetCategory';
 import MyGrade from '../pages/MyGrade';
 import MyKnowhow from '../pages/MyKnowhow';
-import MyCertification from '../pages/MyCertification';
+import MyCertificationNavigation from './MycertificationNavigation';
 
 export type MypageStackParamList = {
   Mypage: undefined;
@@ -22,6 +23,11 @@ export type MypageStackParamList = {
 export type MypageStackNavigationProp =
   NativeStackNavigationProp<MypageStackParamList>;
 
+export type MypageScreenProps = NativeStackScreenProps<
+  MypageStackParamList,
+  'Mypage'
+>;
+
 const Stack = createNativeStackNavigator<MypageStackParamList>();
 
 export default function MypageNavigation() {
@@ -33,7 +39,7 @@ export default function MypageNavigation() {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '내 정보',
           headerTintColor: '#346627',
@@ -49,7 +55,7 @@ export default function MypageNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '카테고리',
           headerTintColor: '#346627',
@@ -65,9 +71,9 @@ export default function MypageNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
-          headerTitle: '등급 보기',
+          headerTitle: '내 등급',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (
@@ -77,18 +83,9 @@ export default function MypageNavigation() {
       />
       <Stack.Screen
         name="MyCertification"
-        component={MyCertification}
+        component={MyCertificationNavigation}
         options={{
-          headerBackTitle: '뒤로',
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
-          headerTitleAlign: 'center',
-          headerTitle: '인증 보기',
-          headerTintColor: '#346627',
-          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -97,9 +94,9 @@ export default function MypageNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
-          headerTitle: '내 노하우',
+          headerTitle: '내 글',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (

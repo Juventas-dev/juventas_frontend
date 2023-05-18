@@ -1,28 +1,40 @@
-import {SettingStackParamList} from '../navigations/SettingNavigation';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {NoticeStackParamList} from '../navigations/NoticeNavigation';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
 
-type SettingScreenProps = NativeStackScreenProps<
-  SettingStackParamList,
-  'Notice'
->;
+type NoticeScreenProps = NativeStackScreenProps<NoticeStackParamList, 'Notice'>;
 
-const Notice = ({navigation}: SettingScreenProps) => {
+const Notice = ({navigation}: NoticeScreenProps) => {
+  const [Notice, setNotice] = useState({date: '', title: '', content: ''});
+  useEffect(() => {
+    const getNotice = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/settings/announcement/:incr`,
+        );
+        setNotice(response.data);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+      }
+    };
+    getNotice();
+  }, []);
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.Board}>
         <View style={styles.BoardTitle}>
-          <Text style={styles.BoardTitleTxt}>공지 제목</Text>
+          <Text style={styles.BoardTitleTxt}>{Notice.title}</Text>
+        </View>
+        <View style={styles.Date}>
+          <Text style={{color: 'black', fontSize: 15}}>{Notice.date}</Text>
         </View>
         <View style={styles.BoardCt}>
-          <Text style={styles.BoardCtTxt}>
-            공지의 내용은 다음과 같습니다. 이벤트를 진행할 예정이니 모두 이렇게
-            저렇게 참여해달라는 것입니다. 쓰면서 생각해보니 이벤트에 대한 것을
-            볼 수 있는 곳도 있으면 좋을 것 같네요. 그 노하우 게시판 쪽을
-            이용해볼까요..
-          </Text>
+          <Text style={styles.BoardCtTxt}>{Notice.content}</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -45,7 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   BoardTitle: {
-    flex: 1,
+    flex: 0.8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -53,6 +65,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '900',
     color: 'black',
+  },
+  Date: {
+    flex: 0.3,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    padding: 10,
   },
   BoardCt: {
     flex: 3,
