@@ -8,14 +8,14 @@ import {
   Alert,
   SafeAreaView,
   Modal,
-  Image
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
-import Config from 'react-native-config'
+import Config from 'react-native-config';
 const IconQuestion = require('../../assets/image/question.png');
 const IconExclamatation = require('../../assets/image/exclamation.png');
 
@@ -28,16 +28,16 @@ function FindPassword({navigation}: FindPassScreenProps) {
   const [showModal, setShowModal] = useState(false);
 
   const [Name, setName] = useState('');
-  const [ID, setID] = useState('');
   const [PhoneNum, setPhoneNum] = useState('');
   const [CheckNum, setCheckNum] = useState('');
+  const [CheckNumAns, setCheckNumAns] = useState('134679');
   const NameRef = useRef<TextInput | null>(null);
-  const IDRef = useRef<TextInput | null>(null);
   const PhoneNumRef = useRef<TextInput | null>(null);
   const CheckNumRef = useRef<TextInput | null>(null);
+  const [alertCheckNum, setAlertCheckNum] = useState(false);
 
   const [focused, setFocused] = useState(false);
-  const [set, setSet] = useState(false);
+  const [AfterCheckNum, setAfterCheckNum] = useState(false);
   const [AfterFinding, setAfterFinding] = useState(false);
   const [userPassword, setUserPassword] = useState('');
 
@@ -46,25 +46,37 @@ function FindPassword({navigation}: FindPassScreenProps) {
   }, []);
   const onChangePhoneNum = useCallback((text: string) => {
     setPhoneNum(text.trim());
+    setAfterCheckNum(false);
   }, []);
   const onChangeCheckNum = useCallback((text: string) => {
     setCheckNum(text.trim());
   }, []);
 
   const getCheckNum = useCallback(() => {
-    if (!PhoneNum) {
-      Alert.alert('알림', '전화번호를 입력해주세요');
+    if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
+      return Alert.alert('알림', '전화번호를 입력하세요');
     } else {
+      // 인증번호 발행
+      setCheckNumAns('1234');
       setShowModal(true);
     }
   }, [PhoneNum]);
-  // 인증번호 발행
+
+  const onCheckNum = useCallback(() => {
+    if (!/^\d{4}$/.test(CheckNum)) {
+      return setAlertCheckNum(true);
+    } else if (CheckNum === CheckNumAns) {
+      setAlertCheckNum(false);
+      return setAfterCheckNum(true);
+    } else {
+      return setAlertCheckNum(true);
+    }
+  }, [CheckNum, CheckNumAns]);
 
   const onSubmit = useCallback(async () => {
     try {
       // 인증번호 확인하는 단계 필요 => 인증번호 틀렸습니다 or 인증이 완료되었습니다 구현 필요
-      const response = await axios.patch(`${Config.API_URL}/user/findPwd`, {
-        id: ID,
+      const response = await axios.post(`${Config.API_URL}/user/findPwd`, {
         name: Name,
         phone: PhoneNum,
       });
@@ -77,7 +89,7 @@ function FindPassword({navigation}: FindPassScreenProps) {
         Alert.alert('알림', errorResponse.data.message);
       }
     }
-  }, [navigation, ID, Name, PhoneNum]);
+  }, [Name, PhoneNum]);
 
   return (
     <KeyboardAwareScrollView
@@ -86,81 +98,130 @@ function FindPassword({navigation}: FindPassScreenProps) {
       <SafeAreaView style={styles.entire}>
         <View style={styles.container}>
           <View style={styles.header}>
-            {AfterFinding
-            ? (<Image source={IconExclamatation} style={styles.image}/>)
-            : (<Image source={IconQuestion} style={!focused ? styles.image : styles.imageFocused}/>)}
-            {AfterFinding
-            ? (<View style={styles.typing}><Text style={styles.typingText}>회원님의 임시 비밀번호는</Text>
-            <Text style={styles.typingTextBold}>{userPassword}</Text>
-            <Text style={styles.typingText}>입니다</Text>
-            <Text style={styles.typingText}>꼭 비밀번호를 다시 설정해주세요</Text></View>)
-            : (<Text style={!focused ? styles.typingText : styles.typingTextFocused}>비밀번호를 잊으셨나요?</Text>)}
+            {AfterFinding ? (
+              <Image source={IconExclamatation} style={styles.image} />
+            ) : (
+              <Image
+                source={IconQuestion}
+                style={!focused ? styles.image : styles.imageFocused}
+              />
+            )}
+            {AfterFinding ? (
+              <View style={styles.typing}>
+                <Text style={styles.typingText}>회원님의 비밀번호는</Text>
+                <Text style={styles.typingTextBold}>{userPassword}</Text>
+                <Text style={styles.typingText}>입니다</Text>
+              </View>
+            ) : (
+              <Text
+                style={!focused ? styles.typingText : styles.typingTextFocused}>
+                비밀번호를 잊으셨나요?
+              </Text>
+            )}
           </View>
-          {!AfterFinding && <TextInput
-            placeholder='이름'
-            placeholderTextColor={'#B7CBB2'}
-            selectionColor={'#346627'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangeName}
-            textContentType="name"
-            value={Name}
-            blurOnSubmit={false}
-            clearButtonMode="while-editing"
-            returnKeyType="next"
-            ref={NameRef}
-            onSubmitEditing={() => IDRef.current?.focus()}
-            onFocus={() => setFocused(true)}
-            onBlur={() => {setFocused(false)}}
-          />}
-          {!AfterFinding && <View style={styles.checkNumContainer}>
+          {!AfterFinding && (
             <TextInput
-              placeholder='전화번호'
+              placeholder="이름"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
               style={styles.typingInput}
               autoCapitalize="none"
-              onChangeText={onChangePhoneNum}
-              value={PhoneNum}
+              onChangeText={onChangeName}
+              textContentType="name"
+              value={Name}
+              blurOnSubmit={false}
               clearButtonMode="while-editing"
               returnKeyType="next"
-              ref={PhoneNumRef}
-              onSubmitEditing={() => CheckNumRef.current?.focus()}
-              keyboardType="number-pad"
+              ref={NameRef}
+              onSubmitEditing={() => PhoneNumRef.current?.focus()}
               onFocus={() => setFocused(true)}
-              onBlur={() => {setFocused(false)}}
+              onBlur={() => {
+                setFocused(false);
+              }}
             />
-            <Pressable onPress={getCheckNum} style={styles.checkNumBtn}>
-              <Text style={styles.checkNumText}>인증번호 발송</Text>
-            </Pressable>
-          </View>}
-          {!AfterFinding && <TextInput
-            placeholder='인증번호 입력'
-            placeholderTextColor={'#B7CBB2'}
-            selectionColor={'#346627'}
-            style={styles.typingInput}
-            autoCapitalize="none"
-            onChangeText={onChangeCheckNum}
-            keyboardType="number-pad"
-            value={CheckNum}
-            clearButtonMode="while-editing"
-            returnKeyType="done"
-            ref={CheckNumRef}
-            onSubmitEditing={onSubmit}
-            onFocus={() => setFocused(true)}
-            onBlur={() => {setFocused(false)}}
-          />}
+          )}
+          {!AfterFinding && (
+            <View style={styles.checkNumContainer}>
+              <TextInput
+                placeholder="전화번호"
+                placeholderTextColor={'#B7CBB2'}
+                selectionColor={'#346627'}
+                style={styles.typingInput}
+                autoCapitalize="none"
+                onChangeText={onChangePhoneNum}
+                value={PhoneNum}
+                clearButtonMode="while-editing"
+                returnKeyType="next"
+                ref={PhoneNumRef}
+                onSubmitEditing={() => CheckNumRef.current?.focus()}
+                keyboardType="number-pad"
+                onFocus={() => setFocused(true)}
+                onBlur={() => {
+                  setFocused(false);
+                }}
+              />
+              <Pressable onPress={getCheckNum} style={styles.checkNumBtn}>
+                <Text style={styles.checkNumText}>인증번호 발송</Text>
+              </Pressable>
+            </View>
+          )}
+          {!AfterFinding && (
+            <>
+              <View style={styles.checkNumContainer}>
+                <TextInput
+                  placeholder="인증번호 입력"
+                  placeholderTextColor={'#B7CBB2'}
+                  selectionColor={'#346627'}
+                  style={styles.typingInput}
+                  autoCapitalize="none"
+                  onChangeText={onChangeCheckNum}
+                  keyboardType="number-pad"
+                  value={CheckNum}
+                  clearButtonMode="while-editing"
+                  returnKeyType="done"
+                  ref={CheckNumRef}
+                  onSubmitEditing={onCheckNum}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => {
+                    setFocused(false);
+                  }}
+                />
+                <Pressable onPress={onCheckNum} style={styles.checkNumBtn}>
+                  <Text style={styles.checkNumText}>인증</Text>
+                </Pressable>
+              </View>
+              {alertCheckNum ? (
+                <Text style={styles.wrong}>
+                  • 인증번호가 틀렸습니다. 다시 확인해주세요.
+                </Text>
+              ) : (
+                <>
+                  {AfterCheckNum ? (
+                    <Text style={styles.right}>• 인증이 완료되었습니다.</Text>
+                  ) : (
+                    <Text style={styles.wrong} />
+                  )}
+                </>
+              )}
+            </>
+          )}
           <Pressable
             style={
-              !AfterFinding 
-              ? (!Name || !PhoneNum || !CheckNum ? styles.findBtn : styles.findBtnSet)
-              : styles.goBackToLogin
+              !AfterFinding
+                ? !Name || !PhoneNum || !AfterCheckNum
+                  ? styles.findBtn
+                  : styles.findBtnSet
+                : styles.goBackToLogin
             }
-            onPress={!AfterFinding ? onSubmit : () => (navigation.navigate('SignIn'))}
-            disabled={!Name || !PhoneNum || !CheckNum}>
-            {!AfterFinding
-              ? <Text style={styles.btnText}>확인</Text>
-              : <Text style={styles.btnText}>로그인으로 돌아가기</Text>}
+            onPress={
+              !AfterFinding ? onSubmit : () => navigation.navigate('SignIn')
+            }
+            disabled={!Name || !PhoneNum || !AfterCheckNum}>
+            {!AfterFinding ? (
+              <Text style={styles.btnText}>확인</Text>
+            ) : (
+              <Text style={styles.btnText}>로그인 화면으로 돌아가기</Text>
+            )}
           </Pressable>
         </View>
         <Modal transparent={true} visible={showModal}>
@@ -201,38 +262,36 @@ const styles = StyleSheet.create({
   headerFocused: {
     alignItems: 'center',
     marginTop: 0,
-    top: -30
+    top: -30,
   },
   image: {
     width: 220,
     height: 270,
-    marginBottom: 15
+    marginBottom: 15,
   },
   imageFocused: {
     width: 180,
     height: 220,
     marginBottom: 15,
   },
-  typing:{
+  typing: {
     alignItems: 'center',
-    // marginTop: 50
   },
   typingText: {
     fontSize: 16,
     fontWeight: '800',
     color: '#346627',
-    marginBottom: 60
   },
   typingTextFocused: {
     fontSize: 16,
     fontWeight: '800',
     color: '#346627',
-    marginBottom: 20
+    marginBottom: 20,
   },
   typingTextBold: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#346627'
+    color: '#346627',
   },
   typingInput: {
     fontSize: 18,
@@ -243,11 +302,11 @@ const styles = StyleSheet.create({
     marginTop: 7,
     marginBottom: 10,
     backgroundColor: 'white',
-    borderRadius: 10
+    borderRadius: 10,
   },
   findBtn: {
     backgroundColor: '#B7CBB2',
-    height: 35,
+    height: 40,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -268,7 +327,7 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 18,
     color: 'white',
-    fontWeight: '400'
+    fontWeight: '400',
   },
   checkNumContainer: {
     width: '100%',
@@ -276,27 +335,37 @@ const styles = StyleSheet.create({
   checkNumBtn: {
     position: 'absolute',
     height: 24,
-    width: 120,
     right: 10,
     top: 13,
     backgroundColor: '#B7CBB2',
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 15,
   },
   checkNumText: {
     fontSize: 15,
     fontWeight: '400',
     color: 'white',
   },
+  wrong: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#B74F38',
+  },
+  right: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#346627',
+  },
   goBackToLogin: {
-    backgroundColor: '#B7CBB2',
-    height: 35,
+    backgroundColor: '#346627',
+    height: 40,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    marginTop: 80,
+    marginTop: 85,
   },
   modalBG: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',

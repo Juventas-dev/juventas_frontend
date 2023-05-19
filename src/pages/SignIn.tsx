@@ -1,7 +1,6 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
   Text,
-  Alert,
   TextInput,
   Pressable,
   StyleSheet,
@@ -37,6 +36,8 @@ function SignIn({navigation}: SignInScreenProps) {
   const [focused, setFocused] = useState(false);
   const PhoneRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
+  const [alertPhoneNum, setAlertPhoneNum] = useState(false);
+  const [alertPass, setAlertPass] = useState(false);
 
   const onChangePhone = useCallback((text: string) => {
     setPhone(text.trim());
@@ -45,14 +46,19 @@ function SignIn({navigation}: SignInScreenProps) {
     setPass(text.trim());
   }, []);
   const onSubmit = useCallback(async () => {
+    setAlertPhoneNum(false);
+    setAlertPass(false);
     if (!phone || !phone.trim()) {
-      return Alert.alert('알림', '전화번호를 입력해주세요.');
+      return setAlertPhoneNum(true);
+    } else if (!/^\d{3}\d{3,4}\d{4}$/.test(phone)) {
+      return setAlertPhoneNum(true);
     }
     if (!Pass || !Pass.trim()) {
-      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+      return setAlertPass(true);
+    } else if (!/^\d{4}$/.test(Pass)) {
+      return setAlertPass(true);
     }
     try {
-      console.log('1');
       console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
         phone: phone,
@@ -71,12 +77,15 @@ function SignIn({navigation}: SignInScreenProps) {
         'refreshToken',
         response.data.refreshToken,
       );
-      return Alert.alert('알림', '로그인되었습니다.');
     } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
+      const errorResponse = (
+        error as AxiosError<{error: string; message: string}>
+      ).response;
       console.error(errorResponse);
-      if (errorResponse) {
-        return Alert.alert('알림', errorResponse.data?.message);
+      if (errorResponse?.data.error === 'phone') {
+        setAlertPhoneNum(true);
+      } else {
+        setAlertPass(true);
       }
     }
   }, [dispatch, phone, Pass]);
@@ -103,7 +112,6 @@ function SignIn({navigation}: SignInScreenProps) {
           loginType: 'kakao',
         }),
       );
-      Alert.alert('알림', '로그인 되었습니다.');
       const response = await axios.post(`${Config.API_URL}/user/signup`, {
         name: profile.nickname,
         id: 'kakao' + profile.id,
@@ -134,7 +142,6 @@ function SignIn({navigation}: SignInScreenProps) {
             loginType: 'naver',
           }),
         );
-        Alert.alert('알림', '로그인 되었습니다.');
         const response = await axios.post(`${Config.API_URL}/user/signup`, {
           name: profile.response.name,
           id: 'naver' + profile.response.id,
@@ -183,6 +190,13 @@ function SignIn({navigation}: SignInScreenProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
+        {alertPhoneNum ? (
+          <Text style={styles.wrong}>
+            • 사용자 정보가 없습니다. 입력한 전화번호를 다시 확인해주세요.
+          </Text>
+        ) : (
+          <Text style={styles.wrong} />
+        )}
         <TextInput
           placeholder="비밀번호"
           placeholderTextColor={'#B7CBB2'}
@@ -202,6 +216,13 @@ function SignIn({navigation}: SignInScreenProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
+        {alertPass ? (
+          <Text style={styles.wrong}>
+            • 비밀번호가 틀렸습니다. 다시 입력해주세요.
+          </Text>
+        ) : (
+          <Text style={styles.wrong} />
+        )}
         <View style={styles.btn}>
           <Pressable
             style={focused ? styles.signInBtn : styles.signUpBtn}
@@ -235,19 +256,19 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 40,
   },
   headerFocused: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 30,
   },
   logo: {
     width: 220,
     height: 270,
   },
   focusedLogo: {
-    width: 180,
-    height: 220,
+    width: 172,
+    height: 210,
   },
   finding: {
     marginTop: 40,
@@ -255,7 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   findingFocused: {
-    marginTop: 20,
+    marginTop: 15,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
@@ -278,10 +299,16 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingLeft: 10,
     marginTop: 7,
-    marginBottom: 10,
+    marginBottom: 5,
     backgroundColor: 'white',
     fontWeight: '400',
     borderRadius: 10,
+    height: 40,
+  },
+  wrong: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#B74F38',
   },
   btn: {
     justifyContent: 'space-between',
@@ -289,52 +316,52 @@ const styles = StyleSheet.create({
   },
   signUpBtn: {
     flex: 1,
-    height: 35,
+    height: 40,
     backgroundColor: '#B7CBB2',
-    marginBottom: 20,
+    marginBottom: 18,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   signInBtn: {
     flex: 1,
-    height: 35,
+    height: 40,
     backgroundColor: '#346627',
-    marginBottom: 20,
+    marginBottom: 18,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   signInKakaoBtn: {
     flex: 1,
-    height: 35,
+    height: 40,
     borderRadius: 10,
     backgroundColor: '#FFE812',
     // justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: 'row',
   },
   signInNaverBtn: {
     flex: 1,
-    height: 35,
+    height: 40,
     borderRadius: 10,
     backgroundColor: '#00BF18',
     // justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     flexDirection: 'row',
   },
   kakaoLogo: {
-    width: 25,
-    height: 25,
-    marginLeft: 8,
+    width: 20,
+    height: 20,
+    marginLeft: 19,
     marginTop: 5,
   },
   naverLogo: {
-    width: 25,
-    height: 25,
-    marginLeft: 8,
+    width: 30,
+    height: 29,
+    marginLeft: 13,
   },
   btnText: {
     color: 'white',
