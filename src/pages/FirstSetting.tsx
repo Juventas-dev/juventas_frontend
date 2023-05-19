@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
+import { Base } from '../../AppInner';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import axios, {AxiosError} from 'axios';
@@ -18,11 +19,12 @@ const IconWelcome = require('../../assets/image/welcome.png');
 const IconLoading = require('../../assets/image/loading.png');
 
 type FirstSettingScreenProps = NativeStackScreenProps<
-  RootStackParamList,
+  Base,
   'FirstSetting'
 >;
 
-function FirstSetting({navigation}: FirstSettingScreenProps) {
+const FirstSetting = ({setState}:{setState:React.Dispatch<React.SetStateAction<boolean>>
+}) => {
   const userID = useSelector((state: RootState) => state.user.id);
 
   const [firstScreen, setFirstScreen] = useState(0);
@@ -40,7 +42,8 @@ function FirstSetting({navigation}: FirstSettingScreenProps) {
           id: userID,
         });
         // 홈화면으로 이동
-        navigation.pop();
+        // navigation.pop();
+        setState(false);
         console.log('pop');
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
