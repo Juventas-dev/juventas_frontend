@@ -8,7 +8,6 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import {ProgressViewIOSBase} from 'react-native/Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
@@ -16,7 +15,6 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ClipPath} from 'react-native-svg';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 
@@ -43,13 +41,7 @@ function Home({navigation}: HomeScreenProps) {
     quest_id: 0,
     num_people: 0,
   });
-  const [boardData, setBoardData] = useState([
-    {incr: 0, c_id: 0, title: 'title', like: 0, comment: 0, myrec: 0},
-  ]);
-  const [boardContent, setBoardContent] = useState({
-    content: 'content',
-    userID: 'userID',
-  });
+  const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
 
   const userID = useSelector((state: RootState) => state.user.id);
@@ -77,7 +69,7 @@ function Home({navigation}: HomeScreenProps) {
     };
     getFirstHomeData();
     getBoardData();
-  }, [questSelected, whichPost]);
+  }, [questSelected, userID, whichPost]);
 
   // useEffect(() => {
   //   setMyPostRecommend(boardData[0].myrec);
@@ -190,10 +182,10 @@ function Home({navigation}: HomeScreenProps) {
     const getBoardDataWait = async () => {
       try {
         const response = await axios.get(
-          `${Config.API_URL}/board/post?id='${userID}'`,
+          `${Config.API_URL}/board/bestpost?id='${userID}'`,
         );
         setBoardData(response.data.bestPost);
-        console.log(response.data.bestPost)
+        console.log(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -203,32 +195,26 @@ function Home({navigation}: HomeScreenProps) {
       }
     };
     getBoardDataWait();
-    getBoardContent(whichPost);
-  }, [boardData, boardContent]);
-  const getBoardContent = useCallback(
-    (num: number) => {
-      const getBoardContentWait = async () => {
-        try {
-          const response = await axios.get(
-            `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
-          );
-          setBoardContent({
-            content: response.data.post[whichPost].content,
-            userID: response.data.post[whichPost].user_name,
-          });
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-          if (errorResponse) {
-            return Alert.alert('알림', errorResponse.data?.message);
-          }
-        }
-      };
-      getBoardContentWait();
-    },
-    [boardContent],
-  );
+    // getBoardContent(whichPost);
+  }, [boardData]);
+
+  // const getBoardContent = useCallback(
+  //   async (num: number) => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
+  //       );
+  //       setBoardContent(response.data.post[0]);
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   },
+  //   [boardContent],
+  // );
 
   const selectQuest = useCallback(
     (num: number) => {
@@ -291,7 +277,7 @@ function Home({navigation}: HomeScreenProps) {
       setWhichPost(num);
       getBoardData();
     },
-    [whichPost, boardData, boardContent],
+    [whichPost, boardData],
   );
 
   const toDaychk = useCallback(() => {
@@ -386,8 +372,12 @@ function Home({navigation}: HomeScreenProps) {
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
               <View>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>{boardData[whichPost].user_name}</Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={1}>{boardData[whichPost].title}</Text>
+                <Text style={styles.boardProfileUsername} numberOfLines={1}>
+                  {boardData[whichPost]?.user_name}
+                </Text>
+                <Text style={styles.boardProfileTitle} numberOfLines={1}>
+                  {boardData[whichPost]?.title}
+                </Text>
               </View>
             </View>
             <View style={styles.boardRecommend}>
@@ -395,20 +385,55 @@ function Home({navigation}: HomeScreenProps) {
                 <FontAwesomeIcon
                   name="thumbs-up"
                   size={39}
-                  color={boardData[whichPost].myrec ? '#1F6733' : '#DAE2D8'}
+                  color={boardData[whichPost]?.myrec ? '#1F6733' : '#DAE2D8'}
                 />
               </Pressable>
               <Text style={styles.boardRecommendTxt}>
-                {boardData[whichPost].like}
+                {boardData[whichPost]?.like}
               </Text>
             </View>
           </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>{boardData[whichPost].content}</Text> 
+          <Text style={styles.boardContentTxt} numberOfLines={3}>
+            {boardData[whichPost]?.content}
+          </Text>
         </Pressable>
         <View style={styles.boardFooter}>
-          {boardData.length > 0 && <Pressable onPress={() => {nextPost(0)}} style={whichPost == 0 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
-          {boardData.length > 1 && <Pressable onPress={() => {nextPost(1)}} style={whichPost == 1 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
-          {boardData.length > 2 && <Pressable onPress={() => {nextPost(2)}} style={whichPost == 2 ? styles.boardFooterBtnActive : styles.boardFooterBtn}></Pressable>}
+          {boardData.length > 0 && (
+            <Pressable
+              onPress={() => {
+                nextPost(0);
+              }}
+              style={
+                whichPost === 0
+                  ? styles.boardFooterBtnActive
+                  : styles.boardFooterBtn
+              }
+            />
+          )}
+          {boardData.length > 1 && (
+            <Pressable
+              onPress={() => {
+                nextPost(1);
+              }}
+              style={
+                whichPost === 1
+                  ? styles.boardFooterBtnActive
+                  : styles.boardFooterBtn
+              }
+            />
+          )}
+          {boardData.length > 2 && (
+            <Pressable
+              onPress={() => {
+                nextPost(2);
+              }}
+              style={
+                whichPost === 2
+                  ? styles.boardFooterBtnActive
+                  : styles.boardFooterBtn
+              }
+            />
+          )}
         </View>
       </View>
       {modal && (
