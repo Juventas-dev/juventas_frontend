@@ -1,36 +1,34 @@
 import React from 'react';
 import {
-  NativeStackScreenProps,
   createNativeStackNavigator,
+  NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import Setting from '../pages/Setting';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import Quit from '../pages/Quit';
-import ComplainNavigation from './ComplainNavigation';
-import NoticeNavigation from './NoticeNavigation';
-export type SettingStackParamList = {
-  Setting: undefined;
+import Notice from '../pages/Notice';
+import NoticeList from '../pages/NoticeList';
+
+export type NoticeStackParamList = {
   NoticeList: undefined;
-  Complain: undefined;
-  Quit: undefined;
+  Notice: undefined;
 };
-export type SettingStackNavigationProp =
-  NativeStackScreenProps<SettingStackParamList>;
 
-const Stack = createNativeStackNavigator<SettingStackParamList>();
+export type NoticeStackNavigationProp =
+  NativeStackNavigationProp<NoticeStackParamList>;
 
-export default function SettingNavigation() {
+const Stack = createNativeStackNavigator<NoticeStackParamList>();
+
+export default function NoticeNavigation() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Setting"
-        component={Setting}
+        name="NoticeList"
+        component={NoticeList}
         options={{
-          headerBackVisible: false,
+          headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
-          headerTitle: '설정',
+          headerTitle: '공지사항',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (
@@ -39,30 +37,14 @@ export default function SettingNavigation() {
         }}
       />
       <Stack.Screen
-        name="NoticeList"
-        component={NoticeNavigation}
-        options={{
-          title: 'Notice',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Complain"
-        component={ComplainNavigation}
-        options={{
-          title: 'Complain',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Quit"
-        component={Quit}
+        name="Notice"
+        component={Notice}
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
           headerStyle: {backgroundColor: '#F9FAF8'},
           headerTitleAlign: 'center',
-          headerTitle: '계정 관리',
+          headerTitle: '공지사항',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
           headerRight: () => (
