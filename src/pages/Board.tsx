@@ -8,6 +8,7 @@ import {
   TextInput,
   RefreshControl,
   Alert,
+  Text,
 } from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -152,8 +153,8 @@ function Board({navigation}: BoardScreenProps) {
             />
             <TextInput
               style={styles.headerSearchInput}
-              placeholder="노하우 검색"
-              placeholderTextColor={'#DAE2D8'}
+              placeholder="검색"
+              placeholderTextColor={'#B7CBB2'}
               onFocus={toSearchPost}
             />
           </View>
@@ -221,7 +222,6 @@ function Board({navigation}: BoardScreenProps) {
           rowTextStyle={styles.RowTxtSt}
         />
       </View>
-
       <FlatList
         data={DATA}
         renderItem={({item}) => <PostItem item={item} />}
@@ -234,10 +234,11 @@ function Board({navigation}: BoardScreenProps) {
       <Pressable style={styles.newPostBtn}>
         <FontAwesome5Icon
           name="pen-nib"
-          size={40}
+          size={30}
           color="white"
           onPress={toNewPost}
         />
+        <Text style={{color: 'white'}}>글쓰기</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     // paddingBottom: 100
   },
   header: {
-    backgroundColor: '#F9FAF8',
+    backgroundColor: '#DAE2D8',
   },
   headerSearchingArea: {
     flexDirection: 'row',
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   },
   headerSearch: {
     flexDirection: 'row',
-    backgroundColor: '#EBEFEA',
+    backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
     height: 40,
