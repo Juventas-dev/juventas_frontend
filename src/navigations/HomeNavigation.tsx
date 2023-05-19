@@ -1,11 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import Home from '../pages/Home';
 import TodayChk from '../pages/TodayChk';
-import FirstSetting from '../pages/FirstSetting';
 import PostDetail from '../pages/PostDetail';
 import SearchPost from '../pages/SearchPost';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -26,6 +25,7 @@ export type HomeStackNavigationProp =
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export default function HomeNavigation() {
+  // const [myQuestAgain, setMyQuestAgain] = useState(0);
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -42,13 +42,6 @@ export default function HomeNavigation() {
           headerRight: () => (
             <FontAwesome5Icon name="bell" size={35} color="#346627" />
           ),
-        }}
-      />
-      <Stack.Screen
-        name="FirstSetting"
-        component={FirstSetting}
-        options={{
-          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -89,6 +82,7 @@ export default function HomeNavigation() {
           title: 'AllQuest',
           headerShown: false,
         }}
+
       />
     </Stack.Navigator>
   );

@@ -10,18 +10,12 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
-import { Base } from '../../AppInner';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 const IconWelcome = require('../../assets/image/welcome.png');
 const IconLoading = require('../../assets/image/loading.png');
-
-type FirstSettingScreenProps = NativeStackScreenProps<
-  Base,
-  'FirstSetting'
->;
 
 const FirstSetting = ({setState}:{setState:React.Dispatch<React.SetStateAction<boolean>>
 }) => {
