@@ -45,20 +45,15 @@ const CommentItem = ({
         <Pressable
           style={styles.recommend}
           onPress={() => likeComment(item.incr)}>
-          <Text style={styles.recommendNum}>{item.like}</Text>
-          <FontAwesomeIcon
-            name="star"
-            size={28}
-            color="#DAE2D8"
-            style={styles.commentIcon}
-          />
+          <View style={styles.thumb}>
+            <FontAwesomeIcon name="thumbs-up" size={28} color="#DAE2D8" />
+            <Text style={styles.recommendNum}>{item.like}</Text>
+          </View>
         </Pressable>
-        <FontAwesome5Icon
-          name="caret-down"
-          size={40}
-          color="#DAE2D8"
-          style={styles.commentIcon}
-        />
+        <View style={styles.thumb}>
+          <FontAwesome5Icon name="caret-down" size={40} color="#DAE2D8" />
+          <Text style={{color: '#B7CBB2'}}>답글</Text>
+        </View>
       </View>
       <Modal transparent={true} visible={showProfile}>
         <Pressable
@@ -72,7 +67,6 @@ const CommentItem = ({
                 width: 130,
                 height: 130,
                 borderRadius: 70,
-                backgroundColor: 'black',
               }}
             />
             <Text style={styles.modalID}>{item.user_name}</Text>
@@ -117,17 +111,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  thumb: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
   recommend: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   recommendNum: {
     color: '#B7CBB2',
-    fontSize: 20,
-  },
-  commentIcon: {
-    marginLeft: 15,
-    marginRight: 5,
+    fontSize: 13,
   },
   entire: {
     flex: 1,
