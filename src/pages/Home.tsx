@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Pressable,
   Alert,
+  Image,
 } from 'react-native';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
@@ -21,6 +22,11 @@ type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 function Home({navigation}: HomeScreenProps) {
   const [date, setDate] = useState(0);
   const [seqCount, setSeqCount] = useState(0);
+  const [completedNum, setCompletedNUm] = useState(0);
+  const [point, setPoint] = useState(0);
+  const [level, setLevel] = useState('');
+  const [levelTxt, setLevelTxt] = useState('');
+  const [levelImage, setImage] = useState<any>();
   const [questSelected, setQuestSelected] = useState('F');
   const [allQuestData, setAllQuestData] = useState([
     {incr: 0, q_name: 'q_name'},
@@ -43,7 +49,19 @@ function Home({navigation}: HomeScreenProps) {
   });
   const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
+  const imageArray = {
+    Level_1: require('../../assets/image/Lv1.png'),
 
+    Level_2: require('../../assets/image/Lv2.png'),
+
+    Level_3: require('../../assets/image/Lv3.png'),
+
+    Level_4: require('../../assets/image/Lv4.png'),
+
+    Level_5: require('../../assets/image/Lv5.png'),
+
+    Level_6: require('../../assets/image/Lv6.png'),
+  };
   const userID = useSelector((state: RootState) => state.user.id);
 
   useEffect(() => {
@@ -69,7 +87,12 @@ function Home({navigation}: HomeScreenProps) {
     };
     getFirstHomeData();
     getBoardData();
-  }, [questSelected, userID, whichPost]);
+  }, [
+    navigation,
+    questSelected,
+    userID,
+    whichPost,
+  ]);
 
   // useEffect(() => {
   //   setMyPostRecommend(boardData[0].myrec);
@@ -121,37 +144,19 @@ function Home({navigation}: HomeScreenProps) {
   const whichScreen = useCallback(() => {
     const getAllQuestData = async () => {
       try {
-        // // await AsyncStorage.removeItem('now');
-        // let temp = false;
-        // let keys = await AsyncStorage.getAllKeys();
-        // if (keys.includes('now')) {
-        //   await AsyncStorage.setItem('now', String(new Date()));
-        //   let check = new Date(String(new Date()));
-        //   let today = new Date();
-        //   console.log('check: ' + check)
-        //   console.log('today: ' + today)
-        //   temp = (check.getDate() == today.getDate());
-        // }
-        // console.log(temp);
-        // if (!temp) {
-        //   const response = await axios.get(`${Config.API_URL}/quest/recommend/${userID}`);
-        //   setAllQuestData(response.data.recommend);
-        //   console.log(response.data.recommend);
-        //   storeData(JSON.stringify(response.data.recommend));
-        //   // setRecommendAgain(false);
-        // }
-        // else {
-        //   console.log('error')
-        //   let data = getQuestData(); // 가공 필요
-        //   console.log(data)
-        //   // setAllQuestData([data]);
-        // }
-
         const response = await axios.get(
-          `${Config.API_URL}/quest/recommend/${userID}`,
+          `${Config.API_URL}/quest/userquest/${userID}`,
         );
+        console.log(response.data);
+        getImage(response.data.level);
+        setSeqCount(response.data.seq_count);
+        setCompletedNUm(response.data.quest_completed);
         setAllQuestData(response.data.recommend);
+        setPoint(response.data.point);
+        setLevel(response.data.level);
         setRecommendAgain(false);
+
+        console.log({completedNum});
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -165,7 +170,13 @@ function Home({navigation}: HomeScreenProps) {
         const response = await axios.get(
           `${Config.API_URL}/quest/userquest/${userID}`,
         );
+        console.log(response.data);
+        getImage(response.data.level);
+        setSeqCount(response.data.seq_count);
+        setCompletedNUm(response.data.quest_completed);
         setMyQuest(response.data);
+        setLevel(response.data.level);
+        setPoint(response.data.point);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -176,7 +187,7 @@ function Home({navigation}: HomeScreenProps) {
     } else {
       getMyQuestData();
     }
-  }, [allQuestData, myQuest, questSelected, recommendAgain]);
+  }, [allQuestData, myQuest, questSelected, recommendAgain, getImage]);
 
   const getBoardData = useCallback(() => {
     const getBoardDataWait = async () => {
@@ -216,8 +227,47 @@ function Home({navigation}: HomeScreenProps) {
   //   [boardContent],
   // );
 
+  const getImage = useCallback(
+    (lev: string) => {
+      console.log({level});
+      if (lev.includes('씨앗') === true) {
+        setLevelTxt('Level_1');
+      } else if (lev.includes('새싹') === true) {
+        setLevelTxt('Level_2');
+      } else if (lev.includes('묘목') === true) {
+        setLevelTxt('Level_3');
+      } else if (lev.includes('나무') === true) {
+        setLevelTxt('Level_4');
+      } else if (lev.includes('꽃') === true) {
+        setLevelTxt('Level_5');
+      } else {
+        setLevelTxt('Level_6');
+      }
+      console.log(levelTxt);
+      getSrc();
+    },
+    [level],
+  );
+
+  const getSrc = useCallback(() => {
+    if (levelTxt === 'Level_1') {
+      setImage(imageArray.Level_1);
+    } else if (levelTxt === 'Level_2') {
+      setImage(imageArray.Level_2);
+    } else if (levelTxt === 'Level_3') {
+      setImage(imageArray.Level_3);
+    } else if (levelTxt === 'Level_4') {
+      setImage(imageArray.Level_4);
+    } else if (levelTxt === 'Level_5') {
+      setImage(imageArray.Level_5);
+    } else {
+      setImage(imageArray.Level_6);
+    }
+  }, [levelTxt]);
+
   const selectQuest = useCallback(
     (num: number) => {
+      console.log(allQuestData[num]);
       const selectQuestWait = async () => {
         try {
           const response = await axios.post(
@@ -243,6 +293,7 @@ function Home({navigation}: HomeScreenProps) {
     [questSelected],
   );
   const resetQuest = useCallback(() => {
+    console.log(recommendAgain);
     const resetQuestWait = async () => {
       try {
         const response = await axios.patch(
@@ -261,8 +312,10 @@ function Home({navigation}: HomeScreenProps) {
     };
     resetQuestWait();
     setQuestSelected('F');
+    setRecommendAgain(true);
     setMyQuest({quest_name: 'quest_name', quest_id: 0, num_people: 0});
-  }, [questSelected, myQuest]);
+    whichScreen();
+  }, [questSelected, myQuest, whichScreen, userID]);
 
   const nextQuestList = useCallback(() => {
     if (questNum === 2) {
@@ -284,16 +337,32 @@ function Home({navigation}: HomeScreenProps) {
     navigation.navigate('TodayChk');
   }, [navigation]);
 
+  const toAllQuest = useCallback(() => {
+    navigation.navigate('AllQuest');
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.attendance}>
-        <View style={styles.attendanceDetail}>
-          <Text>연속으로 출석했어요</Text>
+        <View style={styles.attendanceDetail_1}>
+          <View style={styles.levelBox}>
+            <Image source={levelImage} style={styles.levelImg} />
+            <View style={styles.LeveltxtBox}>
+              <Text style={styles.levelTxt}>{level}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.attendanceDetail_2}>
+          <Text style={styles.txt}>연속 도전</Text>
           <Text style={styles.attendanceDetailTxt}>{seqCount}회</Text>
         </View>
-        <View style={styles.attendanceDetail}>
-          <Text>이번달 이만큼 출석했어요</Text>
-          <Text style={styles.attendanceDetailTxt}>{date}회</Text>
+        <View style={styles.attendanceDetail_2}>
+          <Text style={styles.txt}>수행한 퀘스트</Text>
+          <Text style={styles.attendanceDetailTxt}>{completedNum}회</Text>
+        </View>
+        <View style={styles.attendanceDetail_3}>
+          <Text style={styles.txt}>포인트</Text>
+          <Text style={styles.attendanceDetailTxt}>{point}p</Text>
         </View>
       </View>
       <View style={styles.quest}>
@@ -321,7 +390,7 @@ function Home({navigation}: HomeScreenProps) {
               </Text>
             </Pressable>
             <Pressable style={styles.questRandomBtn} onPress={nextQuestList}>
-              <Text style={styles.questBtnTxt}>랜덤</Text>
+              <Text style={styles.questBtnTxt}>추천 도전 새로고침</Text>
             </Pressable>
           </View>
         ) : (
@@ -333,29 +402,25 @@ function Home({navigation}: HomeScreenProps) {
                 {myQuest.num_people}명이 이 퀘스트에 참여중입니다
               </Text>
               <Pressable onPress={toDaychk} style={styles.submitQuestTodayBtn}>
-                <Text style={styles.submitQuestTodayTxt}>오늘의 인증</Text>
+                <Text style={styles.submitQuestTodayTxt}>도전 기록하기</Text>
               </Pressable>
             </View>
             <Pressable style={styles.reselect} onPress={resetQuest}>
-              <Text>다시 선택하기</Text>
+              <Text style={styles.questBtnTxt}>도전 다시 선택하기</Text>
             </Pressable>
           </View>
         )}
         {questSelected === 'F' && (
           <View style={styles.questFooter}>
-            <Pressable>
-              <Text
-                style={styles.questFooterTxt}
-                onPress={() => showModal(true)}>
-                전체 퀘스트 보기
-              </Text>
+            <Pressable onPress={toAllQuest}>
+              <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
             </Pressable>
           </View>
         )}
       </View>
       <View style={styles.board}>
         <View style={styles.boardSearch}>
-          <FontAwesomeIcon name="search" size={25} color="#DAE2D8" />
+          <FontAwesomeIcon name="search" size={25} color="#B7CBB2" />
           <Pressable
             onPress={() =>
               navigation.navigate('SearchPostHome', {goBackToBoard: 'F'})
@@ -436,84 +501,6 @@ function Home({navigation}: HomeScreenProps) {
           )}
         </View>
       </View>
-      {modal && (
-        <Pressable style={styles.modalBG} onPress={() => showModal(false)}>
-          <View style={styles.modal}>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(0);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[0].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(1);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[1].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(2);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[2].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(3);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[3].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(4);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[4].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(5);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[5].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(6);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[6].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(7);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[7].q_name}</Text>
-            </Pressable>
-            <Pressable
-              style={styles.modalBtn}
-              onPress={() => {
-                selectQuest(8);
-                showModal(false);
-              }}>
-              <Text>{allQuestData[8].q_name}</Text>
-            </Pressable>
-          </View>
-        </Pressable>
-      )}
     </SafeAreaView>
   );
 }
@@ -532,23 +519,78 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 20,
   },
-  attendanceDetail: {
+  txt: {
+    fontWeight: '400',
+  },
+  attendanceDetail_1: {
+    flex: 1,
+    borderRightWidth: 1,
+    marginHorizontal: 2,
+    borderColor: '#E7EBE4',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  levelBox: {
+    flexDirection: 'column',
+    borderColor: '#B7CBB2',
+    borderWidth: 1,
+    borderRadius: 8,
+    width: '90%',
+    height: '140%',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  levelImg: {
+    flex: 3,
+    width: 47,
+  },
+  LeveltxtBox: {
+    flex: 1,
+    backgroundColor: '#B7CBB2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  levelTxt: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  attendanceDetail_2: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    marginHorizontal: 2,
+    borderColor: '#E7EBE4',
+  },
+  attendanceDetail_3: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderLeftWidth: 1,
+    marginHorizontal: 2,
+    borderColor: '#E7EBE4',
   },
   attendanceDetailTxt: {
-    color: '#1F6733',
+    color: '#346627',
     fontSize: 30,
+    fontWeight: 'bold',
   },
   quest: {
     flex: 15,
-    backgroundColor: '#EBEFEA',
+    backgroundColor: '#E4EAE3',
     marginBottom: 18,
     borderRadius: 10,
     alignItems: 'center',
     paddingTop: 8,
     paddingBottom: 3,
+    paddingHorizontal: 10,
   },
   questBody: {
     flex: 10,
@@ -579,9 +621,10 @@ const styles = StyleSheet.create({
   },
   questName: {
     color: 'black',
-    fontSize: 24,
+    fontSize: 18,
     marginBottom: 5,
     fontWeight: '800',
+    textAlign: 'center',
   },
   howManyPeopleInQuest: {
     color: '#8D8D8D',
@@ -622,7 +665,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   questBtnTxt: {
-    fontSize: 15,
+    fontSize: 14,
+    color: '#3D3C3C',
+    fontWeight: 'bold',
   },
   questRandomBtn: {
     flex: 1,
@@ -635,17 +680,21 @@ const styles = StyleSheet.create({
   },
   questFooter: {
     flex: 1,
-    width: '100%',
+    backgroundColor: '#F9FAF8',
+    borderRadius: 10,
     paddingHorizontal: 20,
-    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   questFooterTxt: {
     color: '#1F6733',
     fontSize: 11,
+    fontWeight: '600',
   },
   board: {
     flex: 15,
-    backgroundColor: '#EBEFEA',
+    backgroundColor: '#E4EAE3',
     marginBottom: 20,
     borderRadius: 10,
     paddingHorizontal: 15,
@@ -661,8 +710,9 @@ const styles = StyleSheet.create({
   },
   searchTxt: {
     fontSize: 18,
-    color: '#DAE2D8',
+    color: '#B7CBB2',
     marginLeft: 8,
+    fontWeight: '600',
   },
   boardBody: {
     flex: 15,
@@ -759,3 +809,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// // await AsyncStorage.removeItem('now');
+// let temp = false;
+// let keys = await AsyncStorage.getAllKeys();
+// if (keys.includes('now')) {
+//   await AsyncStorage.setItem('now', String(new Date()));
+//   let check = new Date(String(new Date()));
+//   let today = new Date();
+//   console.log('check: ' + check)
+//   console.log('today: ' + today)
+//   temp = (check.getDate() == today.getDate());
+// }
+// console.log(temp);
+// if (!temp)
+//   const response = await axios.get(`${Config.API_URL}/quest/recommend/${userID}`);
+//   setAllQuestData(response.data.recommend);
+//   console.log(response.data.recommend);
+//   storeData(JSON.stringify(response.data.recommend));
+//   // setRecommendAgain(false);
+// }
+// else {
+//   console.log('error')
+//   let data = getQuestData(); // 가공 필요
+//   console.log(data)
+//   // setAllQuestData([data]);
+// }
