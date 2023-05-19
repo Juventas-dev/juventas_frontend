@@ -12,6 +12,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MessageStackParamList} from '../navigations/MessageNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import useSocket from '../hooks/useSockets';
@@ -27,7 +28,7 @@ type ChatProps = {
   timestamp: string;
 };
 
-function MessageDetail({route}: MessageDetailScreenProps) {
+function MessageDetail({navigation, route}: MessageDetailScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -40,9 +41,26 @@ function MessageDetail({route}: MessageDetailScreenProps) {
   const [myMessage, setMyMessage] = useState('');
   const [chats, setChats] = useState<ChatProps[]>([]);
 
+  const userID = useSelector((state: RootState) => state.user.id);
+
+  navigation.setOptions({
+    headerLeft: () => (
+      <Ionicons
+        name="arrow-back"
+        onPress={() => {
+          socket?.emit('leave room', userID, roomID);
+          navigation.goBack();
+        }}
+        size={30}
+        color="#000000"
+      />
+    ),
+  });
+
   useEffect(() => {
-    if (socket && roomID !== '') {
-      socket.emit('join room', roomID);
+    console.log(route);
+    if (socket && roomID !== null) {
+      socket.emit('join room', userID, roomID);
       socket.on('messages', results => setChats(results));
       socket.on('new message', (userId, message, timestamp) => {
         setChats([
@@ -60,17 +78,15 @@ function MessageDetail({route}: MessageDetailScreenProps) {
   const onSend = () => {
     socket?.emit('send message', userID, roomID, myMessage);
     setChats(prev => [
+      ...prev,
       {
         user_id: userID,
         message: myMessage,
         timestamp: new Date().toTimeString(),
       },
-      ...prev,
     ]);
     setMyMessage('');
   };
-
-  const userID = useSelector((state: RootState) => state.user.id);
 
   return (
     <SafeAreaView style={styles.entire}>

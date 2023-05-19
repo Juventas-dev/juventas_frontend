@@ -48,13 +48,7 @@ function Home({navigation}: HomeScreenProps) {
     quest_id: 0,
     num_people: 0,
   });
-  const [boardData, setBoardData] = useState([
-    {incr: 0, c_id: 0, title: 'title', like: 0, comment: 0, myrec: 0},
-  ]);
-  const [boardContent, setBoardContent] = useState({
-    content: 'content',
-    userID: 'userID',
-  });
+  const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
     Level_1: require('../../assets/image/Lv1.png'),
@@ -77,10 +71,11 @@ function Home({navigation}: HomeScreenProps) {
         const response = await axios.get(
           `${Config.API_URL}/quest/questselected/${userID}`,
         );
-        console.log(response.data);
-        if (response.data.is_first === 'T') {
-          navigation.navigate('FirstSetting');
-        }
+        setDate(response.data.date);
+        setSeqCount(response.data.seq_count);
+        // if (response.data.is_first === 'T') {
+        //   navigation.navigate('FirstSetting');
+        // }
         setQuestSelected(response.data.is_selected);
         whichScreen();
       } catch (error) {

@@ -17,7 +17,7 @@ export type BoardStackParamList = {
   PostDetail: {postID: number};
   SearchPost: {goBackToBoard: string};
   Message: undefined;
-  MessageDetail: {me: string; you: string};
+  MessageDetail: {incr: number};
 };
 
 export type BoardStackNavigationProp =
