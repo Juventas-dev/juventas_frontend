@@ -86,7 +86,7 @@ function Setting({navigation}: SettingScreenProps) {
       await NaverLogin.logout();
       console.log('네이버 로그아웃 완료');
     } else {
-      const response = await axios.get(`${Config.API_URL}/user/logout`, {
+      const response = await axios.patch(`${Config.API_URL}/user/logout`, {
         headers: {
           authorization: `Bearer ${user.accessToken}`,
         },
