@@ -1,17 +1,11 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useState} from 'react';
-import {View, Text, StyleSheet, Pressable, Modal, Switch} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import NaverLogin from '@react-native-seoul/naver-login';
-import {RootState, useAppDispatch} from '../store';
-import {useSelector} from 'react-redux';
-import {logout, unlink} from '@react-native-seoul/kakao-login';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
+import React, {useCallback, useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Pressable, Switch} from 'react-native';
 import Config from 'react-native-config';
-import userSlice from '../slices/user';
-import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {SettingStackParamList} from '../navigations/SettingNavigation';
+import Notice from './Notice';
 
 type SettingScreenProps = NativeStackScreenProps<
   SettingStackParamList,
@@ -22,142 +16,86 @@ function Setting({navigation}: SettingScreenProps) {
   const [isEnabled, setIsEnabled] = useState(false);
   const AlltoggleSwitch = () => {
     setIsEnabled(previousState => !previousState);
-    /*if (isEnabled) {
+    if (isEnabled === false) {
       setMessageIsEnabled(true);
       setBoardIsEnabled(true);
       setPointIsEnabled(true);
       setQuestIsEnabled(true);
-    } */
+    }
   };
   const [MessageisEnabled, setMessageIsEnabled] = useState(false);
   const MessagetoggleSwitch = () => {
-    /* if (isEnabled) {
+    if (isEnabled) {
       setIsEnabled(false);
-    } */
+    }
     setMessageIsEnabled(previousState => !previousState);
   };
   const [BoardisEnabled, setBoardIsEnabled] = useState(false);
   const BoardtoggleSwitch = () => {
-    /* if (isEnabled) {
+    if (isEnabled) {
       setIsEnabled(false);
     }
-    */
+
     setBoardIsEnabled(previousState => !previousState);
   };
   const [PointisEnabled, setPointIsEnabled] = useState(false);
   const PointtoggleSwitch = () => {
-    /* if (isEnabled) {
+    if (isEnabled) {
       setIsEnabled(false);
     }
-    */
+
     setPointIsEnabled(previousState => !previousState);
   };
   const [QuestisEnabled, setQuestIsEnabled] = useState(false);
   const QuesttoggleSwitch = () => {
-    /*if (isEnabled) {
+    if (isEnabled) {
       setIsEnabled(false);
-    } */
+    }
     setQuestIsEnabled(previousState => !previousState);
   };
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [showQuitModal, setShowQuitModal] = useState(false);
-  const dispatch = useAppDispatch();
-  const user = useSelector((state: RootState) => state.user);
 
   const toNotice = useCallback(() => {
-    navigation.navigate('Notice');
+    navigation.navigate('NoticeList');
   }, [navigation]);
   const toComplain = useCallback(() => {
     navigation.navigate('Complain');
   }, [navigation]);
+  const toQuit = useCallback(() => {
+    navigation.navigate('Quit');
+  }, [navigation]);
 
-  const onLogOut = useCallback(() => {
-    setShowLogoutModal(true);
+  const [Notice, setNotice] = useState({content: '', title: ''});
+
+  useEffect(() => {
+    const getNotice = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/settings/announcement`,
+        );
+        setNotice(response.data.fixed[0]);
+        console.log({Notice});
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+      }
+    };
+    getNotice();
   }, []);
-  const onQuit = useCallback(() => {
-    setShowQuitModal(true);
-  }, []);
-
-  const signOutUser = async (): Promise<void> => {
-    if (user.loginType === 'kakao') {
-      await logout();
-      console.log('카카오 로그아웃 완료');
-    } else if (user.loginType === 'naver') {
-      await NaverLogin.logout();
-      console.log('네이버 로그아웃 완료');
-    } else {
-      const response = await axios.get(`${Config.API_URL}/user/logout`, {
-        headers: {
-          authorization: `Bearer ${user.accessToken}`,
-        },
-      });
-      console.log(response);
-      await EncryptedStorage.removeItem('refreshToken');
-    }
-    dispatch(
-      userSlice.actions.setUser({
-        name: '',
-        id: '',
-        phoneNum: '',
-        loginType: '',
-        accessToken: '',
-      }),
-    );
-  };
-
-  const unlinkUser = async (): Promise<void> => {
-    if (user.loginType === 'kakao') {
-      await unlink();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('카카오 회원탈퇴 완료');
-    } else if (user.loginType === 'naver') {
-      await NaverLogin.deleteToken();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('네이버 회원탈퇴 완료');
-    } else {
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlink?id=${user.id}`,
-        {
-          headers: {
-            authorization: `Bearer ${user.accessToken}`,
-          },
-        },
-      );
-      console.log(response);
-      await EncryptedStorage.removeItem('refreshToken');
-    }
-    dispatch(
-      userSlice.actions.setUser({
-        name: '',
-        id: '',
-        phoneNum: '',
-        loginType: '',
-        accessToken: '',
-      }),
-    );
-  };
 
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.Notice}>
-        <Text style={styles.BoardTitle}>공지사항</Text>
-        <View style={styles.NoticeBoard}>
-          <Text style={styles.BoardTitleTxt}>공지 제목</Text>
-          <Text>
-            공지 메인에 들어가지 않아도 가장 최근의 공지사항 내용이 한눈에 바로
-            들어올 수 있도록 합니다.
-          </Text>
+        <View>
+          <Text style={styles.BoardTitle}>공지사항</Text>
         </View>
+        <View style={styles.NoticeBoard}>
+          <Text style={styles.BoardTitleTxt}>{Notice.title}</Text>
+          <Text style={{marginTop: 5, fontSize: 15}}>{Notice.content}</Text>
+        </View>
+        <Pressable style={styles.All} onPress={toNotice}>
+          <Text style={styles.AllTxt}>전체 공지 보기</Text>
+        </Pressable>
       </View>
-      <Pressable style={styles.All} onPress={toNotice}>
-        <Text style={styles.AllTxt}>전체 공지 보기</Text>
-      </Pressable>
       <View style={styles.AlarmSetting}>
         <Text style={styles.BoardTitle}>알림 설정</Text>
         <View style={styles.AlarmBoard}>
@@ -217,7 +155,7 @@ function Setting({navigation}: SettingScreenProps) {
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.BoardTitle}>문의 게시판</Text>
           <Text style={styles.TxtTip}>
-            *1:1 문의는 카카오톡 채널을 이용 부탁드립니다
+            *1:1 문의는 카카오톡 채널 '하루도전'으로 보내주세요.
           </Text>
         </View>
         <View style={styles.NoticeBoard}>
@@ -234,76 +172,15 @@ function Setting({navigation}: SettingScreenProps) {
             <Text>~~~~~</Text>
           </View>
         </View>
-      </View>
-      <Pressable style={styles.All} onPress={toComplain}>
-        <Text style={styles.AllTxt}>전체 문의 보기</Text>
-      </Pressable>
-      <View style={styles.LogOut}>
-        <Pressable style={styles.Logout} onPress={onLogOut}>
-          <Text style={styles.Txt}>로그아웃</Text>
-        </Pressable>
-        <Pressable style={styles.ByeBye} onPress={onQuit}>
-          <Text style={styles.Txt}>회원 탈퇴</Text>
+        <Pressable style={styles.All} onPress={toComplain}>
+          <Text style={styles.AllTxt}>전체 문의 보기</Text>
         </Pressable>
       </View>
-      <Modal transparent={true} visible={showLogoutModal}>
-        <Pressable
-          style={styles.modalBG}
-          onPress={() => setShowLogoutModal(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalHead}>
-              <CheckIcon
-                name="check-circle"
-                size={50}
-                color="#F6DD55"
-                style={styles.modalImg}
-              />
-              <Text style={styles.modalTextHeader}>
-                정말 로그아웃 하시겟습니까?
-              </Text>
-            </View>
-            <View style={styles.Choose}>
-              <Pressable
-                style={styles.NoBt}
-                onPress={() => setShowLogoutModal(false)}>
-                <Text style={styles.ChooseTxt}>아니요</Text>
-              </Pressable>
-              <Pressable style={styles.YesBt} onPress={signOutUser}>
-                <Text style={styles.ChooseTxt}>예</Text>
-              </Pressable>
-            </View>
-          </View>
+      <View style={styles.Account}>
+        <Pressable style={styles.account} onPress={toQuit}>
+          <Text style={{fontWeight: 'bold', color: 'black'}}>계정 관리</Text>
         </Pressable>
-      </Modal>
-      <Modal transparent={true} visible={showQuitModal}>
-        <Pressable
-          style={styles.modalBG}
-          onPress={() => setShowQuitModal(false)}>
-          <View style={styles.modal}>
-            <View style={styles.modalHead}>
-              <CheckIcon
-                name="check-circle"
-                size={50}
-                color="#F6DD55"
-                style={styles.modalImg}
-              />
-              <Text style={styles.modalTextHeader}>
-                정말 탈퇴 하시겠습니까?
-              </Text>
-            </View>
-            <View style={styles.Choose}>
-              <Pressable
-                style={styles.NoBt}
-                onPress={() => setShowQuitModal(false)}>
-                <Text style={styles.ChooseTxt}>아니요</Text>
-              </Pressable>
-              <Pressable style={styles.YesBt} onPress={unlinkUser}>
-                <Text style={styles.ChooseTxt}>예</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Pressable>
-      </Modal>
+      </View>
     </SafeAreaView>
   );
 }
@@ -312,35 +189,37 @@ export default Setting;
 const styles = StyleSheet.create({
   entire: {
     flex: 1,
-    flexWrap: 'nowrap',
-    backgroundColor: '#F9FAF8',
+    flexWrap: 'wrap',
+    backgroundColor: '#E7EBE4',
     paddingHorizontal: 20,
     paddingTop: 6,
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   Notice: {
-    flex: 1,
-    flexWrap: 'wrap',
+    flex: 2,
+    marginBottom: 10,
   },
   BoardTitle: {
     color: '#346627',
     fontWeight: 'bold',
     paddingLeft: 5,
+    paddingBottom: 5,
     fontSize: 14,
   },
   TxtTip: {
     color: '#346627',
-    fontSize: 10,
+    fontSize: 12,
     marginLeft: 5,
     textAlignVertical: 'bottom',
   },
   NoticeBoard: {
-    marginTop: 5,
+    flex: 3.7,
+    paddingHorizontal: 10,
+    paddingTop: 10,
     backgroundColor: 'white',
     width: '100%',
-    height: 65,
-    paddingHorizontal: 7,
-    borderRadius: 7,
+    borderTopLeftRadius: 7,
+    borderTopRightRadius: 7,
   },
   FrequentQ: {
     flexDirection: 'row',
@@ -348,10 +227,13 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
   All: {
-    flex: 0.2,
-    alignItems: 'flex-end',
-    paddingRight: 5,
-    paddingTop: 2,
+    flex: 1,
+    backgroundColor: '#B7CBB2',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomLeftRadius: 7,
+    borderBottomRightRadius: 7,
   },
   AllTxt: {
     color: '#346627',
@@ -359,14 +241,13 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   AlarmSetting: {
-    flex: 2,
+    flex: 3,
+    marginBottom: 10,
   },
   AlarmBoard: {
-    marginTop: 5,
     backgroundColor: 'white',
     width: '100%',
     height: 160,
-    paddingHorizontal: 7,
     borderRadius: 7,
   },
   AlarmSt1: {
@@ -374,96 +255,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: '#B7CBB2',
+    paddingHorizontal: 7,
+    borderTopLeftRadius: 7,
+    borderTopRighttRadius: 7,
   },
   BoardTitleTxt: {
     color: '#3D3C3C',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 17,
   },
   AlarmSt2: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 7,
   },
   ComplainBoard: {
-    flex: 1,
+    flex: 2.5,
     paddingTop: 15,
-  },
-  LogOut: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  Logout: {
-    borderRadius: 10,
-    backgroundColor: '#346627',
-    width: 168,
-    height: 40,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  ByeBye: {
-    borderRadius: 10,
-    backgroundColor: '#B7CBB2',
-    width: 168,
-    height: 40,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    width: '100%',
   },
   Txt: {
     fontWeight: 'bold',
     color: 'white',
   },
-  modalBG: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  Account: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modal: {
-    width: 246,
-    height: 181,
-    backgroundColor: 'white',
-    borderRadius: 30,
-  },
-  modalHead: {
-    flex: 2.5,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalImg: {
-    marginTop: 3,
-  },
-  modalTextHeader: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: 'black',
-    marginVertical: 10,
-  },
-  Choose: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  NoBt: {
-    width: '49.5%',
-    backgroundColor: '#346627',
+  account: {
+    height: 30,
+    width: '90%',
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomLeftRadius: 30,
-  },
-  YesBt: {
-    width: '49.5%',
-    backgroundColor: '#346627',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomRightRadius: 30,
-  },
-  ChooseTxt: {
-    color: 'white',
-    fontWeight: 'bold',
+    backgroundColor: '#CEDACB',
   },
 });
