@@ -9,6 +9,7 @@ import FirstSetting from '../pages/FirstSetting';
 import PostDetail from '../pages/PostDetail';
 import SearchPost from '../pages/SearchPost';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import AllQuestNavigation from './AllQuestNavigation';
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -16,6 +17,7 @@ export type HomeStackParamList = {
   FirstSetting: undefined;
   PostDetail: {postID: number};
   SearchPostHome: undefined;
+  AllQuest: undefined;
 };
 
 export type HomeStackNavigationProp =
@@ -68,9 +70,9 @@ export default function HomeNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
-          headerTitle: '퀘스트',
+          headerTitle: '도전',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
@@ -79,6 +81,14 @@ export default function HomeNavigation() {
         name="SearchPostHome"
         component={SearchPost}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="AllQuest"
+        component={AllQuestNavigation}
+        options={{
+          title: 'AllQuest',
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );
