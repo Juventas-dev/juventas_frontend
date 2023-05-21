@@ -26,7 +26,6 @@ import {Alert} from 'react-native';
 import FirstSetting from './src/pages/FirstSetting';
 import { useNavigation } from '@react-navigation/native';
 
-
 export type LoggedInParamList = {
   Board: undefined;
   Message: undefined;
@@ -122,7 +121,6 @@ function AppInner() {
           if (response.data.is_first === 'T') {
             setFirstLogin(true);
           }
-          // else {setFirstLogin(false);}
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.error(errorResponse);

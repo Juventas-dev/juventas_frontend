@@ -5,36 +5,55 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {NoticeStackParamList} from '../navigations/NoticeNavigation';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NoticeScreenProps = NativeStackScreenProps<NoticeStackParamList, 'Notice'>;
 
 const Notice = ({navigation}: NoticeScreenProps) => {
-  const [Notice, setNotice] = useState({date: '', title: '', content: ''});
+  const [notice, setNotice] = useState({date: '', title: '', content: ''});
+  const [incr, setIncr] = useState(0);
+
   useEffect(() => {
     const getNotice = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/settings/announcement/:incr`,
-        );
-        setNotice(response.data);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
+      if (incr !== 0) {
+        try {
+          const response = await axios.get(
+            `${Config.API_URL}/settings/announcement/${incr}`,
+          );
+          setNotice(response.data);
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
+          console.error(errorResponse);
+        }
       }
     };
     getNotice();
+  }, [incr]);
+
+  useEffect(() => {
+    console.log('^^');
+    const getIncr = async () => {
+      const inc = await AsyncStorage.getItem('notice');
+      console.log('**');
+      console.log(inc);
+      console.log(typeof inc);
+      setIncr(parseInt(inc));
+      console.log(incr);
+    };
+    getIncr();
   }, []);
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.Board}>
         <View style={styles.BoardTitle}>
-          <Text style={styles.BoardTitleTxt}>{Notice.title}</Text>
+          <Text style={styles.BoardTitleTxt}>{notice.title}</Text>
         </View>
         <View style={styles.Date}>
-          <Text style={{color: 'black', fontSize: 15}}>{Notice.date}</Text>
+          <Text style={{color: 'black', fontSize: 15}}>{notice.date}</Text>
         </View>
         <View style={styles.BoardCt}>
-          <Text style={styles.BoardCtTxt}>{Notice.content}</Text>
+          <Text style={styles.BoardCtTxt}>{notice.content}</Text>
         </View>
       </View>
     </SafeAreaView>
