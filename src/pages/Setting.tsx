@@ -5,7 +5,6 @@ import {View, Text, StyleSheet, Pressable, Switch} from 'react-native';
 import Config from 'react-native-config';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SettingStackParamList} from '../navigations/SettingNavigation';
-import Notice from './Notice';
 
 type SettingScreenProps = NativeStackScreenProps<
   SettingStackParamList,
@@ -14,6 +13,7 @@ type SettingScreenProps = NativeStackScreenProps<
 
 function Setting({navigation}: SettingScreenProps) {
   const [isEnabled, setIsEnabled] = useState(false);
+  const [faq, setFaq] = useState([{title: ''}, {tite: ''}, {title: ''}]);
   const AlltoggleSwitch = () => {
     setIsEnabled(previousState => !previousState);
     if (isEnabled === false) {
@@ -128,6 +128,16 @@ function Setting({navigation}: SettingScreenProps) {
     getNotice();
   }, []);
 
+  useEffect(() => {
+    const getComplain = async () => {
+      const response = await axios.get(`${Config.API_URL}/settings/inquiry`);
+      setFaq(response.data.FAQ);
+      console.log({faq});
+      console.log(faq[0].title);
+    };
+    getComplain();
+  }, []);
+
   return (
     <SafeAreaView style={styles.entire}>
       <View style={styles.Notice}>
@@ -206,16 +216,13 @@ function Setting({navigation}: SettingScreenProps) {
         </View>
         <View style={styles.NoticeBoard}>
           <View style={styles.FrequentQ}>
-            <Text>자주 묻는 질문{')'}</Text>
-            <Text>~~~~~</Text>
+            <Text>{faq[0].title}</Text>
           </View>
           <View style={styles.FrequentQ}>
-            <Text>자주 묻는 질문{')'}</Text>
-            <Text>~~~~~</Text>
+            <Text>{faq[1].title}</Text>
           </View>
           <View style={styles.FrequentQ}>
-            <Text>자주 묻는 질문{')'}</Text>
-            <Text>~~~~~</Text>
+            <Text>{faq[2].title}</Text>
           </View>
         </View>
         <Pressable style={styles.All} onPress={toComplain}>
