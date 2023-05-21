@@ -24,6 +24,7 @@ import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
 import {Alert} from 'react-native';
 import FirstSetting from './src/pages/FirstSetting';
+import { useNavigation } from '@react-navigation/native';
 
 export type LoggedInParamList = {
   Board: undefined;

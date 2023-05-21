@@ -20,7 +20,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 
 function Home({navigation}: HomeScreenProps) {
-  const [date, setDate] = useState(0);
   const [seqCount, setSeqCount] = useState(0);
   const [completedNum, setCompletedNUm] = useState(0);
   const [point, setPoint] = useState(0);
@@ -39,12 +38,11 @@ function Home({navigation}: HomeScreenProps) {
     {incr: 7, q_name: 'q_name'},
     {incr: 8, q_name: 'q_name'},
   ]);
-  const [recommendAgain, setRecommendAgain] = useState(true);
   const [questNum, setQuestNum] = useState(0);
   const [modal, showModal] = useState(false);
   const [myQuest, setMyQuest] = useState({
-    category: '',
-    middle_category: '',
+    questCategory: 'category',
+    questMidCategory: 'midCategory',
     quest_name: 'quest_name',
     quest_id: 0,
     num_people: 0,
@@ -67,174 +65,78 @@ function Home({navigation}: HomeScreenProps) {
   const userID = useSelector((state: RootState) => state.user.id);
 
   useEffect(() => {
-    const getFirstHomeData = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/questselected/${userID}`,
-        );
-        setDate(response.data.date);
-        setSeqCount(response.data.seq_count);
-        // if (response.data.is_first === 'T') {
-        //   navigation.navigate('FirstSetting');
-        // }
-        setQuestSelected(response.data.is_selected);
-        whichScreen();
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
-      }
-    };
-    getFirstHomeData();
+    getQuestSelectedOrNot();
     getBoardData();
-  }, [
-    getBoardData,
-    navigation,
-    questSelected,
-    userID,
-    whichPost,
-    whichScreen,
-    getImage,
-  ]);
+  }, []);
 
-  // useEffect(() => {
-  //   setMyPostRecommend(boardData[0].myrec);
-  // }, [boardData]);
-
-  const storeData = async (value: any) => {
+  const getQuestSelectedOrNot = useCallback(async () => {
     try {
-      const keys = await AsyncStorage.getAllKeys();
-      if (keys.includes('now')) {
-        await AsyncStorage.removeItem('now');
-        await AsyncStorage.removeItem('quest');
+      const response = await axios.get(`${Config.API_URL}/quest/questselected/${userID}`);
+      setQuestSelected(response.data.is_selected)
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-      const now = new Date();
-      console.log('abcde');
-      // console.log(new Date(String(now)).getDate());
-      // const stringValue = String(now);
-      await AsyncStorage.setItem('now', String(now));
-      await AsyncStorage.setItem('quest', JSON.stringify(value));
-    } catch (e: any) {
-      console.error(e.message);
     }
-  };
+  }, [questSelected]);
 
-  const getDateData = async () => {
+  const getQuestData = useCallback(async () => {
     try {
-      const value = await AsyncStorage.getItem('now');
-      if (value !== null) {
-        // const data = new Date(value);
-        // console.log('stored data: ' + data)
-        return value;
+      console.log(111)
+      const response = await axios.get(`${Config.API_URL}/quest/userquest/${userID}`);
+      if (questSelected == 'T') {
+        console.log(222)
+        setMyQuest({
+          questCategory: response.data.category,
+          questMidCategory: response.data.middle_category,
+          quest_name: response.data.quest_name,
+          quest_id: response.data.quest_id,
+          num_people: response.data.num_people
+        })
       }
-    } catch (e: any) {
-      console.log(e.message);
-    }
-  };
-
-  const getQuestData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('quest');
-      if (value !== null) {
-        const data = JSON.parse(value);
-        return data;
-      }
-    } catch (e: any) {
-      console.log(e.message);
-    }
-  };
-
-  const whichScreen = useCallback(() => {
-    const getAllQuestData = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/userquest/${userID}`,
-        );
-        console.log(response.data);
-        getImage(response.data.level);
-        setSeqCount(response.data.seq_count);
-        setCompletedNUm(response.data.quest_completed);
+      else {
+        console.log(333)
         setAllQuestData(response.data.recommend);
-        setPoint(response.data.point);
-        setLevel(response.data.level);
-        setRecommendAgain(false);
-
-        console.log({completedNum});
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
       }
-    };
-    const getMyQuestData = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/quest/userquest/${userID}`,
-        );
-        console.log(response.data);
-        getImage(response.data.level);
-        setSeqCount(response.data.seq_count);
-        setCompletedNUm(response.data.quest_completed);
-        setMyQuest(response.data);
-        setLevel(response.data.level);
-        setPoint(response.data.point);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
+      console.log(444)
+      setLevel(response.data.level);
+      setSeqCount(response.data.seq_count);
+      setCompletedNUm(response.data.quest_completed);
+      setPoint(response.data.point);
+      
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    };
-    if (questSelected === 'F' && recommendAgain) {
-      getAllQuestData();
-    } else {
-      getMyQuestData();
     }
-  }, [allQuestData, myQuest, questSelected, recommendAgain, getImage]);
+  }, [questSelected, allQuestData, level, seqCount, completedNum, point, myQuest]);
 
-  const getBoardData = useCallback(() => {
-    const getBoardDataWait = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/board/bestpost?id='${userID}'`,
-        );
-        setBoardData(response.data.bestPost);
-        console.log(response.data.bestPost);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+  useEffect(() => {
+    getQuestData();
+    getImage(level);
+  }, [questSelected]);
+
+  const getBoardData = async () => {
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/board/bestpost?id='${userID}'`,
+      );
+      setBoardData(response.data.bestPost);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    };
-    getBoardDataWait();
-    // getBoardContent(whichPost);
-  }, [boardData]);
-
-  // const getBoardContent = useCallback(
-  //   async (num: number) => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
-  //       );
-  //       setBoardContent(response.data.post[0]);
-  //     } catch (error) {
-  //       const errorResponse = (error as AxiosError<{message: string}>).response;
-  //       console.error(errorResponse);
-  //       if (errorResponse) {
-  //         return Alert.alert('알림', errorResponse.data?.message);
-  //       }
-  //     }
-  //   },
-  //   [boardContent],
-  // );
+    }
+  };
 
   const getImage = useCallback(
     (lev: string) => {
-      console.log({level});
       if (lev.includes('씨앗') === true) {
         setLevelTxt('Level_1');
       } else if (lev.includes('새싹') === true) {
@@ -248,10 +150,9 @@ function Home({navigation}: HomeScreenProps) {
       } else {
         setLevelTxt('Level_6');
       }
-      console.log(levelTxt);
       getSrc();
     },
-    [level],
+    [level, levelTxt, levelImage],
   );
 
   const getImage = useCallback(
@@ -290,59 +191,53 @@ function Home({navigation}: HomeScreenProps) {
     } else {
       setImage(imageArray.Level_6);
     }
-  }, [levelTxt]);
+  }, [levelTxt, levelImage]);
 
-  const selectQuest = useCallback(
-    (num: number) => {
-      console.log(allQuestData[num]);
-      const selectQuestWait = async () => {
-        try {
-          const response = await axios.post(
-            `${Config.API_URL}/quest/userquest`,
-            {
-              id: userID,
-              q_id: allQuestData[num].incr,
-            },
-          );
-          setQuestSelected('T');
-          whichScreen();
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-          if (errorResponse) {
-            return Alert.alert('알림', errorResponse.data?.message);
-          }
-        }
-      };
-      selectQuestWait();
-    },
-    [questSelected],
-  );
-  const resetQuest = useCallback(() => {
-    console.log(recommendAgain);
-    const resetQuestWait = async () => {
-      try {
-        const response = await axios.patch(
-          `${Config.API_URL}/quest/questreselect`,
-          {
-            id: userID,
-          },
+  const selectQuest = useCallback(async (num: number) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/quest/userquest`,
+        {
+          id: userID,
+          q_id: allQuestData[num].incr,
+        },
         );
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+      setQuestSelected('T');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>)
+        .response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    };
-    resetQuestWait();
-    setQuestSelected('F');
-    setRecommendAgain(true);
-    setMyQuest({quest_name: 'quest_name', quest_id: 0, num_people: 0});
-    whichScreen();
-  }, [questSelected, myQuest, whichScreen, userID]);
+    }
+  }, [questSelected, allQuestData, myQuest]);
+
+  const resetQuest = useCallback(async () => {
+    try {
+      const response = await axios.patch(
+        `${Config.API_URL}/quest/questreselect`,
+        {
+          id: userID,
+        });
+      setQuestSelected('F');
+      setMyQuest({
+        questCategory: 'category',
+        questMidCategory: 'midCategory',
+        quest_name: 'quest_name',
+        quest_id: 0,
+        num_people: 0,
+      });
+      getQuestData();
+      
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
+      }
+    }
+  }, [questSelected, myQuest, allQuestData]);
 
   const nextQuestList = useCallback(() => {
     if (questNum === 2) {
@@ -423,12 +318,10 @@ function Home({navigation}: HomeScreenProps) {
         ) : (
           <View style={styles.questBodyDecided}>
             <View style={styles.myQuest}>
-              <Text style={styles.questNum}>
-                {myQuest.category} - {myQuest.middle_category}
-              </Text>
+              <Text style={styles.questNum}>{myQuest.questCategory} - {myQuest.questMidCategory}</Text>
               <Text style={styles.questName}>{myQuest.quest_name}</Text>
               <Text style={styles.howManyPeopleInQuest}>
-                {myQuest.num_people}명이 이 퀘스트에 참여중입니다
+                {myQuest.num_people}명이 이 도전에 참여중입니다
               </Text>
               <Pressable onPress={toDaychk} style={styles.submitQuestTodayBtn}>
                 <Text style={styles.submitQuestTodayTxt}>도전 기록하기</Text>
@@ -439,13 +332,12 @@ function Home({navigation}: HomeScreenProps) {
             </Pressable>
           </View>
         )}
-        {questSelected === 'F' && (
-          <View style={styles.questFooter}>
-            <Pressable onPress={toAllQuest}>
-              <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
-            </Pressable>
-          </View>
-        )}
+
+        <View style={styles.questFooter}>
+          <Pressable onPress={toAllQuest}>
+            <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
+          </Pressable>
+        </View>
       </View>
       <View style={styles.board}>
         <View style={styles.boardSearch}>
@@ -709,7 +601,7 @@ const styles = StyleSheet.create({
   },
   questFooter: {
     flex: 1,
-    backgroundColor: '#F9FAF8',
+    // backgroundColor: '#F9FAF8',
     borderRadius: 10,
     paddingHorizontal: 20,
     alignSelf: 'flex-end',
