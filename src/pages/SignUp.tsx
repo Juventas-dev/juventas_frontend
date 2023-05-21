@@ -60,7 +60,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
 
   const getCheckNum = useCallback(() => {
     if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
-      return Alert.alert('알림', '전화번호를 입력하세요');
+      return Alert.alert('알림', '올바른 전화번호를 입력하세요');
     } else {
       // 인증번호 발행
       setCheckNumAns('1234');
