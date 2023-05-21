@@ -37,7 +37,7 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/mypage/myrecord/${userID}`,
         );
-
+        console.log(response.data.record);
         setMyCertification(response.data.record);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;

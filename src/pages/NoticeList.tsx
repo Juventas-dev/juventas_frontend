@@ -14,6 +14,7 @@ import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NoticeScreenProps = NativeStackScreenProps<
   NoticeStackParamList,
@@ -32,6 +33,13 @@ function NoticeList({navigation}: NoticeScreenProps) {
   const [Notice, setNotice] = useState([{incr: 0, title: ''}]);
   const userID = useSelector((state: RootState) => state.user.id);
 
+  const setNoticeIncr = useCallback((text: string) => {
+    console.log(text);
+    AsyncStorage.setItem('notice', text, () => {
+      console.log('저장완료');
+    });
+  }, []);
+
   useEffect(() => {
     const getNotice = async () => {
       try {
@@ -40,6 +48,7 @@ function NoticeList({navigation}: NoticeScreenProps) {
         );
         setFixedNotice(response.data.fixed[0]);
         setNotice(response.data.announce);
+        console.log(1);
         console.log(response.data.fixed);
         console.log(response.data.announce);
       } catch (error) {
@@ -52,7 +61,12 @@ function NoticeList({navigation}: NoticeScreenProps) {
 
   function header() {
     return (
-      <Pressable style={styles.NoticeFix} onPress={toNotice}>
+      <Pressable
+        style={styles.NoticeFix}
+        onPress={() => {
+          setNoticeIncr(String(fixedNotice.incr));
+          navigation.navigate('Notice');
+        }}>
         <Text style={styles.NoticeTitleFix}>{fixedNotice.title}</Text>
         <Text style={{color: '#4C4D4C', fontSize: 20}}>
           {fixedNotice.content}
@@ -62,9 +76,16 @@ function NoticeList({navigation}: NoticeScreenProps) {
   }
 
   function NoTice({Item}) {
+    console.log(0);
+    console.log([Item]);
     return (
-      <Pressable style={styles.NoticeBf} onPress={toNotice}>
-        <Text style={styles.NoticeTitle}>{Item}</Text>
+      <Pressable
+        style={styles.NoticeBf}
+        onPress={() => {
+          setNoticeIncr(String(Item.incr));
+          navigation.navigate('Notice');
+        }}>
+        <Text style={styles.NoticeTitle}>{Item.title}</Text>
       </Pressable>
     );
   }
@@ -75,7 +96,7 @@ function NoticeList({navigation}: NoticeScreenProps) {
         <FlatList
           data={Notice}
           keyExtractor={item => String(item.title)}
-          renderItem={({item}) => <NoTice Item={item.title} />}
+          renderItem={({item}) => <NoTice Item={item} />}
           ListHeaderComponent={header()}
         />
       </View>
