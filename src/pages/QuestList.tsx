@@ -18,6 +18,7 @@ import SetCategory from './SetCategory';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {compose} from '@reduxjs/toolkit';
+import { useNavigationBuilder } from '@react-navigation/native';
 
 type QuestScreenProps = NativeStackScreenProps<
   QuestStackParamList,
@@ -66,10 +67,22 @@ const QuestList = ({navigation}: QuestScreenProps) => {
     getQuest();
   }, [category]);
 
-  /*const selectQuest = useCallback((num: number) => {
-    const selectQuestWait = async () => {
+  // const selectQuest = useCallback((num:number) => {
+  //   AsyncStorage.setItem('questAgain', num.toString(), () => {
+  //     console.log('change quest');
+  //   });
+  // }, []);
+
+  const selectQuest = useCallback(async (num: number) => {
       try {
-        const response = await axios.post(`${Config.API_URL}/quest/userquest`, {
+        const response1 = await axios.patch(
+          `${Config.API_URL}/quest/questreselect`,
+          {
+            id: userID,
+          },
+        );
+
+        const response2 = await axios.post(`${Config.API_URL}/quest/userquest`, {
           id: userID,
           q_id: num,
         });
@@ -80,17 +93,21 @@ const QuestList = ({navigation}: QuestScreenProps) => {
           return Alert.alert('알림', errorResponse.data?.message);
         }
       }
-    };
-    selectQuestWait();
-  }, []);
- */
+    }, []);
+ 
   function Quest({Item}) {
     console.log({Item});
     return (
       <View style={styles.Quest}>
         <Text style={styles.QuestName}>{Item.q_name}</Text>
         <Pressable
-          style={styles.selectBox} /*onPress={selectQuest({Item.incr})}*/
+          style={styles.selectBox}
+          onPress={() => {
+            // 여기서 뭘 어케해야되는지 진짜 모르겠음
+            selectQuest(Item.incr);
+            navigation.pop();
+            navigation.pop();
+          }}
         >
           <Text style={styles.selectTxt}>도전 선택하기</Text>
         </Pressable>
@@ -120,7 +137,7 @@ const styles = StyleSheet.create({
   entire: {
     backgroundColor: '#E7EBE4',
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 10,
   },
   CategoryBox: {
     backgroundColor: '#CFE0C2',
