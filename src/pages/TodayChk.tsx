@@ -40,6 +40,8 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
   }, []);
 
   const [myQuest, setMyQuest] = useState({
+    category: '',
+    middle_category: '',
     quest_name: 'quest_name',
     quest_id: 0,
     num_people: 0,
@@ -81,6 +83,7 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/quest/userquest/${userID}`,
         );
+        console.log(response.data);
         setMyQuest(response.data);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -95,14 +98,13 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
       <SafeAreaView style={styles.Background}>
         <View style={styles.questBodyDecided}>
           <View style={styles.myQuest}>
-            <Text style={styles.questNum}>대분류 - 중분류</Text>
+            <Text style={styles.questNum}>
+              {myQuest.category} - {myQuest.middle_category}
+            </Text>
             <Text style={styles.questName}>{myQuest.quest_name}</Text>
             <Text style={styles.howManyPeopleInQuest}>
               {myQuest.num_people}명이 이 퀘스트에 참여중입니다
             </Text>
-            <Pressable style={styles.submitQuestTodayBtn}>
-              <Text style={styles.submitQuestTodayTxt}>오늘의 인증</Text>
-            </Pressable>
           </View>
         </View>
         <View style={styles.Title}>
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 35,
     width: '100%',
-    height: '100%',
+    height: '80%',
   },
   questNum: {
     color: '#1F6733',
@@ -217,7 +219,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 18,
     marginBottom: 5,
-    fontWeight: '800',
+    fontWeight: '900',
   },
   howManyPeopleInQuest: {
     color: '#8D8D8D',

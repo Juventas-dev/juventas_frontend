@@ -17,7 +17,6 @@ const AllQuest = ({navigation}: QuestScreenProps) => {
       console.log('저장완료');
     });
   }, []);
-  const userID = useSelector((state: RootState) => state.user.id);
 
   return (
     <SafeAreaView style={styles.entire}>
