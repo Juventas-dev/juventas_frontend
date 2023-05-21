@@ -62,6 +62,7 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
   const upload = async () => {
     await axios.post(`${Config.API_URL}/settings/inquiry`, {
       id: userID,
+      is_faq: 'F',
       title: title,
       content: content,
       iid: ComplainSelected,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
   },
   ComplainTitle: {
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 20,
     paddingLeft: 15,
     justifyContent: 'center',
     alignItems: 'center',

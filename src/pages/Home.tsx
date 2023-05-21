@@ -43,6 +43,8 @@ function Home({navigation}: HomeScreenProps) {
   const [questNum, setQuestNum] = useState(0);
   const [modal, showModal] = useState(false);
   const [myQuest, setMyQuest] = useState({
+    category: '',
+    middle_category: '',
     quest_name: 'quest_name',
     quest_id: 0,
     num_people: 0,
@@ -421,7 +423,9 @@ function Home({navigation}: HomeScreenProps) {
         ) : (
           <View style={styles.questBodyDecided}>
             <View style={styles.myQuest}>
-              <Text style={styles.questNum}>{myQuest.quest_id}</Text>
+              <Text style={styles.questNum}>
+                {myQuest.category} - {myQuest.middle_category}
+              </Text>
               <Text style={styles.questName}>{myQuest.quest_name}</Text>
               <Text style={styles.howManyPeopleInQuest}>
                 {myQuest.num_people}명이 이 퀘스트에 참여중입니다
