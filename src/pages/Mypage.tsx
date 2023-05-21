@@ -31,6 +31,7 @@ const Mypage = () => {
   const [images, setImages] = useState<ImageResults[]>([]);
   const [userName, setuserName] = useState('');
   const [Intro, setIntro] = useState('');
+  const [percent, setPercent] = useState(0);
   const [profile, setProfile] = useState({
     cat_0: '',
     cat_1: '',
@@ -42,6 +43,13 @@ const Mypage = () => {
     intro: '',
     quest: '',
   });
+  const getPercent = (text: string) => {
+    let arr = text.split('%');
+    let p = parseInt(arr[0], 10);
+    setPercent(p);
+    console.log({percent});
+  };
+
   const selectImage = async () => {
     const response = await MultipleImagePicker.openPicker({
       mediaType: MediaType.IMAGE,
@@ -84,6 +92,7 @@ const Mypage = () => {
           setProfile(response.data);
           setuserName(response.data.name);
           setIntro(response.data.intro);
+          getPercent(response.data.percentage);
           console.log(profile);
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>)
@@ -178,8 +187,18 @@ const Mypage = () => {
       )}
       <View style={isModifying ? styles.modify : styles.noModify}>
         <View>
-          <Progress.Bar style={isModifying ? styles.modifybar : styles.bar}>
-            <Text style={styles.Txt}>다음등급: {profile.next_level}</Text>
+          <Progress.Bar
+            progress={percent / 100}
+            color={'#346627'}
+            unfilledColor={'#EBEFEA'}
+            width={370}
+            height={30}
+            borderRadius={30}
+            style={styles.bar}>
+            <Text style={styles.barTxt_1}>
+              현재 등급: {profile.current_level} ({profile.percentage})
+            </Text>
+            <Text style={styles.barTxt_2}>다음등급: {profile.next_level}</Text>
           </Progress.Bar>
         </View>
         <View style={isModifying ? styles.modifyongoing : styles.Ongoing}>
@@ -341,12 +360,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bar: {
-    height: 30,
-    width: '100%',
-    backgroundColor: '#EBEFEA',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginVertical: 10,
     borderWidth: 0,
   },
@@ -481,6 +494,20 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  barTxt_1: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    color: 'white',
+    fontSize: 12,
+  },
+  barTxt_2: {
+    position: 'absolute',
+    top: 6,
+    left: 245,
+    color: 'black',
+    fontSize: 12,
   },
   Txt: {
     fontWeight: 'bold',
