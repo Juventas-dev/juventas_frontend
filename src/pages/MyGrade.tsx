@@ -14,16 +14,28 @@ type MypageScreenProps = NativeStackScreenProps<MypageStackParamList>;
 const MyGrade = ({navigation}: MypageScreenProps) => {
   const [currentGrade, setCurrentGrade] = useState('');
   const [nextGrade, setNextGrade] = useState('');
-
+  const [percent, setPercent] = useState(0);
+  const [leftNum, setLeftNum] = useState(0);
+  const [percentage, setPercentage] = useState('');
+  const getPercent = (text: string) => {
+    let arr = text.split('%');
+    let p = parseInt(arr[0], 10);
+    setPercent(p);
+    console.log({percent});
+  };
   const userID = useSelector((state: RootState) => state.user.id);
   useEffect(() => {
     const getGrade = async () => {
       try {
         const response = await axios.get(
-          `${Config.API_URL}/mypage/main/${userID}`,
+          `${Config.API_URL}/mypage/mylevel/${userID}`,
         );
+        console.log(response.data);
         setCurrentGrade(response.data.current_level);
         setNextGrade(response.data.next_level);
+        setPercentage(response.data.percentage);
+        setLeftNum(response.data.questleft);
+        getPercent(response.data.percentage);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -40,37 +52,40 @@ const MyGrade = ({navigation}: MypageScreenProps) => {
       </View>
       <View style={styles.GradeInf}>
         <Text style={styles.MyGradeInf}>다음 등급 ({nextGrade})까지</Text>
-        <Text style={styles.MyGradeInf_2}>NN 도전 남음</Text>
+        <Text style={styles.MyGradeInf_2}>{leftNum} 도전 남음</Text>
       </View>
       <View style={styles.grade}>
-        <Progress.Bar style={styles.bar}>
-          <Text>다음등급:~</Text>
-        </Progress.Bar>
+        <View>
+          <Progress.Bar
+            progress={percent / 100}
+            color={'#346627'}
+            unfilledColor={'#EBEFEA'}
+            width={370}
+            height={30}
+            borderRadius={30}
+            style={styles.bar}>
+            <Text style={styles.barTxt}>{percentage}</Text>
+          </Progress.Bar>
+        </View>
       </View>
       <View style={styles.AllGrade}>
         <View style={styles.TopGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>열매</Text>
         </View>
         <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>꽃</Text>
         </View>
         <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>나무</Text>
         </View>
         <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>묘목</Text>
         </View>
         <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
-        </View>
-        <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
-        </View>
-        <View style={styles.MiddleGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>새싹</Text>
         </View>
         <View style={styles.LowGrade}>
-          <Text style={styles.GradeName}>어쩌구</Text>
+          <Text style={styles.GradeName}>씨앗</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -92,12 +107,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bar: {
-    width: '100%',
-    backgroundColor: '#F9FAF8',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginVertical: 10,
     borderWidth: 0,
+  },
+  barTxt: {
+    position: 'absolute',
+    top: 6,
+    left: 180,
+    color: 'white',
+    fontSize: 12,
   },
   GradeInf: {
     flex: 0.5,
@@ -114,7 +132,8 @@ const styles = StyleSheet.create({
   },
   AllGrade: {
     flex: 8,
-    marginBottom: 1,
+    marginTop: 20,
+    marginBottom: 100,
     justifyContent: 'space-around',
   },
   TopGrade: {
