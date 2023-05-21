@@ -289,9 +289,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
               style={styles.modalImg}
             />
             <Text style={styles.modalTextHeader}>인증번호 발송</Text>
-            <Text style={styles.modalTextBody}>
-              인증번호가 카카오톡으로 발송되었습니다
-            </Text>
+            <Text style={styles.modalTextBody}>인증번호가 발송되었습니다</Text>
           </View>
         </Pressable>
       </Modal>

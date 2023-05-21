@@ -9,7 +9,6 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import {ProgressViewIOSBase} from 'react-native/Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
@@ -48,13 +47,7 @@ function Home({navigation}: HomeScreenProps) {
     quest_id: 0,
     num_people: 0,
   });
-  const [boardData, setBoardData] = useState([
-    {incr: 0, c_id: 0, title: 'title', like: 0, comment: 0, myrec: 0},
-  ]);
-  const [boardContent, setBoardContent] = useState({
-    content: 'content',
-    userID: 'userID',
-  });
+  const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
     Level_1: require('../../assets/image/Lv1.png'),
@@ -203,7 +196,7 @@ function Home({navigation}: HomeScreenProps) {
     const getBoardDataWait = async () => {
       try {
         const response = await axios.get(
-          `${Config.API_URL}/board/post?id='${userID}'`,
+          `${Config.API_URL}/board/bestpost?id='${userID}'`,
         );
         setBoardData(response.data.bestPost);
         console.log(response.data.bestPost);
@@ -216,31 +209,47 @@ function Home({navigation}: HomeScreenProps) {
       }
     };
     getBoardDataWait();
-    getBoardContent(whichPost);
-  }, [boardData, boardContent]);
-  const getBoardContent = useCallback(
-    (num: number) => {
-      const getBoardContentWait = async () => {
-        try {
-          const response = await axios.get(
-            `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
-          );
-          setBoardContent({
-            content: response.data.post[whichPost].content,
-            userID: response.data.post[whichPost].user_name,
-          });
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-          if (errorResponse) {
-            return Alert.alert('알림', errorResponse.data?.message);
-          }
-        }
-      };
-      getBoardContentWait();
+    // getBoardContent(whichPost);
+  }, [boardData]);
+
+  // const getBoardContent = useCallback(
+  //   async (num: number) => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${Config.API_URL}/board/post/${boardData[num].incr}?id='${userID}'`,
+  //       );
+  //       setBoardContent(response.data.post[0]);
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.error(errorResponse);
+  //       if (errorResponse) {
+  //         return Alert.alert('알림', errorResponse.data?.message);
+  //       }
+  //     }
+  //   },
+  //   [boardContent],
+  // );
+
+  const getImage = useCallback(
+    (lev: string) => {
+      console.log({level});
+      if (lev.includes('씨앗') === true) {
+        setLevelTxt('Level_1');
+      } else if (lev.includes('새싹') === true) {
+        setLevelTxt('Level_2');
+      } else if (lev.includes('묘목') === true) {
+        setLevelTxt('Level_3');
+      } else if (lev.includes('나무') === true) {
+        setLevelTxt('Level_4');
+      } else if (lev.includes('꽃') === true) {
+        setLevelTxt('Level_5');
+      } else {
+        setLevelTxt('Level_6');
+      }
+      console.log(levelTxt);
+      getSrc();
     },
-    [boardContent],
+    [level],
   );
 
   const getImage = useCallback(
@@ -346,7 +355,7 @@ function Home({navigation}: HomeScreenProps) {
       setWhichPost(num);
       getBoardData();
     },
-    [whichPost, boardData, boardContent],
+    [whichPost, boardData],
   );
 
   const toDaychk = useCallback(() => {
@@ -454,10 +463,10 @@ function Home({navigation}: HomeScreenProps) {
               <Pressable style={styles.profile} />
               <View>
                 <Text style={styles.boardProfileUsername} numberOfLines={1}>
-                  {boardData[whichPost].user_name}
+                  {boardData[whichPost]?.user_name}
                 </Text>
                 <Text style={styles.boardProfileTitle} numberOfLines={1}>
-                  {boardData[whichPost].title}
+                  {boardData[whichPost]?.title}
                 </Text>
               </View>
             </View>
@@ -466,16 +475,16 @@ function Home({navigation}: HomeScreenProps) {
                 <FontAwesomeIcon
                   name="thumbs-up"
                   size={39}
-                  color={boardData[whichPost].myrec ? '#1F6733' : '#DAE2D8'}
+                  color={boardData[whichPost]?.myrec ? '#1F6733' : '#DAE2D8'}
                 />
               </Pressable>
               <Text style={styles.boardRecommendTxt}>
-                {boardData[whichPost].like}
+                {boardData[whichPost]?.like}
               </Text>
             </View>
           </View>
           <Text style={styles.boardContentTxt} numberOfLines={3}>
-            {boardData[whichPost].content}
+            {boardData[whichPost]?.content}
           </Text>
         </Pressable>
         <View style={styles.boardFooter}>
@@ -485,7 +494,7 @@ function Home({navigation}: HomeScreenProps) {
                 nextPost(0);
               }}
               style={
-                whichPost == 0
+                whichPost === 0
                   ? styles.boardFooterBtnActive
                   : styles.boardFooterBtn
               }
@@ -497,7 +506,7 @@ function Home({navigation}: HomeScreenProps) {
                 nextPost(1);
               }}
               style={
-                whichPost == 1
+                whichPost === 1
                   ? styles.boardFooterBtnActive
                   : styles.boardFooterBtn
               }
@@ -509,7 +518,7 @@ function Home({navigation}: HomeScreenProps) {
                 nextPost(2);
               }}
               style={
-                whichPost == 2
+                whichPost === 2
                   ? styles.boardFooterBtnActive
                   : styles.boardFooterBtn
               }

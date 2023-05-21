@@ -81,6 +81,52 @@ function Setting({navigation}: SettingScreenProps) {
     };
     getNotice();
   }, []);
+  const onQuit = useCallback(() => {
+    setShowQuitModal(true);
+  }, []);
+
+  const signOutUser = async (): Promise<void> => {
+    if (user.loginType === 'kakao') {
+      await logout();
+      console.log('카카오 로그아웃 완료');
+    } else if (user.loginType === 'naver') {
+      await NaverLogin.logout();
+      console.log('네이버 로그아웃 완료');
+    } else {
+      const response = await axios.patch(`${Config.API_URL}/user/logout`, {
+        headers: {
+          authorization: `Bearer ${user.accessToken}`,
+        },
+      });
+      console.log(response);
+      await EncryptedStorage.removeItem('refreshToken');
+    }
+    dispatch(
+      userSlice.actions.setUser({
+        name: '',
+        id: '',
+        phoneNum: '',
+        loginType: '',
+        accessToken: '',
+      }),
+    );
+  };
+
+  useEffect(() => {
+    const getNotice = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/settings/announcement`,
+        );
+        setNotice(response.data.fixed[0]);
+        console.log({Notice});
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+      }
+    };
+    getNotice();
+  }, []);
 
   return (
     <SafeAreaView style={styles.entire}>
