@@ -112,43 +112,21 @@ function Setting({navigation}: SettingScreenProps) {
     );
   };
 
-  const unlinkUser = async (): Promise<void> => {
-    if (user.loginType === 'kakao') {
-      await unlink();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('카카오 회원탈퇴 완료');
-    } else if (user.loginType === 'naver') {
-      await NaverLogin.deleteToken();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('네이버 회원탈퇴 완료');
-    } else {
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlink?id=${user.id}`,
-        {
-          headers: {
-            authorization: `Bearer ${user.accessToken}`,
-          },
-        },
-      );
-      console.log(response);
-      await EncryptedStorage.removeItem('refreshToken');
-    }
-    dispatch(
-      userSlice.actions.setUser({
-        name: '',
-        id: '',
-        phoneNum: '',
-        loginType: '',
-        accessToken: '',
-      }),
-    );
-  };
+  useEffect(() => {
+    const getNotice = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/settings/announcement`,
+        );
+        setNotice(response.data.fixed[0]);
+        console.log({Notice});
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+      }
+    };
+    getNotice();
+  }, []);
 
   return (
     <SafeAreaView style={styles.entire}>

@@ -88,10 +88,13 @@ function Home({navigation}: HomeScreenProps) {
     getFirstHomeData();
     getBoardData();
   }, [
+    getBoardData,
     navigation,
     questSelected,
     userID,
     whichPost,
+    whichScreen,
+    getImage,
   ]);
 
   // useEffect(() => {
@@ -226,6 +229,28 @@ function Home({navigation}: HomeScreenProps) {
   //   },
   //   [boardContent],
   // );
+
+  const getImage = useCallback(
+    (lev: string) => {
+      console.log({level});
+      if (lev.includes('씨앗') === true) {
+        setLevelTxt('Level_1');
+      } else if (lev.includes('새싹') === true) {
+        setLevelTxt('Level_2');
+      } else if (lev.includes('묘목') === true) {
+        setLevelTxt('Level_3');
+      } else if (lev.includes('나무') === true) {
+        setLevelTxt('Level_4');
+      } else if (lev.includes('꽃') === true) {
+        setLevelTxt('Level_5');
+      } else {
+        setLevelTxt('Level_6');
+      }
+      console.log(levelTxt);
+      getSrc();
+    },
+    [level],
+  );
 
   const getImage = useCallback(
     (lev: string) => {
