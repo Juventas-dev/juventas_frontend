@@ -42,13 +42,7 @@ function Home({navigation}: HomeScreenProps) {
   const [recommendAgain, setRecommendAgain] = useState(true);
   const [questNum, setQuestNum] = useState(0);
   const [modal, showModal] = useState(false);
-  const [myQuest, setMyQuest] = useState({
-    category: '',
-    middle_category: '',
-    quest_name: 'quest_name',
-    quest_id: 0,
-    num_people: 0,
-  });
+  const [myQuest, setMyQuest] = useState({});
   const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
@@ -89,15 +83,7 @@ function Home({navigation}: HomeScreenProps) {
     };
     getFirstHomeData();
     getBoardData();
-  }, [
-    getBoardData,
-    navigation,
-    questSelected,
-    userID,
-    whichPost,
-    whichScreen,
-    getImage,
-  ]);
+  }, [navigation, questSelected, userID, whichPost]);
 
   // useEffect(() => {
   //   setMyPostRecommend(boardData[0].myrec);
