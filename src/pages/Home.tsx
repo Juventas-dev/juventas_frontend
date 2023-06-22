@@ -15,7 +15,6 @@ import {RootState} from '../store';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 
@@ -39,7 +38,6 @@ function Home({navigation}: HomeScreenProps) {
     {incr: 8, q_name: 'q_name'},
   ]);
   const [questNum, setQuestNum] = useState(0);
-  const [modal, showModal] = useState(false);
   const [myQuest, setMyQuest] = useState({
     questCategory: 'category',
     questMidCategory: 'midCategory',
@@ -71,8 +69,10 @@ function Home({navigation}: HomeScreenProps) {
 
   const getQuestSelectedOrNot = useCallback(async () => {
     try {
-      const response = await axios.get(`${Config.API_URL}/quest/questselected/${userID}`);
-      setQuestSelected(response.data.is_selected)
+      const response = await axios.get(
+        `${Config.API_URL}/quest/questselected/${userID}`,
+      );
+      setQuestSelected(response.data.is_selected);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -84,28 +84,28 @@ function Home({navigation}: HomeScreenProps) {
 
   const getQuestData = useCallback(async () => {
     try {
-      console.log(111)
-      const response = await axios.get(`${Config.API_URL}/quest/userquest/${userID}`);
+      console.log(111);
+      const response = await axios.get(
+        `${Config.API_URL}/quest/userquest/${userID}`,
+      );
       if (questSelected == 'T') {
-        console.log(222)
+        console.log(222);
         setMyQuest({
           questCategory: response.data.category,
           questMidCategory: response.data.middle_category,
           quest_name: response.data.quest_name,
           quest_id: response.data.quest_id,
-          num_people: response.data.num_people
-        })
-      }
-      else {
-        console.log(333)
+          num_people: response.data.num_people,
+        });
+      } else {
+        console.log(333);
         setAllQuestData(response.data.recommend);
       }
-      console.log(444)
+      console.log(444);
       setLevel(response.data.level);
       setSeqCount(response.data.seq_count);
       setCompletedNUm(response.data.quest_completed);
       setPoint(response.data.point);
-      
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -113,7 +113,15 @@ function Home({navigation}: HomeScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, [questSelected, allQuestData, level, seqCount, completedNum, point, myQuest]);
+  }, [
+    questSelected,
+    allQuestData,
+    level,
+    seqCount,
+    completedNum,
+    point,
+    myQuest,
+  ]);
 
   useEffect(() => {
     getQuestData();
@@ -155,28 +163,6 @@ function Home({navigation}: HomeScreenProps) {
     [level, levelTxt, levelImage],
   );
 
-  const getImage = useCallback(
-    (lev: string) => {
-      console.log({level});
-      if (lev.includes('씨앗') === true) {
-        setLevelTxt('Level_1');
-      } else if (lev.includes('새싹') === true) {
-        setLevelTxt('Level_2');
-      } else if (lev.includes('묘목') === true) {
-        setLevelTxt('Level_3');
-      } else if (lev.includes('나무') === true) {
-        setLevelTxt('Level_4');
-      } else if (lev.includes('꽃') === true) {
-        setLevelTxt('Level_5');
-      } else {
-        setLevelTxt('Level_6');
-      }
-      console.log(levelTxt);
-      getSrc();
-    },
-    [level],
-  );
-
   const getSrc = useCallback(() => {
     if (levelTxt === 'Level_1') {
       setImage(imageArray.Level_1);
@@ -193,33 +179,30 @@ function Home({navigation}: HomeScreenProps) {
     }
   }, [levelTxt, levelImage]);
 
-  const selectQuest = useCallback(async (num: number) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/quest/userquest`,
-        {
+  const selectQuest = useCallback(
+    async (num: number) => {
+      try {
+        await axios.post(`${Config.API_URL}/quest/userquest`, {
           id: userID,
           q_id: allQuestData[num].incr,
-        },
-        );
-      setQuestSelected('T');
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>)
-        .response;
-      console.error(errorResponse);
-      if (errorResponse) {
-        return Alert.alert('알림', errorResponse.data?.message);
+        });
+        setQuestSelected('T');
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
       }
-    }
-  }, [questSelected, allQuestData, myQuest]);
+    },
+    [questSelected, allQuestData, myQuest],
+  );
 
   const resetQuest = useCallback(async () => {
     try {
-      const response = await axios.patch(
-        `${Config.API_URL}/quest/questreselect`,
-        {
-          id: userID,
-        });
+      await axios.patch(`${Config.API_URL}/quest/questreselect`, {
+        id: userID,
+      });
       setQuestSelected('F');
       setMyQuest({
         questCategory: 'category',
@@ -229,7 +212,6 @@ function Home({navigation}: HomeScreenProps) {
         num_people: 0,
       });
       getQuestData();
-      
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -318,7 +300,9 @@ function Home({navigation}: HomeScreenProps) {
         ) : (
           <View style={styles.questBodyDecided}>
             <View style={styles.myQuest}>
-              <Text style={styles.questNum}>{myQuest.questCategory} - {myQuest.questMidCategory}</Text>
+              <Text style={styles.questNum}>
+                {myQuest.questCategory} - {myQuest.questMidCategory}
+              </Text>
               <Text style={styles.questName}>{myQuest.quest_name}</Text>
               <Text style={styles.howManyPeopleInQuest}>
                 {myQuest.num_people}명이 이 도전에 참여중입니다
