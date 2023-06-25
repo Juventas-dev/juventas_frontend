@@ -23,7 +23,7 @@ function Term() {
       <ScrollView style={styles.viewOut} contentContainerStyle={styles.view}>
         <Text style={styles.header}>서비스 이용약관 및 개인정보 처리방침</Text>
         <Pressable onPress={() => setOpen0(!open0)} style={styles.pages}>
-          <Text style={styles.pagesHeader}>0. 서비스 이용약관</Text>
+          <Text style={styles.pagesHeader}>제1장(목적)</Text>
           {open0 && <Text style={styles.pagesTxt}>어쩌고저쩌고</Text>}
         </Pressable>
         <Pressable onPress={() => setOpen1(!open1)} style={styles.pages}>
