@@ -43,12 +43,12 @@ const Quit = ({navigation}: SettingScreenProps) => {
         },
       });
       console.log(response);
-      const deviceToken = await EncryptedStorage.getItem('deviceToken');
-      await axios.delete(`${Config.API_URL}/push/delete`, {
-        data: {deviceToken: deviceToken},
-      });
       await EncryptedStorage.removeItem('refreshToken');
     }
+    const deviceToken = await EncryptedStorage.getItem('deviceToken');
+    await axios.delete(`${Config.API_URL}/push/delete`, {
+      data: {deviceToken: deviceToken},
+    });
     dispatch(
       userSlice.actions.setUser({
         name: '',
