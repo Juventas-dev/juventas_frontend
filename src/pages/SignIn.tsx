@@ -124,6 +124,13 @@ function SignIn({navigation}: SignInScreenProps) {
         id: 'kakao' + profile.id,
       });
       console.log(response);
+
+      const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+      await axios.post(`${Config.API_URL}/push/register`, {
+        id: response.data.id,
+        deviceToken: deviceToken,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -154,6 +161,13 @@ function SignIn({navigation}: SignInScreenProps) {
           id: 'naver' + profile.response.id,
         });
         console.log(response);
+
+        const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+        await axios.post(`${Config.API_URL}/push/register`, {
+          id: response.data.id,
+          deviceToken: deviceToken,
+        });
       }
     } catch (error) {
       console.log(error);
