@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState, useEffect} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Text,
   TextInput,
@@ -23,11 +23,9 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import DeviceInfo from 'react-native-device-info';
 const IconBasic = require('../../assets/image/fund.png');
 const kakao = require('../../assets/image/KakaoTalk.png');
 const naver = require('../../assets/image/Naver.png');
-import PushNotification from 'react-native-push-notification';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -40,17 +38,6 @@ function SignIn({navigation}: SignInScreenProps) {
   const PassRef = useRef<TextInput | null>(null);
   const [alertPhoneNum, setAlertPhoneNum] = useState(false);
   const [alertPass, setAlertPass] = useState(false);
-  const [deviceToken, setDeviceToken] = useState('');
-
-  useEffect(() => {
-    PushNotification.configure({
-      // (optional) 토큰이 생성될 때 실행됨(토큰을 서버에 등록할 때 쓸 수 있음)
-      onRegister: function (token: any) {
-        setDeviceToken(token.token);
-        console.log('TOKEN:', token.token);
-      },
-    });
-  }, []);
 
   const onChangePhone = useCallback((text: string) => {
     setPhone(text.trim());
@@ -91,8 +78,10 @@ function SignIn({navigation}: SignInScreenProps) {
         response.data.refreshToken,
       );
 
+      const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
       await axios.post(`${Config.API_URL}/push/register`, {
-        userId: response.data.id,
+        id: response.data.id,
         deviceToken: deviceToken,
       });
     } catch (error) {
@@ -135,6 +124,13 @@ function SignIn({navigation}: SignInScreenProps) {
         id: 'kakao' + profile.id,
       });
       console.log(response);
+
+      const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+      await axios.post(`${Config.API_URL}/push/register`, {
+        id: response.data.id,
+        deviceToken: deviceToken,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -165,6 +161,13 @@ function SignIn({navigation}: SignInScreenProps) {
           id: 'naver' + profile.response.id,
         });
         console.log(response);
+
+        const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+        await axios.post(`${Config.API_URL}/push/register`, {
+          id: response.data.id,
+          deviceToken: deviceToken,
+        });
       }
     } catch (error) {
       console.log(error);
