@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useEffect} from 'react';
+import React, {useCallback, useState, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -61,6 +61,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const [commentValue, setCommentValue] = useState('');
   const [needReset, setNeedReset] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const commentref = useRef<TextInput | null>(null);
 
   const onChangeComment = useCallback((text: string) => {
     setCommentValue(text);
@@ -98,7 +99,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       }
     };
     getBoardAndRefresh();
-  }, []);
+  }, [needReset]);
 
   const userID = useSelector((state: RootState) => state.user.id);
   const [myPostRecommend, setMyPostRecommend] = useState(0);
@@ -129,6 +130,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         }
       };
       recommendPostWait();
+      setNeedReset(!setNeedReset);
     }
   }, [idCurrent, myPostRecommend, userID]);
 
@@ -153,6 +155,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       }
     };
     postCommentWait();
+    commentref.current?.clear();
   }, [commentValue, idCurrent, needReset, userID]);
 
   const likeComment = useCallback(
@@ -232,6 +235,8 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           onChangeText={onChangeComment}
           placeholder="댓글을 입력하세요"
           onSubmitEditing={postComment}
+          ref={commentref}
+          
         />
         <Pressable onPress={postComment} style={styles.commentBtn}>
           <Text style={styles.commentBtnTxt}>입력</Text>
