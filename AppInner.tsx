@@ -24,7 +24,7 @@ import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
 import {Alert} from 'react-native';
 import FirstSetting from './src/pages/FirstSetting';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 export type LoggedInParamList = {
   Board: undefined;
@@ -110,9 +110,8 @@ function AppInner() {
     if (!isLoggedIn) {
       console.log('!isLoggedIn', !isLoggedIn);
       disconnect();
-    }
-    else {
-      console.log('Loggedin', isFirstLogin)
+    } else {
+      console.log('Loggedin', isFirstLogin);
       const getFirstHomeData = async () => {
         try {
           const response = await axios.get(
@@ -122,7 +121,8 @@ function AppInner() {
             setFirstLogin(false);
           }
         } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
           console.error(errorResponse);
           if (errorResponse) {
             return Alert.alert('알림', errorResponse.data?.message);
@@ -134,72 +134,72 @@ function AppInner() {
   }, [isLoggedIn, disconnect, isFirstLogin, setFirstLogin]);
 
   return isLoggedIn ? (
-      !isFirstLogin ? (
-        <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
-          <Tab.Screen
-            name="BoardNav"
-            component={BoardNavigation}
-            options={{
-              title: 'Board',
-              headerShown: false,
-              tabBarLabel: '게시판',
-              tabBarIcon: ({color}) => (
-                <FontAwesome5Icon name="bars" color={color} size={40} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="MessageNavigation"
-            component={MessageNavigation}
-            options={{
-              title: 'Message',
-              headerShown: false,
-              tabBarLabel: '쪽지',
-              tabBarIcon: ({color}) => (
-                <AntDesignIcon name="message1" color={color} size={40} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="HomeNav"
-            component={HomeNavigation}
-            options={{
-              title: 'Home',
-              headerShown: false,
-              tabBarLabel: '홈',
-              tabBarIcon: ({color}) => (
-                <FontAwesome5Icon name="home" color={color} size={40} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="MypageNav"
-            component={MypageNavigation}
-            options={{
-              title: 'Mypage',
-              headerShown: false,
-              tabBarLabel: '내정보',
-              tabBarIcon: ({color}) => (
-                <IoniconsIcon name="person" color={color} size={40} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Setting"
-            component={SettingNavigation}
-            options={{
-              title: 'Setting',
-              headerShown: false,
-              tabBarLabel: '설정',
-              tabBarIcon: ({color}) => (
-                <IoniconsIcon name="settings" color={color} size={40} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      ) : (
-        <FirstSetting setState={setFirstLogin}/>
-      )
+    !isFirstLogin ? (
+      <Tab.Navigator initialRouteName="HomeNav" screenOptions={screenoptions}>
+        <Tab.Screen
+          name="BoardNav"
+          component={BoardNavigation}
+          options={{
+            title: 'Board',
+            headerShown: false,
+            tabBarLabel: '게시판',
+            tabBarIcon: ({color}) => (
+              <FontAwesome5Icon name="bars" color={color} size={40} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="MessageNavigation"
+          component={MessageNavigation}
+          options={{
+            title: 'Message',
+            headerShown: false,
+            tabBarLabel: '쪽지',
+            tabBarIcon: ({color}) => (
+              <AntDesignIcon name="message1" color={color} size={40} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="HomeNav"
+          component={HomeNavigation}
+          options={{
+            title: 'Home',
+            headerShown: false,
+            tabBarLabel: '홈',
+            tabBarIcon: ({color}) => (
+              <FontAwesome5Icon name="home" color={color} size={40} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="MypageNav"
+          component={MypageNavigation}
+          options={{
+            title: 'Mypage',
+            headerShown: false,
+            tabBarLabel: '내정보',
+            tabBarIcon: ({color}) => (
+              <IoniconsIcon name="person" color={color} size={40} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Setting"
+          component={SettingNavigation}
+          options={{
+            title: 'Setting',
+            headerShown: false,
+            tabBarLabel: '설정',
+            tabBarIcon: ({color}) => (
+              <IoniconsIcon name="settings" color={color} size={40} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    ) : (
+      <FirstSetting setState={setFirstLogin} />
+    )
   ) : (
     <Stack.Navigator>
       <Stack.Screen
