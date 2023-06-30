@@ -266,12 +266,12 @@ const FirstSetting = ({setState}:{setState:React.Dispatch<React.SetStateAction<b
         if (UsingtimeMin > UsingtimeMax) {Alert.alert('알림', '최소시간이 최대시간보다 짧아야 함')}
         else {
           Alert.alert('알림', '다 쓰셈');
-          console.log(NameCheck)
-          console.log(Age)
-          console.log(Sex)
-          console.log(UsingtimeMin)
-          console.log(UsingtimeMax)
-          console.log(selected)
+          console.log('name ', NameCheck)
+          console.log('age ', Age)
+          console.log('sex ', Sex)
+          console.log('mintime ', UsingtimeMin)
+          console.log('maxtime ', UsingtimeMax)
+          console.log('category ', selected)
         }
       }
       else {
