@@ -37,7 +37,7 @@ const Quit = ({navigation}: SettingScreenProps) => {
       await NaverLogin.logout();
       console.log('네이버 로그아웃 완료');
     } else {
-      const response = await axios.get(`${Config.API_URL}/user/logout`, {
+      const response = await axios.patch(`${Config.API_URL}/user/logout`, {
         headers: {
           authorization: `Bearer ${user.accessToken}`,
         },
@@ -45,6 +45,10 @@ const Quit = ({navigation}: SettingScreenProps) => {
       console.log(response);
       await EncryptedStorage.removeItem('refreshToken');
     }
+    const deviceToken = await EncryptedStorage.getItem('deviceToken');
+    await axios.delete(`${Config.API_URL}/push/delete`, {
+      data: {deviceToken: deviceToken},
+    });
     dispatch(
       userSlice.actions.setUser({
         name: '',
