@@ -38,13 +38,8 @@ function Home({navigation}: HomeScreenProps) {
     {incr: 8, q_name: 'q_name'},
   ]);
   const [questNum, setQuestNum] = useState(0);
-  const [myQuest, setMyQuest] = useState({
-    questCategory: 'category',
-    questMidCategory: 'midCategory',
-    quest_name: 'quest_name',
-    quest_id: 0,
-    num_people: 0,
-  });
+  const [modal, showModal] = useState(false);
+  const [myQuest, setMyQuest] = useState({});
   const [boardData, setBoardData] = useState([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
