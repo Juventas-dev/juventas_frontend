@@ -391,45 +391,21 @@ const FirstSetting = ({
   );
 
   const nextScreen = useCallback(() => {
-    if (firstScreen === 1) {
-      if (
-        NameCheck !== 'T' ||
-        !/^\d{1,3}$/.test(Age) ||
-        !Sex ||
-        !Sex.trim() ||
-        (!worker &&
-          !self &&
-          !partTime &&
-          !housemaker &&
-          !student &&
-          !nojob &&
-          !official &&
-          !etcjob) ||
-        !UsingtimeMin ||
-        !UsingtimeMax ||
-        UsingtimeMin > UsingtimeMax ||
-        (!parent &&
-          !spouse &&
-          !child &&
-          !sibling &&
-          !relative &&
-          !lover &&
-          !friend &&
-          !pet &&
-          !etc &&
-          !none) ||
-        selected < 3
-      ) {
-        if (UsingtimeMin > UsingtimeMax) {
-          Alert.alert('알림', '최소시간이 최대시간보다 짧아야 합니다.');
-        } else {
-          Alert.alert('알림', '입력하지 않은 정보가 있습니다.');
-          console.log(NameCheck);
-          console.log(Age);
-          console.log(Sex);
-          console.log(UsingtimeMin);
-          console.log(UsingtimeMax);
-          console.log(selected);
+    if (firstScreen == 1) {
+      if ((NameCheck != 'T') || (!/^\d{1,3}$/.test(Age)) || (!Sex || !Sex.trim()) 
+      || (!worker && !self && !partTime && !housemaker && !student && !nojob && !official && !etcjob) 
+      || (!UsingtimeMin) || (!UsingtimeMax) || (UsingtimeMin > UsingtimeMax) 
+      || (!parent && !spouse && !child && !sibling && !relative && !lover && !friend && !pet && !etc && !none) 
+      || (selected < 3)) {
+        if (UsingtimeMin > UsingtimeMax) {Alert.alert('알림', '최소시간이 최대시간보다 짧아야 함')}
+        else {
+          Alert.alert('알림', '다 쓰셈');
+          console.log('name ', NameCheck)
+          console.log('age ', Age)
+          console.log('sex ', Sex)
+          console.log('mintime ', UsingtimeMin)
+          console.log('maxtime ', UsingtimeMax)
+          console.log('category ', selected)
         }
       } else {
         setFirstScreen(firstScreen + 1);
