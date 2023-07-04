@@ -66,14 +66,19 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
   };
 
   const uploadTd = async () => {
+    console.log('1');
+    console.log(userID);
+    console.log(myQuest.quest_id);
+    console.log(title);
+    console.log(content);
     await axios.post(`${Config.API_URL}/quest/post`, {
       id: userID,
       q_id: myQuest.quest_id,
       title: title,
       content: content,
-      img_path_1: null,
-      img_path_2: null,
-      img_path_3: null,
+      img_path_1: undefined,
+      img_path_2: undefined,
+      img_path_3: undefined,
     });
     console.log('123');
     navigation.goBack();
@@ -163,7 +168,7 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
                 </Text>
               </View>
               <View style={styles.Choose}>
-                <Pressable style={styles.YesBt} onPress={uploadTd}>
+                <Pressable style={styles.YesBt} onPress={() => uploadTd()}>
                   <Text style={styles.ChooseTxt}>예</Text>
                 </Pressable>
                 <Pressable

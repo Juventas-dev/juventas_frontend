@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert,
   Image,
+  FlatList,
 } from 'react-native';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
@@ -15,8 +16,17 @@ import {RootState} from '../store';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
+type boardItemPorps = {
+  content: string;
+  incr: number;
+  like: number;
+  myrec: number;
+  title: string;
+  user_name: string;
+};
 
 function Home({navigation}: HomeScreenProps) {
   const [seqCount, setSeqCount] = useState(0);
@@ -45,7 +55,7 @@ function Home({navigation}: HomeScreenProps) {
     quest_id: 0,
     num_people: 0,
   });
-  const [boardData, setBoardData] = useState([]);
+  const [boardData, setBoardData] = useState<boardItemPorps[]>([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
     Level_1: require('../../assets/image/Lv1.png'),
@@ -66,6 +76,15 @@ function Home({navigation}: HomeScreenProps) {
     getQuestSelectedOrNot();
     getBoardData();
   }, [questSelected]);
+
+  useEffect(() => {
+    const getSelect = async () => {
+      console.log('GETETETETET');
+      const Select = await AsyncStorage.getItem('select');
+      console.log(Select);
+    };
+    getSelect();
+  }, [navigation]);
 
   const getQuestSelectedOrNot = useCallback(async () => {
     try {
@@ -136,7 +155,8 @@ function Home({navigation}: HomeScreenProps) {
       const response = await axios.get(
         `${Config.API_URL}/board/bestpost?id='${userID}'`,
       );
-      console.log(response.data);
+      console.log('^^^');
+      console.log(response.data.bestPost);
       setBoardData(response.data.bestPost);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -202,6 +222,7 @@ function Home({navigation}: HomeScreenProps) {
 
   const resetQuest = useCallback(async () => {
     try {
+      console.log('sssssssss');
       await axios.patch(`${Config.API_URL}/quest/questreselect`, {
         id: userID,
       });
@@ -213,6 +234,8 @@ function Home({navigation}: HomeScreenProps) {
         quest_id: 0,
         num_people: 0,
       });
+      console.log('@!@');
+      console.log(questSelected);
       getQuestData();
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -233,8 +256,8 @@ function Home({navigation}: HomeScreenProps) {
 
   const nextPost = useCallback(
     (num: number) => {
+      console.log(boardData);
       setWhichPost(num);
-      getBoardData();
     },
     [whichPost, boardData],
   );
@@ -246,6 +269,53 @@ function Home({navigation}: HomeScreenProps) {
   const toAllQuest = useCallback(() => {
     navigation.navigate('AllQuest');
   }, [navigation]);
+
+  const handleScroll = (event: any) => {
+    const {contentOffset} = event.nativeEvent;
+    const currentIndex = Math.round(contentOffset.x / 330);
+    setWhichPost(currentIndex);
+    // currentIndex를 사용하여 현재 보이는 아이템에 대한 작업을 수행할 수 있습니다.
+    // 예: currentIndex를 상태로 업데이트하고, 해당 아이템을 활성화하거나 데이터를 변경합니다.
+  };
+
+  function ShowBoard({Item}) {
+    return (
+      <Pressable
+        style={styles.boardBody}
+        onPress={() =>
+          navigation.navigate('PostDetail', {
+            postID: Item.incr,
+          })
+        }>
+        <View style={styles.boardHeader}>
+          <View style={styles.boardProfile}>
+            <Pressable style={styles.profile} />
+            <View style={{flex: 5}}>
+              <Text style={styles.boardProfileUsername} numberOfLines={1}>
+                {Item?.user_name}
+              </Text>
+              <Text style={styles.boardProfileTitle} numberOfLines={2}>
+                {Item?.title}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.boardRecommend}>
+            <Pressable onPress={() => console.log(allQuestData)}>
+              <FontAwesomeIcon
+                name="thumbs-up"
+                size={39}
+                color={Item?.myrec ? '#1F6733' : '#DAE2D8'}
+              />
+            </Pressable>
+            <Text style={styles.boardRecommendTxt}>{Item?.like}</Text>
+          </View>
+        </View>
+        <Text style={styles.boardContentTxt} numberOfLines={3}>
+          {Item?.content}
+        </Text>
+      </Pressable>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.entire}>
@@ -279,7 +349,6 @@ function Home({navigation}: HomeScreenProps) {
               onPress={() => {
                 setQuestSelected('T');
                 selectQuest(questNum * 3);
-                console.log(questSelected);
               }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3].q_name}
@@ -288,8 +357,8 @@ function Home({navigation}: HomeScreenProps) {
             <Pressable
               style={styles.questBtn}
               onPress={() => {
-                selectQuest(questNum * 3 + 1);
                 setQuestSelected('T');
+                selectQuest(questNum * 3 + 1);
               }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 1].q_name}
@@ -298,8 +367,8 @@ function Home({navigation}: HomeScreenProps) {
             <Pressable
               style={styles.questBtn}
               onPress={() => {
-                selectQuest(questNum * 3 + 2);
                 setQuestSelected('T');
+                selectQuest(questNum * 3 + 2);
               }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 2].q_name}
@@ -344,40 +413,18 @@ function Home({navigation}: HomeScreenProps) {
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
         </View>
-        <Pressable
-          style={styles.boardBody}
-          onPress={() =>
-            navigation.navigate('PostDetail', {postID: boardData[0].incr})
-          }>
-          <View style={styles.boardHeader}>
-            <View style={styles.boardProfile}>
-              <Pressable style={styles.profile} />
-              <View style={{flex: 5}}>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>
-                  {boardData[whichPost]?.user_name}
-                </Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={2}>
-                  {boardData[whichPost]?.title}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.boardRecommend}>
-              <Pressable onPress={() => console.log(allQuestData)}>
-                <FontAwesomeIcon
-                  name="thumbs-up"
-                  size={39}
-                  color={boardData[whichPost]?.myrec ? '#1F6733' : '#DAE2D8'}
-                />
-              </Pressable>
-              <Text style={styles.boardRecommendTxt}>
-                {boardData[whichPost]?.like}
-              </Text>
-            </View>
-          </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>
-            {boardData[whichPost]?.content}
-          </Text>
-        </Pressable>
+        <View style={styles.boardCt}>
+          <FlatList
+            horizontal
+            pagingEnabled
+            data={boardData}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => String(item.incr)}
+            renderItem={({item}) => <ShowBoard Item={item} />}
+            ItemSeparatorComponent={() => <View style={{width: 2}} />}
+            onScroll={handleScroll}
+          />
+        </View>
         <View style={styles.boardFooter}>
           {boardData.length > 0 && (
             <Pressable
@@ -630,8 +677,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: '600',
   },
-  boardBody: {
+  boardCt: {
     flex: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boardBody: {
+    width: 340,
     marginTop: 15,
     marginBottom: 10,
     backgroundColor: 'white',
