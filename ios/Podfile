@@ -23,7 +23,14 @@ end
 
 target 'Juventas' do
   config = use_native_modules!
-
+  pod 'KakaoSDKCommon'  # 필수 요소를 담은 공통 모듈
+  pod 'KakaoSDKAuth'  # 사용자 인증
+  pod 'KakaoSDKUser'  # 카카오 로그인, 사용자 관리
+  pod 'KakaoSDKTalk'  # 친구, 메시지(카카오톡)
+  pod 'KakaoSDKStory'  # 카카오스토리
+  pod 'KakaoSDKShare'  # 메시지(카카오톡 공유)
+  pod 'KakaoSDKTemplate'  # 메시지 템플릿
+  pod 'naveridlogin-sdk-ios'
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -47,7 +54,7 @@ target 'Juventas' do
     inherit! :complete
     # Pods for testing
   end
-
+  
   post_install do |installer|
     react_native_post_install(
       installer,

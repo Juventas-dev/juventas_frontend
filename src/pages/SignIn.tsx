@@ -1,12 +1,12 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   Text,
-  Alert,
   TextInput,
   Pressable,
   StyleSheet,
   View,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -23,39 +23,65 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import DeviceInfo from 'react-native-device-info';
+const IconBasic = require('../../assets/image/fund.png');
+const kakao = require('../../assets/image/KakaoTalk.png');
+const naver = require('../../assets/image/Naver.png');
+import PushNotification from 'react-native-push-notification';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignIn({navigation}: SignInScreenProps) {
   const dispatch = useAppDispatch();
-  const [ID, setID] = useState('');
+  const [phone, setPhone] = useState('');
   const [Pass, setPass] = useState('');
-  const IDRef = useRef<TextInput | null>(null);
+  const [focused, setFocused] = useState(false);
+  const PhoneRef = useRef<TextInput | null>(null);
   const PassRef = useRef<TextInput | null>(null);
+  const [alertPhoneNum, setAlertPhoneNum] = useState(false);
+  const [alertPass, setAlertPass] = useState(false);
+  const [deviceToken, setDeviceToken] = useState('');
 
-  const onChangeID = useCallback((text: string) => {
-    setID(text.trim());
+  useEffect(() => {
+    PushNotification.configure({
+      // (optional) 토큰이 생성될 때 실행됨(토큰을 서버에 등록할 때 쓸 수 있음)
+      onRegister: function (token: any) {
+        setDeviceToken(token.token);
+        console.log('TOKEN:', token.token);
+      },
+    });
+  }, []);
+
+  const onChangePhone = useCallback((text: string) => {
+    setPhone(text.trim());
   }, []);
   const onChangePass = useCallback((text: string) => {
     setPass(text.trim());
   }, []);
   const onSubmit = useCallback(async () => {
-    if (!ID || !ID.trim()) {
-      return Alert.alert('알림', '아이디를 입력해주세요.');
+    setAlertPhoneNum(false);
+    setAlertPass(false);
+    if (!phone || !phone.trim()) {
+      return setAlertPhoneNum(true);
+    } else if (!/^\d{3}\d{3,4}\d{4}$/.test(phone)) {
+      return setAlertPhoneNum(true);
     }
     if (!Pass || !Pass.trim()) {
-      return Alert.alert('알림', '비밀번호를 입력해주세요.');
+      return setAlertPass(true);
+    } else if (!/^\d{4}$/.test(Pass)) {
+      return setAlertPass(true);
     }
     try {
+      console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
-        id: ID,
+        phone: phone,
         pwd: Pass,
       });
       console.log(response);
       dispatch(
         userSlice.actions.setUser({
           name: response.data.name,
-          id: ID,
+          id: response.data.id,
           loginType: 'custom',
           accessToken: response.data.accessToken,
         }),
@@ -64,22 +90,26 @@ function SignIn({navigation}: SignInScreenProps) {
         'refreshToken',
         response.data.refreshToken,
       );
-      return Alert.alert('알림', '로그인되었습니다.');
+
+      await axios.post(`${Config.API_URL}/push/register`, {
+        userId: response.data.id,
+        deviceToken: deviceToken,
+      });
     } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
+      const errorResponse = (
+        error as AxiosError<{error: string; message: string}>
+      ).response;
       console.error(errorResponse);
-      if (errorResponse) {
-        return Alert.alert('알림', errorResponse.data?.message);
+      if (errorResponse?.data.error === 'phone') {
+        setAlertPhoneNum(true);
+      } else {
+        setAlertPass(true);
       }
     }
-  }, [dispatch, ID, Pass]);
+  }, [dispatch, phone, Pass]);
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
-  }, [navigation]);
-
-  const toFindID = useCallback(() => {
-    navigation.navigate('FindID');
   }, [navigation]);
 
   const toFindPass = useCallback(() => {
@@ -100,7 +130,6 @@ function SignIn({navigation}: SignInScreenProps) {
           loginType: 'kakao',
         }),
       );
-      Alert.alert('알림', '로그인 되었습니다.');
       const response = await axios.post(`${Config.API_URL}/user/signup`, {
         name: profile.nickname,
         id: 'kakao' + profile.id,
@@ -131,7 +160,6 @@ function SignIn({navigation}: SignInScreenProps) {
             loginType: 'naver',
           }),
         );
-        Alert.alert('알림', '로그인 되었습니다.');
         const response = await axios.post(`${Config.API_URL}/user/signup`, {
           name: profile.response.name,
           id: 'naver' + profile.response.id,
@@ -143,42 +171,54 @@ function SignIn({navigation}: SignInScreenProps) {
     }
   };
 
-  // const canGoNext = ID && Pass;
   return (
     <KeyboardAwareScrollView
       style={styles.keyboardAwareScrollView}
       showsVerticalScrollIndicator={false}>
       <SafeAreaView style={styles.entire}>
-        <Text style={styles.logo}>juventas</Text>
-        <View style={styles.finding}>
-          {/* 아이디찾기 비밀번호 찾기 */}
-          <Pressable onPress={toFindID} style={styles.findBtn}>
-            <Text style={styles.findText}>아이디 찾기</Text>
-          </Pressable>
+        <View style={!focused ? styles.header : styles.headerFocused}>
+          <Image
+            source={IconBasic}
+            style={!focused ? styles.logo : styles.focusedLogo}
+          />
+        </View>
+        <View style={!focused ? styles.finding : styles.findingFocused}>
+          {/* 비밀번호 찾기 */}
           <Pressable onPress={toFindPass} style={styles.findBtn}>
             <Text style={styles.findText}>비밀번호 찾기</Text>
           </Pressable>
         </View>
-        {/* 아이디 비밀번호 입력 */}
-        <Text style={styles.typingText}>아이디</Text>
+        {/* 비밀번호 입력 */}
         <TextInput
-          selectionColor={'#DE7878'}
+          placeholder="전화번호"
+          placeholderTextColor={'#B7CBB2'}
+          selectionColor={'#346627'}
           style={styles.typingInput}
           autoCapitalize="none"
-          onChangeText={onChangeID}
+          onChangeText={onChangePhone}
           importantForAutofill="yes"
           autoComplete="username"
           textContentType="username"
-          value={ID}
+          value={phone}
           clearButtonMode="while-editing"
           returnKeyType="next"
-          ref={IDRef}
+          ref={PhoneRef}
           onSubmitEditing={() => PassRef.current?.focus()}
           blurOnSubmit={false}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
-        <Text style={styles.typingText}>비밀번호</Text>
+        {alertPhoneNum ? (
+          <Text style={styles.wrong}>
+            • 사용자 정보가 없습니다. 입력한 전화번호를 다시 확인해주세요.
+          </Text>
+        ) : (
+          <Text style={styles.wrong} />
+        )}
         <TextInput
-          selectionColor={'#DE7878'}
+          placeholder="비밀번호"
+          placeholderTextColor={'#B7CBB2'}
+          selectionColor={'#346627'}
           secureTextEntry={true}
           style={styles.typingInput}
           autoCapitalize="none"
@@ -191,21 +231,34 @@ function SignIn({navigation}: SignInScreenProps) {
           returnKeyType="done"
           ref={PassRef}
           onSubmitEditing={onSubmit}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
+        {alertPass ? (
+          <Text style={styles.wrong}>
+            • 비밀번호가 틀렸습니다. 다시 입력해주세요.
+          </Text>
+        ) : (
+          <Text style={styles.wrong} />
+        )}
         <View style={styles.btn}>
-          <Pressable style={styles.signUpBtn} onPress={toSignUp}>
-            <Text style={styles.btnText}>회원가입</Text>
-          </Pressable>
-          <Pressable style={styles.signInBtn} onPress={onSubmit}>
+          <Pressable
+            style={focused ? styles.signInBtn : styles.signUpBtn}
+            onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
+          <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
+            <Image source={kakao} style={styles.kakaoLogo} />
+            <Text style={styles.btnTextKakao}>카카오 로그인</Text>
+          </Pressable>
+          <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
+            <Image source={naver} style={styles.naverLogo} />
+            <Text style={styles.btnTextNaver}>네이버 로그인</Text>
+          </Pressable>
+          <Pressable style={styles.signInBtn} onPress={toSignUp}>
+            <Text style={styles.btnText}>회원가입</Text>
+          </Pressable>
         </View>
-        <Pressable style={styles.signInBtn} onPress={signInWithKakao}>
-          <Text style={styles.btnText}>카카오 로그인</Text>
-        </Pressable>
-        <Pressable style={styles.signInBtn} onPress={signInWithNaver}>
-          <Text style={styles.btnText}>네이버 로그인</Text>
-        </Pressable>
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -213,22 +266,35 @@ function SignIn({navigation}: SignInScreenProps) {
 
 const styles = StyleSheet.create({
   keyboardAwareScrollView: {
-    backgroundColor: '#0E1D0A',
+    backgroundColor: '#F5F5F5',
   },
   entire: {
     flex: 1,
-    backgroundColor: '#0E1D0A',
     marginHorizontal: 25,
   },
+  header: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  headerFocused: {
+    alignItems: 'center',
+    marginTop: 30,
+  },
   logo: {
-    fontSize: 60,
-    marginTop: 170,
-    color: '#94EE3A',
-    fontFamily: 'PurplePurse-Regular',
-    textAlign: 'center',
+    width: 220,
+    height: 270,
+  },
+  focusedLogo: {
+    width: 172,
+    height: 210,
   },
   finding: {
-    marginTop: 122,
+    marginTop: 40,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  findingFocused: {
+    marginTop: 15,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
@@ -236,50 +302,103 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   findText: {
-    color: 'rgba(235, 225, 225, 0.8)',
-    fontSize: 10,
+    color: '#346627',
+    fontSize: 15,
+    fontWeight: '400',
   },
   typingText: {
     color: '#FFE3E3',
     fontSize: 13,
+    fontWeight: '700',
   },
   typingInput: {
-    color: 'white',
-    fontSize: 15,
-    padding: 0,
+    color: '#346627',
+    fontSize: 18,
+    padding: 5,
+    paddingLeft: 10,
     marginTop: 7,
-    marginBottom: 18,
-    borderBottomColor: '#EBAAAA',
-    borderBottomWidth: 2,
+    marginBottom: 5,
+    backgroundColor: 'white',
+    fontWeight: '400',
+    borderRadius: 10,
+    height: 40,
+  },
+  wrong: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#B74F38',
   },
   btn: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    columnGap: 20,
     marginTop: 10,
   },
   signUpBtn: {
     flex: 1,
-    height: 43,
-    backgroundColor: '#E6CCCA',
-    marginBottom: 20,
-    borderRadius: 30,
+    height: 40,
+    backgroundColor: '#B7CBB2',
+    marginBottom: 18,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   signInBtn: {
     flex: 1,
-    height: 43,
-    backgroundColor: '#94EE3A',
-    marginBottom: 20,
-    borderRadius: 30,
+    height: 40,
+    backgroundColor: '#346627',
+    marginBottom: 18,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  signInKakaoBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#FFE812',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 18,
+    flexDirection: 'row',
+  },
+  signInNaverBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#00BF18',
+    // justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 18,
+    flexDirection: 'row',
+  },
+  kakaoLogo: {
+    width: 20,
+    height: 20,
+    marginLeft: 19,
+    marginTop: 5,
+  },
+  naverLogo: {
+    width: 30,
+    height: 29,
+    marginLeft: 13,
+  },
   btnText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '400',
+  },
+  btnTextKakao: {
     color: 'black',
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 18,
+    fontWeight: '400',
+    width: '88%',
+    textAlign: 'center',
+  },
+  btnTextNaver: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '400',
+    width: '88%',
+    textAlign: 'center',
   },
 });
 
