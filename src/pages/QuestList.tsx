@@ -31,6 +31,13 @@ const QuestList = ({navigation}: QuestScreenProps) => {
   const [category, setCategory] = useState(0);
 
   const userID = useSelector((state: RootState) => state.user.id);
+
+  const saveSelect = useCallback(() => {
+    AsyncStorage.setItem('select', 'T', () => {
+      console.log('저장완료');
+    });
+  }, []);
+
   useEffect(() => {
     const getCategory = async () => {
       const Category = await AsyncStorage.getItem('category');
@@ -99,6 +106,7 @@ const QuestList = ({navigation}: QuestScreenProps) => {
         <Pressable
           style={styles.selectBox}
           onPress={() => {
+            saveSelect();
             // 여기서 뭘 어케해야되는지 진짜 모르겠음
             selectQuest(Item.incr);
             navigation.pop();

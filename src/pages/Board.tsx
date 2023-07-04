@@ -28,6 +28,7 @@ type ItemProps = {
   title: string;
   like: number;
   comment: number;
+  myrec: number;
 };
 
 const FlatListHeader = (bestPostDATA: ItemProps[]) => (
