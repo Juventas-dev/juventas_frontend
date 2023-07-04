@@ -55,18 +55,16 @@ const ComplainAnswer = ({navigation}: ComplainScreenProps) => {
         <View style={styles.BoardTitle}>
           <Text style={styles.BoardTitleTxt}>{complain.inquiry_title}</Text>
         </View>
-        <View style={styles.BoardCt}>
+        <ScrollView style={styles.BoardCt}>
           <Text style={styles.BoardCtTxt}>{complain.inquiry_content}</Text>
-        </View>
+        </ScrollView>
       </View>
       <View style={styles.AnswerBoard}>
         <View style={styles.AnsBoardTitle}>
           <Text style={styles.BoardTitleTxt}>{complain.answer_title}</Text>
         </View>
-        <ScrollView>
-          <View style={styles.BoardCt}>
-            <Text style={styles.BoardCtTxt}>{complain.answer_content}</Text>
-          </View>
+        <ScrollView style={styles.BoardCt}>
+          <Text style={styles.BoardCtTxt}>{complain.answer_content}</Text>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -79,20 +77,23 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     flexWrap: 'nowrap',
-    backgroundColor: '#F9FAF8',
+    backgroundColor: '#E7EBE4',
     paddingHorizontal: 20,
     paddingTop: 6,
   },
   ComplainBoard: {
     flex: 3,
     backgroundColor: 'white',
-    borderRadius: 7,
+    borderRadius: 15,
     marginBottom: 15,
+    paddingHorizontal: 20,
+    paddingTop: 5,
   },
   BoardTitle: {
-    flex: 1,
+    flex: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10,
   },
   BoardTitleTxt: {
     fontSize: 20,
@@ -109,7 +110,10 @@ const styles = StyleSheet.create({
   AnswerBoard: {
     flex: 5,
     backgroundColor: 'white',
-    borderRadius: 7,
+    borderRadius: 15,
+    marginBottom: 10,
+    paddingHorizontal: 20,
+    paddingTop: 5,
   },
   AnsBoardTitle: {
     height: '15%',

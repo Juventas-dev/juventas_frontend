@@ -15,6 +15,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import Config from 'react-native-config';
 import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type CertificationScreenProps = NativeStackScreenProps<
   CertificationtStackParamList,
@@ -23,12 +24,26 @@ type CertificationScreenProps = NativeStackScreenProps<
 
 const MyCertification = ({navigation}: CertificationScreenProps) => {
   const [myCertification, setMyCertification] = useState([
-    {content: '', t_date: '', title: ''},
+    {content: '', q_name: '', t_date: '', title: ''},
   ]);
 
   const toContent = useCallback(() => {
     navigation.navigate('CertificationContent');
   }, [navigation]);
+
+  interface DataItem {
+    content: string;
+    q_name: string;
+    t_date: string;
+    title: string;
+  }
+
+  const setTdIncr = useCallback((id: string) => {
+    console.log(id);
+    AsyncStorage.setItem('TdIncr', id, () => {
+      console.log('저장완료');
+    });
+  }, []);
 
   const userID = useSelector((state: RootState) => state.user.id);
   useEffect(() => {
@@ -47,17 +62,28 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
     getCertification();
   }, []);
 
-  function Item({date}) {
-    console.log({date});
-    // moment({date}).format('YYYY-MM-DD');
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
+  };
 
+  function Item({item, index}: {item: DataItem; index: number}) {
+    const formattedDate = formatDate(item.t_date);
     return (
-      <Pressable style={styles.Box1} onPress={toContent}>
+      <Pressable
+        style={styles.Box1}
+        onPress={() => {
+          toContent();
+          setTdIncr(index.toString());
+        }}>
         <View style={styles.date}>
-          <Text style={styles.dateTxt}>{date}</Text>
+          <Text style={styles.dateTxt}>{formattedDate}</Text>
         </View>
         <View style={styles.Content}>
-          <Text style={styles.ChallengeName}>바이올린 배우기</Text>
+          <Text style={styles.ChallengeName}>{item.q_name}</Text>
           <View style={styles.Step}>
             <View style={styles.Step1} />
             <View style={styles.Step2} />
@@ -70,10 +96,10 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
 
   return (
     <SafeAreaView style={styles.entire}>
-      <FlatList
+      <FlatList<DataItem>
         data={myCertification}
-        keyExtractor={item => String(item.t_date)}
-        renderItem={({item}) => <Item date={item.t_date} />}
+        renderItem={Item}
+        keyExtractor={(item, index) => index.toString()}
       />
     </SafeAreaView>
   );

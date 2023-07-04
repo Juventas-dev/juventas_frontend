@@ -10,6 +10,12 @@ import SetCategory from '../pages/SetCategory';
 import MyGrade from '../pages/MyGrade';
 import MyKnowhow from '../pages/MyKnowhow';
 import MyCertificationNavigation from './MycertificationNavigation';
+import MyPostDetail from '../pages/MyPostDetail';
+import MessageDetail from '../pages/MessageDetail';
+import {Pressable, Text} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import SearchMyPost from '../pages/SearchMypost';
+import ModifyMyknowhow from '../pages/ModifyMyknowhow';
 
 export type MypageStackParamList = {
   Mypage: undefined;
@@ -18,6 +24,10 @@ export type MypageStackParamList = {
   MyGrade: undefined;
   MyCertification: undefined;
   MyKnowhow: undefined;
+  MyPostDetail: {postID: number};
+  MessageDetail: {incr: number};
+  ModifyMyknowhow: undefined;
+  SearchMyPost: undefined;
 };
 
 export type MypageStackNavigationProp =
@@ -89,6 +99,11 @@ export default function MypageNavigation() {
         }}
       />
       <Stack.Screen
+        name="SearchMyPost"
+        component={SearchMyPost}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
         name="MyKnowhow"
         component={MyKnowhow}
         options={{
@@ -102,6 +117,46 @@ export default function MypageNavigation() {
           headerRight: () => (
             <FontAwesome5Icon name="bell" size={35} color="#346627" />
           ),
+        }}
+      />
+
+      <Stack.Screen
+        name="MyPostDetail"
+        component={MyPostDetail}
+        options={{
+          headerBackTitle: '뒤로',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#E7EBE4'},
+          headerTitleAlign: 'center',
+          headerTitle: '',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+        }}
+      />
+      <Stack.Screen
+        name="MessageDetail"
+        component={MessageDetail}
+        options={{
+          headerBackTitle: '뒤로',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#E7EBE4'},
+          headerTitleAlign: 'center',
+          headerTitle: '',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+        }}
+      />
+      <Stack.Screen
+        name="ModifyMyknowhow"
+        component={ModifyMyknowhow}
+        options={{
+          headerBackTitle: '뒤로',
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#E7EBE4'},
+          headerTitleAlign: 'center',
+          headerTitle: '',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
         }}
       />
     </Stack.Navigator>

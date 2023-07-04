@@ -18,7 +18,7 @@ import SetCategory from './SetCategory';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {compose} from '@reduxjs/toolkit';
-import { useNavigationBuilder } from '@react-navigation/native';
+import {useNavigationBuilder} from '@react-navigation/native';
 
 type QuestScreenProps = NativeStackScreenProps<
   QuestStackParamList,
@@ -35,19 +35,22 @@ const QuestList = ({navigation}: QuestScreenProps) => {
     const getCategory = async () => {
       const Category = await AsyncStorage.getItem('category');
       console.log(Category);
-      setCategoryNmae(Category);
-      if (Category === '건강') {
-        setCategory(0);
-      } else if (Category === '여가') {
-        setCategory(1);
-      } else if (Category === '학습') {
-        setCategory(2);
-      } else if (Category === '관계') {
-        setCategory(3);
-      } else {
-        setCategory(4);
+      if (Category) {
+        setCategoryNmae(Category);
+        if (Category === '건강') {
+          setCategory(0);
+        } else if (Category === '여가') {
+          setCategory(1);
+        } else if (Category === '학습') {
+          setCategory(2);
+        } else if (Category === '관계') {
+          setCategory(3);
+        } else {
+          setCategory(4);
+        }
       }
     };
+
     getCategory();
   }, []);
 
@@ -74,27 +77,20 @@ const QuestList = ({navigation}: QuestScreenProps) => {
   // }, []);
 
   const selectQuest = useCallback(async (num: number) => {
-      try {
-        const response1 = await axios.patch(
-          `${Config.API_URL}/quest/questreselect`,
-          {
-            id: userID,
-          },
-        );
-
-        const response2 = await axios.post(`${Config.API_URL}/quest/userquest`, {
-          id: userID,
-          q_id: num,
-        });
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+    try {
+      await axios.post(`${Config.API_URL}/quest/userquest`, {
+        id: userID,
+        q_id: num,
+      });
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    }, []);
- 
+    }
+  }, []);
+
   function Quest({Item}) {
     console.log({Item});
     return (
@@ -107,8 +103,7 @@ const QuestList = ({navigation}: QuestScreenProps) => {
             selectQuest(Item.incr);
             navigation.pop();
             navigation.pop();
-          }}
-        >
+          }}>
           <Text style={styles.selectTxt}>도전 선택하기</Text>
         </Pressable>
       </View>

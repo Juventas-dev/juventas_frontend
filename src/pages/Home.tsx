@@ -291,6 +291,11 @@ function Home({navigation}: HomeScreenProps) {
             <Pressable style={styles.questRandomBtn} onPress={nextQuestList}>
               <Text style={styles.questBtnTxt}>추천 도전 새로고침</Text>
             </Pressable>
+            <View style={styles.questFooter}>
+              <Pressable onPress={toAllQuest}>
+                <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
+              </Pressable>
+            </View>
           </View>
         ) : (
           <View style={styles.questBodyDecided}>
@@ -311,12 +316,6 @@ function Home({navigation}: HomeScreenProps) {
             </Pressable>
           </View>
         )}
-
-        <View style={styles.questFooter}>
-          <Pressable onPress={toAllQuest}>
-            <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
-          </Pressable>
-        </View>
       </View>
       <View style={styles.board}>
         <View style={styles.boardSearch}>
@@ -336,11 +335,11 @@ function Home({navigation}: HomeScreenProps) {
           <View style={styles.boardHeader}>
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
-              <View>
+              <View style={{flex: 5}}>
                 <Text style={styles.boardProfileUsername} numberOfLines={1}>
                   {boardData[whichPost]?.user_name}
                 </Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={1}>
+                <Text style={styles.boardProfileTitle} numberOfLines={2}>
                   {boardData[whichPost]?.title}
                 </Text>
               </View>
@@ -631,10 +630,11 @@ const styles = StyleSheet.create({
   },
   boardProfile: {
     flexDirection: 'row',
-    width: '82%',
+    flex: 4,
+    flexWrap: 'wrap',
   },
   profile: {
-    width: 40,
+    flex: 1,
     height: 40,
     borderRadius: 20,
     backgroundColor: 'black',
@@ -642,12 +642,15 @@ const styles = StyleSheet.create({
   },
   boardProfileUsername: {
     fontSize: 12,
+    color: '#5F5D5D',
   },
   boardProfileTitle: {
     fontSize: 17,
+    color: '#3D3C3C',
+    fontWeight: 'bold',
   },
   boardRecommend: {
-    width: '18%',
+    flex: 1,
     alignItems: 'center',
     marginLeft: 3,
   },
@@ -657,6 +660,7 @@ const styles = StyleSheet.create({
   },
   boardContentTxt: {
     fontSize: 12,
+    color: '#4C4D4C',
   },
   boardFooter: {
     flexDirection: 'row',
