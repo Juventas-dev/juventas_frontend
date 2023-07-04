@@ -40,6 +40,16 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
   const onChangeTitle = useCallback((text: string) => {
     Settitle(text);
   }, []);
+  const selectImage = async () => {
+    const response = await MultipleImagePicker.openPicker({
+      mediaType: MediaType.IMAGE,
+      maxSelectedAssets: 3,
+      doneTitle: '완료',
+      cancelTitle: '취소',
+      selectedAssets: images,
+    });
+    setImages(response);
+  };
   const onChangeContent = useCallback((text: string) => {
     SetContent(text);
   }, []);
@@ -99,6 +109,14 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
         </View>
 
         <View style={styles.board}>
+          <Pressable
+            android_ripple={{
+              color: '#ffffff',
+            }}
+            style={styles.circle}
+            onPress={selectImage}>
+            <Icon name="camera-alt" color="white" size={24} />
+          </Pressable>
           <TextInput
             style={styles.contentInput}
             placeholder="내용을 입력하세요"

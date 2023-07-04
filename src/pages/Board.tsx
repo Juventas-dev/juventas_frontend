@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     // paddingBottom: 100
   },
   header: {
-    backgroundColor: '#DAE2D8',
+    backgroundColor: '#E7EBE4',
   },
   headerSearchingArea: {
     flexDirection: 'row',
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   categoryTxt: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#DAE2D8',
+    color: '#B7CBB2',
     marginLeft: 20,
   },
   categoryIcon: {

@@ -115,8 +115,14 @@ function Setting({navigation}: SettingScreenProps) {
           <Text style={styles.BoardTitle}>공지사항</Text>
         </View>
         <View style={styles.NoticeBoard}>
-          <Text style={styles.BoardTitleTxt}>{Notice.title}</Text>
-          <Text style={{marginTop: 5, fontSize: 15}}>{Notice.content}</Text>
+          <Text style={styles.BoardTitleTxt} numberOfLines={1}>
+            {Notice.title}
+          </Text>
+          <Text
+            style={{marginTop: 5, fontSize: 13, color: '#4C4D4C'}}
+            numberOfLines={2}>
+            {Notice.content}
+          </Text>
         </View>
         <Pressable style={styles.All} onPress={toNotice}>
           <Text style={styles.AllTxt}>전체 공지 보기</Text>
@@ -136,7 +142,7 @@ function Setting({navigation}: SettingScreenProps) {
             />
           </View>
           <View style={styles.AlarmSt2}>
-            <Text>쪽지 알림</Text>
+            <Text style={styles.txt}>쪽지 알림</Text>
             <Switch
               trackColor={{false: '#767577', true: '#346627'}}
               thumbColor={'white'}
@@ -146,7 +152,7 @@ function Setting({navigation}: SettingScreenProps) {
             />
           </View>
           <View style={styles.AlarmSt2}>
-            <Text>게시판 알림</Text>
+            <Text style={styles.txt}>게시판 알림</Text>
             <Switch
               trackColor={{false: '#767577', true: '#346627'}}
               thumbColor={'white'}
@@ -156,7 +162,7 @@ function Setting({navigation}: SettingScreenProps) {
             />
           </View>
           <View style={styles.AlarmSt2}>
-            <Text>포인트 알림</Text>
+            <Text style={styles.txt}>포인트 알림</Text>
             <Switch
               trackColor={{false: '#767577', true: '#346627'}}
               thumbColor={'white'}
@@ -166,7 +172,7 @@ function Setting({navigation}: SettingScreenProps) {
             />
           </View>
           <View style={styles.AlarmSt2}>
-            <Text>퀘스트 알림</Text>
+            <Text style={styles.txt}>퀘스트 알림</Text>
             <Switch
               trackColor={{false: '#767577', true: '#346627'}}
               thumbColor={'white'}
@@ -186,13 +192,19 @@ function Setting({navigation}: SettingScreenProps) {
         </View>
         <View style={styles.NoticeBoard}>
           <View style={styles.FrequentQ}>
-            <Text>{faq[0].title}</Text>
+            <Text style={styles.txt} numberOfLines={1}>
+              {faq[0].title}
+            </Text>
           </View>
           <View style={styles.FrequentQ}>
-            <Text>{faq[1].title}</Text>
+            <Text style={styles.txt} numberOfLines={1}>
+              {faq[1].title}
+            </Text>
           </View>
           <View style={styles.FrequentQ}>
-            <Text>{faq[2].title}</Text>
+            <Text style={styles.txt} numberOfLines={1}>
+              {faq[2].title}
+            </Text>
           </View>
         </View>
         <Pressable style={styles.All} onPress={toComplain}>
@@ -303,6 +315,9 @@ const styles = StyleSheet.create({
   Txt: {
     fontWeight: 'bold',
     color: 'white',
+  },
+  txt: {
+    color: '#4C4D4C',
   },
   Account: {
     flex: 1,

@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState, useEffect} from 'react';
 import {
   Text,
   TextInput,
@@ -38,7 +38,6 @@ function SignIn({navigation}: SignInScreenProps) {
   const PassRef = useRef<TextInput | null>(null);
   const [alertPhoneNum, setAlertPhoneNum] = useState(false);
   const [alertPass, setAlertPass] = useState(false);
-
   const onChangePhone = useCallback((text: string) => {
     setPhone(text.trim());
   }, []);

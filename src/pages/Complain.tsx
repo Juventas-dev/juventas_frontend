@@ -23,7 +23,6 @@ type ComplainScreenProps = NativeStackScreenProps<
 
 function Complain({navigation}: ComplainScreenProps) {
   const [faq, setFaq] = useState([{incr: 0, title: ''}]);
-  const [isAnswered, setAnswered] = useState('');
   const [complain, setComplain] = useState([{incr: 0, title: '', answer: ''}]);
   const toComplainAnswer = useCallback(() => {
     navigation.navigate('ComplainAnswer');
@@ -39,23 +38,10 @@ function Complain({navigation}: ComplainScreenProps) {
     });
   }, []);
 
-  const checkAnswered = useCallback((text: string) => {
-    console.log(text);
-    if (text === '답변완료') {
-      setAnswered('T');
-    } else {
-      setAnswered('F');
-    }
-  }, []);
-
   useEffect(() => {
     const getComplain = async () => {
       const response = await axios.get(`${Config.API_URL}/settings/inquiry`);
-      console.log('^^');
-      console.log(response.data.FAQ);
       setFaq(response.data.FAQ);
-      console.log('**');
-      console.log(faq);
       setComplain(response.data.inquiry);
     };
     getComplain();
@@ -69,26 +55,29 @@ function Complain({navigation}: ComplainScreenProps) {
           setComplainIncr(String(Item.incr));
           navigation.navigate('ComplainAnswer');
         }}>
-        <Text style={styles.QuestionTxt}>자주 묻는 질문{') '}</Text>
-        <Text style={styles.QuestionTxt}>{Item.title}</Text>
+        <View style={{flex: 1}}>
+          <Text style={styles.QuestionTxt}>자주 묻는 질문{') '}</Text>
+        </View>
+        <View style={{flex: 3.2}}>
+          <Text style={styles.QuestionTxt} numberOfLines={1}>
+            {Item.title}
+          </Text>
+        </View>
       </Pressable>
     );
   }
 
   function ComplainContent({Item}) {
-    console.log({Item});
-    console.log(Item.answer);
-    checkAnswered(Item.answer);
-
-    console.log(isAnswered);
-    return isAnswered === 'F' ? (
+    return Item.answer === '답변미작성' ? (
       <Pressable
         style={styles.QuestionBox}
         onPress={() => {
           setComplainIncr(String(Item.incr));
           navigation.navigate('ComplainAnswer');
         }}>
-        <Text style={styles.QuestionTxt}>{Item.title}</Text>
+        <Text style={styles.QuestionTxt} numberOfLines={1}>
+          {Item.title}
+        </Text>
       </Pressable>
     ) : (
       <Pressable
@@ -97,8 +86,14 @@ function Complain({navigation}: ComplainScreenProps) {
           setComplainIncr(String(Item.incr));
           navigation.navigate('ComplainAnswer');
         }}>
-        <Text style={styles.QuestionTxt}>{Item.title}</Text>
-        <Text style={styles.answered}>{Item.answered}</Text>
+        <View style={{flex: 4}}>
+          <Text style={styles.QuestionTxt} numberOfLines={1}>
+            {Item.title}
+          </Text>
+        </View>
+        <View style={styles.answeredBt}>
+          <Text style={styles.answered}>{Item.answer}</Text>
+        </View>
       </Pressable>
     );
   }
@@ -155,6 +150,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 40,
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
     marginHorizontal: 10,
   },
@@ -162,15 +158,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#B7CBB2',
     marginHorizontal: 10,
     flexDirection: 'row',
-    paddingLeft: 5,
+    paddingHorizontal: 5,
     borderRadius: 5,
     height: 40,
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   QuestionTxt: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  answeredBt: {
+    flex: 1,
+    borderRadius: 40,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  answered: {
+    color: '#346627',
   },
   newComplainBtn: {
     backgroundColor: '#346627',

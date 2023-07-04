@@ -60,7 +60,7 @@ export default function SettingNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '계정 관리',
           headerTintColor: '#346627',

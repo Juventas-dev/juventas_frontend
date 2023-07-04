@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Text, Pressable, StyleSheet} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import {useNavigation} from '@react-navigation/native';
-import {BoardStackNavigationProp} from '../navigations/BoardNavigation';
+import {MypageStackNavigationProp} from '../navigations/MypageNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ItemProps = {
   incr: number;
@@ -14,9 +15,13 @@ type ItemProps = {
   myrec: number;
 };
 
-const PostItem = ({item}: {item: ItemProps}) => {
-  const navigation = useNavigation<BoardStackNavigationProp>();
-
+const PostMyItem = ({item}: {item: ItemProps}) => {
+  const navigation = useNavigation<MypageStackNavigationProp>();
+  const setCid = useCallback((id: string) => {
+    console.log(id);
+    console.log('##');
+    AsyncStorage.setItem('cId', id, () => [console.log('저장완료')]);
+  }, []);
   const category = (c_id: number): string => {
     switch (c_id) {
       case 0:
@@ -35,7 +40,12 @@ const PostItem = ({item}: {item: ItemProps}) => {
   return (
     <Pressable
       style={styles.posting}
-      onPress={() => navigation.navigate('PostDetail', {postID: item.incr})}>
+      onPress={() => {
+        navigation.navigate('MyPostDetail', {
+          postID: item.incr,
+        });
+        setCid(item.c_id.toString());
+      }}>
       <View style={styles.postContent}>
         <Text style={styles.postContentCategory} numberOfLines={1}>
           {category(item.c_id)}
@@ -50,7 +60,6 @@ const PostItem = ({item}: {item: ItemProps}) => {
             name="thumbs-up"
             size={30}
             color={item.myrec ? '#1F6733' : '#DAE2D8'}
-            // 내가 추천했을 경우 색을 다르게
           />
           <Text style={styles.postInfoTxt}>{item.like}</Text>
         </View>
@@ -99,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostItem;
+export default PostMyItem;

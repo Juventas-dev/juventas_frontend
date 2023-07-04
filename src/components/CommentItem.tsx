@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import React, {useCallback, useState} from 'react';
 import {Text, View, Pressable, StyleSheet, Modal} from 'react-native';
+=======
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Text, View, Pressable, StyleSheet, Modal, FlatList} from 'react-native';
+>>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {MessageStackNavigationProp} from '../navigations/MessageNavigation';
@@ -12,49 +17,152 @@ type ItemProps = {
   c_content: string;
   user_name: string;
   like: number;
+  myrec: number;
+};
+
+type CommentItemProps = {
+  incr: number;
+  c_content: string;
+  user_id: number;
+  user_name: string;
+  like: number;
+  myrec: number;
+  r_id: number;
 };
 
 const CommentItem = ({
-  item,
+  items,
   likeComment,
+  onValueChange,
+  writeRc,
+  recommentData,
 }: {
-  item: ItemProps;
+  items: ItemProps;
   likeComment: Function;
+  onValueChange: Function;
+  writeRc: string;
+  recommentData: CommentItemProps[];
 }) => {
+  console.log('*&*');
+  console.log(items);
   const [showProfile, setShowProfile] = useState(false);
+
   const userID = useSelector((state: RootState) => state.user.id);
   const navigation = useNavigation<MessageStackNavigationProp>();
+  const [recomment, setRecomment] = useState('F');
+  const currentReData: CommentItemProps[] = [];
+  const reComment = useCallback(() => {
+    setRecomment('T');
+  }, []);
+
+  function handleClick() {
+    onValueChange(items.incr);
+  }
+
+  const setRc = () => {
+    if (writeRc === 'F') {
+      setRecomment('F');
+    }
+  };
+
+  const setReData = () => {
+    for (let i: number = 0; i < recommentData.length; i++) {
+      if (recommentData[i].r_id > items.incr) {
+        break;
+      } else {
+        if (recommentData[i].r_id === items.incr) {
+          currentReData.push(recommentData[i]);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    setRc();
+  }, [writeRc]);
+
+  useEffect(() => {
+    setReData();
+  }, [currentReData]);
+
+  function ReplyComment({Item}) {
+    return (
+      <View style={styles.replyComment}>
+        <View style={styles.RecommentProfile}>
+          {/* setProfile(item.user_name) */}
+          <Pressable
+            style={styles.reprofile}
+            onPress={() => {
+              setShowProfile(true);
+            }}
+          />
+          <View style={styles.commentContent}>
+            <Text style={styles.commentContentIDTxt}>{Item.user_name}</Text>
+            <Text style={styles.commentContentBodyTxt}>{Item.c_content}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <Pressable style={styles.eachComment}>
-      <View style={styles.commentProfile}>
-        {/* setProfile(item.user_name) */}
-        <Pressable
-          style={styles.profile}
-          onPress={() => {
-            setShowProfile(true);
-          }}
-        />
-        <View style={styles.commentContent}>
-          <Text style={styles.commentContentIDTxt}>{item.user_name}</Text>
-          <Text style={styles.commentContentBodyTxt}>{item.c_content}</Text>
-        </View>
-      </View>
-      <View style={styles.commentInfo}>
-        {/* onPress시 incr이용해서 like 눌러주는 기능 + axios get 해서 댓글 추천 수 새로고침하는 기능*/}
-        <Pressable
-          style={styles.recommend}
-          onPress={() => likeComment(item.incr)}>
-          <View style={styles.thumb}>
-            <FontAwesomeIcon name="thumbs-up" size={28} color="#DAE2D8" />
-            <Text style={styles.recommendNum}>{item.like}</Text>
+      <View style={{flexDirection: 'row'}}>
+        <View style={styles.commentProfile}>
+          {/* setProfile(item.user_name) */}
+          <Pressable
+            style={styles.profile}
+            onPress={() => {
+              console.log(currentReData);
+              setShowProfile(true);
+            }}
+          />
+          <View style={styles.commentContent}>
+            <Text style={styles.commentContentIDTxt}>{items.user_name}</Text>
+            <Text style={styles.commentContentBodyTxt}>{items.c_content}</Text>
           </View>
-        </Pressable>
-        <View style={styles.thumb}>
-          <FontAwesome5Icon name="caret-down" size={40} color="#DAE2D8" />
-          <Text style={{color: '#B7CBB2'}}>답글</Text>
+        </View>
+        <View style={styles.commentInfo}>
+          {/* onPress시 incr이용해서 like 눌러주는 기능 + axios get 해서 댓글 추천 수 새로고침하는 기능*/}
+          <Pressable
+            style={styles.recommend}
+            onPress={() => {
+              likeComment(items.incr);
+            }}>
+            <View style={styles.thumb}>
+              <FontAwesomeIcon
+                name="thumbs-up"
+                size={28}
+                color={items.myrec ? '#1F6733' : '#DAE2D8'}
+              />
+              <Text style={styles.recommendNum}>{items.like}</Text>
+            </View>
+          </Pressable>
+          <Pressable
+            style={styles.thumb}
+            onPress={() => {
+              reComment();
+              handleClick();
+            }}>
+            <FontAwesome5Icon
+              name="caret-down"
+              size={40}
+              color={recomment === 'F' ? '#DAE2D8' : '#346627'}
+            />
+            <Text
+              style={
+                recomment === 'F' ? {color: '#B7CBB2'} : {color: '#346627'}
+              }>
+              답글
+            </Text>
+          </Pressable>
         </View>
       </View>
+      <FlatList
+        data={currentReData}
+        keyExtractor={item => String(item.incr)}
+        renderItem={({item}) => <ReplyComment Item={item} />}
+      />
       <Modal transparent={true} visible={showProfile}>
         <Pressable
           style={styles.modalBG}
@@ -69,13 +177,21 @@ const CommentItem = ({
                 borderRadius: 70,
               }}
             />
+<<<<<<< HEAD
             <Text style={styles.modalID}>{item.user_name}</Text>
+=======
+            <Text style={styles.modalID}>{items.user_name}</Text>
+>>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
             <Pressable
               style={styles.modalBtn}
               onPress={() =>
                 navigation.navigate('MessageDetail', {
                   me: userID,
+<<<<<<< HEAD
                   you: item.user_name,
+=======
+                  you: items.user_name,
+>>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
                 })
               }>
               {/* navigate할때 전달해주는 정보 수정 필요! roomID 찾아보고 있으면 string으로 전달해줘야함 (없으면 만들면서 전달) */}
@@ -90,6 +206,7 @@ const CommentItem = ({
 
 const styles = StyleSheet.create({
   eachComment: {
+<<<<<<< HEAD
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 10,
@@ -106,6 +223,47 @@ const styles = StyleSheet.create({
   },
   commentContentBodyTxt: {
     fontSize: 14,
+=======
+    paddingHorizontal: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  replyComment: {
+    width: '70%',
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+    marginLeft: 50,
+  },
+  reComment: {
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    backgroundColor: '#DCFFEB',
+  },
+  commentContent: {
+    paddingLeft: 10,
+    paddingRight: 35,
+  },
+  RecommentProfile: {
+    flexDirection: 'row',
+    width: '110%',
+  },
+  commentProfile: {
+    flexDirection: 'row',
+    width: '80%',
+  },
+  commentContentIDTxt: {
+    fontSize: 11,
+    color: '#5F5D5D',
+  },
+  commentContentBodyTxt: {
+    fontSize: 14,
+    color: '#878787',
+>>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
   },
   commentInfo: {
     flexDirection: 'row',
@@ -157,6 +315,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     top: 1,
   },
+<<<<<<< HEAD
+=======
+  reprofile: {
+    width: 35,
+    height: 35,
+    borderRadius: 20,
+    backgroundColor: 'black',
+    top: 1,
+  },
+
+>>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
   postHeaderTxt: {
     fontSize: 17,
     marginLeft: 20,

@@ -1,5 +1,5 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {NoticeStackParamList} from '../navigations/NoticeNavigation';
@@ -45,7 +45,7 @@ const Notice = ({navigation}: NoticeScreenProps) => {
   }, []);
   return (
     <SafeAreaView style={styles.entire}>
-      <View style={styles.Board}>
+      <ScrollView style={styles.Board}>
         <View style={styles.BoardTitle}>
           <Text style={styles.BoardTitleTxt}>{notice.title}</Text>
         </View>
@@ -55,7 +55,7 @@ const Notice = ({navigation}: NoticeScreenProps) => {
         <View style={styles.BoardCt}>
           <Text style={styles.BoardCtTxt}>{notice.content}</Text>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -66,14 +66,15 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     flexWrap: 'nowrap',
-    backgroundColor: '#F9FAF8',
+    backgroundColor: '#E7EBE4',
     paddingHorizontal: 20,
     paddingTop: 6,
   },
   Board: {
     backgroundColor: 'white',
-    height: '70%',
-    borderRadius: 7,
+    height: '95%',
+    borderRadius: 15,
+    paddingHorizontal: 20,
   },
   BoardTitle: {
     flex: 0.8,
