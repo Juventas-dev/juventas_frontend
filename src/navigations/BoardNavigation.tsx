@@ -15,7 +15,7 @@ export type BoardStackParamList = {
   Board: undefined;
   NewPost: undefined;
   PostDetail: {postID: number};
-  SearchPost: {goBackToBoard: string};
+  SearchPost: undefined;
   Message: undefined;
   MessageDetail: {incr: number};
 };
@@ -36,7 +36,7 @@ export default function BoardNavigation() {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#DAE2D8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '게시판',
           headerTintColor: '#346627',
@@ -57,7 +57,7 @@ export default function BoardNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#DAE2D8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '글쓰기',
           headerTintColor: '#346627',
@@ -70,7 +70,7 @@ export default function BoardNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '',
           headerTintColor: '#346627',
@@ -96,7 +96,7 @@ export default function BoardNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '',
           headerTintColor: '#346627',

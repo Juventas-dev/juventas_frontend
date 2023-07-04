@@ -8,51 +8,33 @@ import {
   Text,
   FlatList,
 } from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useFocusEffect} from '@react-navigation/native';
-import {BoardStackParamList} from '../navigations/BoardNavigation';
+
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Config from 'react-native-config';
 import SearchPostItem from '../components/SearchPostItem';
-import {HomeStackParamList} from '../navigations/HomeNavigation';
-import MyKnowhow, {MyKnowhowStackParamList} from './MyKnowhow';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {MypageStackParamList} from '../navigations/MypageNavigation';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store';
 
-// const DATA = [
-//   {
-//     id: '1234',
-//     c_id: '0',
-//     q_id: '0',
-//     Is_qna: 'F',
-//     title: '줄넘기 하는 법',
-//     content: '줄넘기는 이렇게!',
-//     img_path: '',
-//   },
-//   {
-//     id: '12345',
-//     c_id: '1',
-//     q_id: '0',
-//     Is_qna: 'F',
-//     title: '서핑보드 중심 잡기',
-//     content: '어려워요',
-//     img_path: '',
-//   },
-// ];
+type SearchMyPostScreenProps = NativeStackScreenProps<
+  MypageStackParamList,
+  'SearchMyPost'
+>;
 
-type SearchPostScreenProps =
-  | NativeStackScreenProps<BoardStackParamList, 'SearchPost'>
-  | NativeStackScreenProps<HomeStackParamList, 'SearchPostHome'>;
-
-function SearchPost({navigation}: SearchPostScreenProps) {
+function SearchMyPost({navigation}: SearchMyPostScreenProps) {
   const [DATA, setDATA] = useState();
 
-  const toBoard = useCallback(() => {
+  const toMyKnowhow = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
   const SearchRef = useRef<TextInput | null>(null);
   const [keyword, setKeyword] = useState('');
 
   const searchKeyword = useRef<string>('');
+  const userID = useSelector((state: RootState) => state.user.id);
 
   useFocusEffect(
     useCallback(() => {
@@ -70,7 +52,7 @@ function SearchPost({navigation}: SearchPostScreenProps) {
 
   const onSubmit = useCallback(async () => {
     const response = await axios.get(
-      `${Config.API_URL}/board/search?keyword=${keyword}`,
+      `${Config.API_URL}/mypage/search?keyword=${keyword}&id=${userID}`,
     );
     setDATA(response.data.post);
     searchKeyword.current = keyword;
@@ -98,7 +80,7 @@ function SearchPost({navigation}: SearchPostScreenProps) {
             clearButtonMode="while-editing"
           />
         </View>
-        <Pressable style={styles.headerSearchCancelBtn} onPress={toBoard}>
+        <Pressable style={styles.headerSearchCancelBtn} onPress={toMyKnowhow}>
           <Text style={styles.headerSearchCancelBtnText}>취소</Text>
         </Pressable>
       </View>
@@ -113,7 +95,7 @@ function SearchPost({navigation}: SearchPostScreenProps) {
   );
 }
 
-export default SearchPost;
+export default SearchMyPost;
 
 const styles = StyleSheet.create({
   entire: {

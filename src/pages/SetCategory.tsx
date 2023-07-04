@@ -9,6 +9,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 
 import {BarChart} from 'react-native-chart-kit';
+import {useFocusEffect} from '@react-navigation/native';
 
 type MypageScreenProps = NativeStackScreenProps<
   MypageStackParamList,
@@ -19,12 +20,6 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
   const [categorySelected_0, setCategorySelected_0] = useState('');
   const [categorySelected_1, setCategorySelected_1] = useState('');
   const [categorySelected_2, setCategorySelected_2] = useState('');
-  const [preferCategory, setCategory] = useState({
-    cat_0: '',
-    cat_1: '',
-    cat_2: '',
-    name: '',
-  });
 
   const [completedNum, setNum] = useState({
     cat_0: '',
@@ -86,11 +81,9 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/mypage/main/${userID}`,
         );
-        setCategory(response.data);
-        console.log(preferCategory);
-        setCategorySelected_0(preferCategory.cat_0);
-        setCategorySelected_1(preferCategory.cat_1);
-        setCategorySelected_2(preferCategory.cat_2);
+        setCategorySelected_0(response.data.cat_0);
+        setCategorySelected_1(response.data.cat_1);
+        setCategorySelected_2(response.data.cat_2);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -106,7 +99,6 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
           `${Config.API_URL}/mypage/category/${userID}`,
         );
         setNum(response.data);
-        console.log(completedNum);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -118,7 +110,6 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
   const changeCategory = async () => {
     await axios.patch(`${Config.API_URL}/mypage/category`, {
       id: userID,
-      name: preferCategory.name,
       cat_0: categorySelected_0,
       cat_1: categorySelected_1,
       cat_2: categorySelected_2,

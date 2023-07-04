@@ -32,7 +32,7 @@ function MessageNavigation() {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '쪽지',
           headerTintColor: '#346627',
@@ -48,7 +48,7 @@ function MessageNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '쪽지', // 여기에 상대방 이름을 뜨게 할 수 있나?
           headerTintColor: '#346627',
