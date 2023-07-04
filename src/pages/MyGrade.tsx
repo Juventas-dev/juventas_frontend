@@ -9,9 +9,9 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import * as Progress from 'react-native-progress';
 
-type MypageScreenProps = NativeStackScreenProps<MypageStackParamList>;
+type MyGradeScreenProps = NativeStackScreenProps<MypageStackParamList>;
 
-const MyGrade = ({navigation}: MypageScreenProps) => {
+const MyGrade = ({navigation}: MyGradeScreenProps) => {
   const [currentGrade, setCurrentGrade] = useState('');
   const [nextGrade, setNextGrade] = useState('');
   const [percent, setPercent] = useState(0);

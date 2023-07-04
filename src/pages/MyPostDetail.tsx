@@ -14,19 +14,18 @@ import {
   ScrollView,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useRoute} from '@react-navigation/native';
-import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import CommentItem from '../components/CommentItem';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {MypageStackParamList} from '../navigations/MypageNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type PostDetailScreenProps = NativeStackScreenProps<
-  BoardStackParamList,
-  'PostDetail'
+type MyPostDetailScreenProps = NativeStackScreenProps<
+  MypageStackParamList,
+  'MyPostDetail'
 >;
 type PostItemProps = {
   is_qna: string;
@@ -48,9 +47,13 @@ type CommentItemProps = {
   r_id: number;
 };
 
-function PostDetail({navigation, route}: PostDetailScreenProps) {
+function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
   const idCurrent = route.params.postID;
-
+  const setQid = useCallback((id: string) => {
+    console.log('!!!');
+    console.log(id);
+    AsyncStorage.setItem('postId', id, () => [console.log('저장완료')]);
+  }, []);
   const [postDATA, setPostDATA] = useState<PostItemProps>({
     is_qna: 'T',
     title: '',
@@ -76,6 +79,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       textInputRef.current.focus();
     }
   };
+
   const onChangeComment = useCallback((text: string) => {
     setCommentValue(text);
   }, []);
@@ -91,6 +95,19 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   navigation.setOptions({
     headerTitle: postDATA.is_qna === 'T' ? '질문' : '노하우',
     headerStyle: {backgroundColor: '#DAE2D8'},
+    headerRight: () => (
+      <Pressable
+        onPress={() => {
+          {
+            setQid(idCurrent.toString());
+            navigation.navigate('ModifyMyknowhow');
+          }
+        }}>
+        <Text style={{color: '#346627', fontSize: 15, fontWeight: '800'}}>
+          수정하기
+        </Text>
+      </Pressable>
+    ),
   });
 
   const getBoardAndRefresh = useCallback(() => {
@@ -100,10 +117,11 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           `${Config.API_URL}/board/post/${idCurrent}?id='${userID}'`,
         );
         setPostDATA(response.data.post[0]);
+        console.log('&*&&');
+        console.log(response.data.comment);
         setMyPostRecommend(response.data.post[0].myrec);
         setCommentDATA(response.data.comment);
         setReCommentDATA(response.data.comment2);
-        console.log(response.data.comment2);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.error(errorResponse);
@@ -155,7 +173,6 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const postComment = useCallback(() => {
     const postCommentWait = async () => {
       try {
-        console.log(rid);
         const response = await axios.post(`${Config.API_URL}/board/comment`, {
           id: userID,
           w_id: idCurrent,
@@ -225,7 +242,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
                 <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
               </View>
             </View>
-            <Pressable onPress={recommendPost} style={styles.like}>
+            <Pressable onPress={recommendPost}>
               <FontAwesomeIcon
                 name="thumbs-up"
                 size={40}
@@ -238,7 +255,6 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
             <Text style={{color: '#4C4D4C'}}>{postDATA.content}</Text>
           </View>
         </View>
-
         <View style={styles.comment}>
           <FlatList
             data={commentDATA}
@@ -317,7 +333,7 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   );
 }
 
-export default PostDetail;
+export default MyPostDetail;
 
 const styles = StyleSheet.create({
   eachComment: {
@@ -366,6 +382,7 @@ const styles = StyleSheet.create({
   },
   postHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 15,
   },
@@ -375,13 +392,11 @@ const styles = StyleSheet.create({
     width: '80%',
     flex: 6,
   },
-  like: {},
   postProfile: {
     width: 40,
     height: 40,
     borderRadius: 20,
     backgroundColor: 'black',
-    felx: 1,
   },
   profile: {
     width: 40,
@@ -391,7 +406,7 @@ const styles = StyleSheet.create({
     top: 1,
   },
   postProfileTxt: {
-    flex: 5,
+    flex: 5, // flexDirection: 'row'
   },
   postProfileNameTxt: {
     fontSize: 12,
@@ -416,6 +431,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   comment: {
+    paddingHorizontal: 10,
     borderTopWidth: 1,
     borderTopColor: '#EBEFEA',
     marginBottom: 100,
@@ -427,7 +443,6 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: 20,
     height: 70,
     backgroundColor: 'white',

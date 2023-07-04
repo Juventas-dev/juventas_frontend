@@ -29,7 +29,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [questId, setQuestId] = useState('');
 
   const now = new Date();
   const year = now.getFullYear(); // 년도
@@ -69,9 +68,12 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
   const uploadTd = async () => {
     await axios.post(`${Config.API_URL}/quest/post`, {
       id: userID,
-      q_id: 1,
+      q_id: myQuest.quest_id,
       title: title,
       content: content,
+      img_path_1: null,
+      img_path_2: null,
+      img_path_3: null,
     });
     console.log('123');
     navigation.goBack();

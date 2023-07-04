@@ -8,10 +8,10 @@ import {
   View,
   SafeAreaView,
   Modal,
+  Alert,
 } from 'react-native';
-import {BoardStackParamList} from '../navigations/BoardNavigation';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -23,10 +23,17 @@ import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import {MypageStackParamList} from '../navigations/MypageNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'NewPost'>;
+type modifyMyknowhowScreenProps = NativeStackScreenProps<
+  MypageStackParamList,
+  'ModifyMyknowhow'
+>;
 
-const NewPost = ({navigation}: BoardScreenProps) => {
+const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
+  const [postId, setPostId] = useState(0);
+  const [cId, setcId] = useState(0);
   const [categorySelected, setCategorySelected] = useState<number | null>(null);
   const [filterSelected, setFilterSelected] = useState<number | null>(null);
   const [images, setImages] = useState<ImageResults[]>([]);
@@ -34,14 +41,65 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [isQ, setIsq] = useState(-1);
 
   const categoryDATA = ['건강', '여가', '학습', '관계'];
   const filterDATA = ['노하우', '질문'];
   const userID = useSelector((state: RootState) => state.user.id);
+  useEffect(() => {
+    const getPost = async () => {
+      const id = await AsyncStorage.getItem('postId');
+      if (id) {
+        const parsedId = parseInt(id, 10);
+        setPostId(parsedId);
+        console.log('**');
+        console.log(postId);
+      }
+    };
+    getPost();
+    const getCid = async () => {
+      const id = await AsyncStorage.getItem('cId');
+      if (id) {
+        const parsedId = parseInt(id, 10);
+        setcId(parsedId);
+        setCategorySelected(parsedId);
+        console.log(cId);
+      }
+    };
+    getCid();
+  }, [postId, cId]);
 
-  const onChangeQuest = useCallback((text: string) => {
-    setQuestId(text);
-  }, []);
+  useEffect(() => {
+    const getBoardAndRefresh = async () => {
+      try {
+        if (postId !== 0) {
+          const response = await axios.get(
+            `${Config.API_URL}/board/post/${postId}?id='${userID}'`,
+          );
+          setQuestId();
+          setTitle(response.data.post[0].title);
+          setContent(response.data.post[0].content);
+          if (response.data.post[0].is_qna === 'T') {
+            setIsq(1);
+            setFilterSelected(1);
+          } else {
+            setIsq(0);
+            setFilterSelected(0);
+          }
+          console.log('$$');
+          console.log(isQ);
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
+      }
+    };
+    getBoardAndRefresh();
+  }, [postId, userID, isQ]);
+
   const onChangeTitle = useCallback((text: string) => {
     setTitle(text);
   }, []);
@@ -70,16 +128,28 @@ const NewPost = ({navigation}: BoardScreenProps) => {
     } else {
       temp = 'F';
     }
-    await axios.post(`${Config.API_URL}/board/post`, {
+    console.log('%$%$%$$');
+    console.log(categorySelected);
+    console.log(questId);
+    console.log(postId);
+    console.log(temp);
+    console.log(title);
+    console.log(content);
+    await axios.patch(`${Config.API_URL}/board/post`, {
       id: userID,
+      incr: postId,
       c_id: categorySelected,
       q_id: 0,
-      is_qna: temp,
       title: title,
+      is_qna: temp,
       content: content,
     });
     navigation.goBack();
   };
+  navigation.setOptions({
+    headerTitle: '글쓰기',
+    headerStyle: {backgroundColor: '#DAE2D8'},
+  });
 
   useEffect(() => {}, [categorySelected, filterSelected]);
 
@@ -92,7 +162,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
             onSelect={(_selectedItem, index) => {
               setCategorySelected(index);
             }}
-            defaultButtonText="카테고리"
+            defaultButtonText={categoryDATA[cId]}
             defaultValue={0}
             buttonTextAfterSelection={(selectedItem, _index) => {
               return selectedItem;
@@ -119,8 +189,8 @@ const NewPost = ({navigation}: BoardScreenProps) => {
             onSelect={(_selectedItem, index) => {
               setFilterSelected(index);
             }}
-            defaultButtonText="필터"
-            defaultValue={0}
+            defaultButtonText={filterDATA[isQ]}
+            defaultValue={isQ}
             buttonTextAfterSelection={(selectedItem, _index) => {
               return selectedItem;
             }}
@@ -151,7 +221,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
             onPress={selectImage}>
             <Icon name="camera-alt" color="white" size={24} />
           </Pressable>
-
           <TextInput
             style={styles.titleInput}
             placeholder="제목을 입력하세요"
@@ -173,7 +242,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
         </View>
         <View>
           <Pressable style={styles.complete} onPress={writeDone}>
-            <Text style={{color: '#346627'}}>업로드</Text>
+            <Text style={{color: '#346627'}}>수정 완료</Text>
           </Pressable>
         </View>
         <Modal transparent={true} visible={showModal}>
@@ -187,7 +256,7 @@ const NewPost = ({navigation}: BoardScreenProps) => {
                   style={styles.modalImg}
                 />
                 <Text style={styles.modalTextHeader}>
-                  글을 업로드 하시겠습니까?
+                  글을 수정 하시겠습니까?
                 </Text>
               </View>
               <View style={styles.Choose}>
@@ -265,12 +334,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   titleInput: {
+    width: '83%',
     fontWeight: 'bold',
     fontSize: 20,
     paddingHorizontal: 21,
     paddingTop: 10,
     paddingBottom: 10,
-    width: '83%',
   },
   contentInput: {
     fontSize: 17,
@@ -358,4 +427,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewPost;
+export default ModifyMyknowhow;

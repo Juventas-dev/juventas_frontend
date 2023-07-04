@@ -67,8 +67,10 @@ function NoticeList({navigation}: NoticeScreenProps) {
           setNoticeIncr(String(fixedNotice.incr));
           navigation.navigate('Notice');
         }}>
-        <Text style={styles.NoticeTitleFix}>{fixedNotice.title}</Text>
-        <Text style={{color: '#4C4D4C', fontSize: 20}}>
+        <Text style={styles.NoticeTitleFix} numberOfLines={2}>
+          {fixedNotice.title}
+        </Text>
+        <Text style={{color: '#4C4D4C', fontSize: 17}} numberOfLines={4}>
           {fixedNotice.content}
         </Text>
       </Pressable>
@@ -85,7 +87,9 @@ function NoticeList({navigation}: NoticeScreenProps) {
           setNoticeIncr(String(Item.incr));
           navigation.navigate('Notice');
         }}>
-        <Text style={styles.NoticeTitle}>{Item.title}</Text>
+        <Text style={styles.NoticeTitle} numberOfLines={1}>
+          {Item.title}
+        </Text>
       </Pressable>
     );
   }
@@ -122,7 +126,7 @@ const styles = StyleSheet.create({
   NoticeTitleFix: {
     color: 'black',
     fontWeight: '900',
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -138,5 +142,6 @@ const styles = StyleSheet.create({
     color: '#3D3C3C',
     fontWeight: '600',
     fontSize: 15,
+    paddingHorizontal: 5,
   },
 });

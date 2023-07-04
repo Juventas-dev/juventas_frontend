@@ -65,14 +65,17 @@ function Home({navigation}: HomeScreenProps) {
   useEffect(() => {
     getQuestSelectedOrNot();
     getBoardData();
-  }, []);
+  }, [questSelected]);
 
   const getQuestSelectedOrNot = useCallback(async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/quest/questselected/${userID}`,
       );
+      console.log('^^');
+      console.log(response.data.is_selected);
       setQuestSelected(response.data.is_selected);
+      getQuestData();
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -84,12 +87,14 @@ function Home({navigation}: HomeScreenProps) {
 
   const getQuestData = useCallback(async () => {
     try {
-      console.log(111);
+      console.log('%%');
+      console.log(questSelected);
       const response = await axios.get(
         `${Config.API_URL}/quest/userquest/${userID}`,
       );
-      if (questSelected == 'T') {
-        console.log(222);
+      console.log('***');
+      console.log(response.data);
+      if (questSelected === 'T') {
         setMyQuest({
           questCategory: response.data.category,
           questMidCategory: response.data.middle_category,
@@ -98,14 +103,17 @@ function Home({navigation}: HomeScreenProps) {
           num_people: response.data.num_people,
         });
       } else {
-        console.log(333);
         setAllQuestData(response.data.recommend);
       }
-      console.log(444);
       setLevel(response.data.level);
+      console.log('&&');
+      console.log(level);
       setSeqCount(response.data.seq_count);
+      console.log(seqCount);
       setCompletedNUm(response.data.quest_completed);
+      console.log(completedNum);
       setPoint(response.data.point);
+      console.log(point);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -123,16 +131,12 @@ function Home({navigation}: HomeScreenProps) {
     myQuest,
   ]);
 
-  useEffect(() => {
-    getQuestData();
-    getImage(level);
-  }, [questSelected]);
-
   const getBoardData = async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/board/bestpost?id='${userID}'`,
       );
+      console.log(response.data);
       setBoardData(response.data.bestPost);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -142,26 +146,6 @@ function Home({navigation}: HomeScreenProps) {
       }
     }
   };
-
-  const getImage = useCallback(
-    (lev: string) => {
-      if (lev.includes('씨앗') === true) {
-        setLevelTxt('Level_1');
-      } else if (lev.includes('새싹') === true) {
-        setLevelTxt('Level_2');
-      } else if (lev.includes('묘목') === true) {
-        setLevelTxt('Level_3');
-      } else if (lev.includes('나무') === true) {
-        setLevelTxt('Level_4');
-      } else if (lev.includes('꽃') === true) {
-        setLevelTxt('Level_5');
-      } else {
-        setLevelTxt('Level_6');
-      }
-      getSrc();
-    },
-    [level, levelTxt, levelImage],
-  );
 
   const getSrc = useCallback(() => {
     if (levelTxt === 'Level_1') {
@@ -179,24 +163,42 @@ function Home({navigation}: HomeScreenProps) {
     }
   }, [levelTxt, levelImage]);
 
-  const selectQuest = useCallback(
-    async (num: number) => {
-      try {
-        await axios.post(`${Config.API_URL}/quest/userquest`, {
-          id: userID,
-          q_id: allQuestData[num].incr,
-        });
-        setQuestSelected('T');
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+  const getImage = useCallback((lev: string) => {
+    if (lev.includes('씨앗') === true) {
+      setLevelTxt('Level_1');
+    } else if (lev.includes('새싹') === true) {
+      setLevelTxt('Level_2');
+    } else if (lev.includes('묘목') === true) {
+      setLevelTxt('Level_3');
+    } else if (lev.includes('나무') === true) {
+      setLevelTxt('Level_4');
+    } else if (lev.includes('꽃') === true) {
+      setLevelTxt('Level_5');
+    } else {
+      setLevelTxt('Level_6');
+    }
+  }, []);
+
+  useEffect(() => {
+    getImage(level);
+    getSrc();
+  }, [level, getImage, getSrc]);
+
+  const selectQuest = async (num: number) => {
+    console.log('^^');
+    try {
+      await axios.post(`${Config.API_URL}/quest/userquest`, {
+        id: userID,
+        q_id: allQuestData[num].incr,
+      });
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    },
-    [questSelected, allQuestData, myQuest],
-  );
+    }
+  };
 
   const resetQuest = useCallback(async () => {
     try {
@@ -274,21 +276,31 @@ function Home({navigation}: HomeScreenProps) {
           <View style={styles.questBody}>
             <Pressable
               style={styles.questBtn}
-              onPress={() => selectQuest(questNum * 3)}>
+              onPress={() => {
+                setQuestSelected('T');
+                selectQuest(questNum * 3);
+                console.log(questSelected);
+              }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3].q_name}
               </Text>
             </Pressable>
             <Pressable
               style={styles.questBtn}
-              onPress={() => selectQuest(questNum * 3 + 1)}>
+              onPress={() => {
+                selectQuest(questNum * 3 + 1);
+                setQuestSelected('T');
+              }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 1].q_name}
               </Text>
             </Pressable>
             <Pressable
               style={styles.questBtn}
-              onPress={() => selectQuest(questNum * 3 + 2)}>
+              onPress={() => {
+                selectQuest(questNum * 3 + 2);
+                setQuestSelected('T');
+              }}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 2].q_name}
               </Text>
@@ -296,6 +308,11 @@ function Home({navigation}: HomeScreenProps) {
             <Pressable style={styles.questRandomBtn} onPress={nextQuestList}>
               <Text style={styles.questBtnTxt}>추천 도전 새로고침</Text>
             </Pressable>
+            <View style={styles.questFooter}>
+              <Pressable onPress={toAllQuest}>
+                <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
+              </Pressable>
+            </View>
           </View>
         ) : (
           <View style={styles.questBodyDecided}>
@@ -316,12 +333,6 @@ function Home({navigation}: HomeScreenProps) {
             </Pressable>
           </View>
         )}
-
-        <View style={styles.questFooter}>
-          <Pressable onPress={toAllQuest}>
-            <Text style={styles.questFooterTxt}>전체 도전 목록 보기</Text>
-          </Pressable>
-        </View>
       </View>
       <View style={styles.board}>
         <View style={styles.boardSearch}>
@@ -341,11 +352,11 @@ function Home({navigation}: HomeScreenProps) {
           <View style={styles.boardHeader}>
             <View style={styles.boardProfile}>
               <Pressable style={styles.profile} />
-              <View>
+              <View style={{flex: 5}}>
                 <Text style={styles.boardProfileUsername} numberOfLines={1}>
                   {boardData[whichPost]?.user_name}
                 </Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={1}>
+                <Text style={styles.boardProfileTitle} numberOfLines={2}>
                   {boardData[whichPost]?.title}
                 </Text>
               </View>
@@ -636,10 +647,11 @@ const styles = StyleSheet.create({
   },
   boardProfile: {
     flexDirection: 'row',
-    width: '82%',
+    flex: 4,
+    flexWrap: 'wrap',
   },
   profile: {
-    width: 40,
+    flex: 1,
     height: 40,
     borderRadius: 20,
     backgroundColor: 'black',
@@ -647,12 +659,15 @@ const styles = StyleSheet.create({
   },
   boardProfileUsername: {
     fontSize: 12,
+    color: '#5F5D5D',
   },
   boardProfileTitle: {
     fontSize: 17,
+    color: '#3D3C3C',
+    fontWeight: 'bold',
   },
   boardRecommend: {
-    width: '18%',
+    flex: 1,
     alignItems: 'center',
     marginLeft: 3,
   },
@@ -662,6 +677,7 @@ const styles = StyleSheet.create({
   },
   boardContentTxt: {
     fontSize: 12,
+    color: '#4C4D4C',
   },
   boardFooter: {
     flexDirection: 'row',

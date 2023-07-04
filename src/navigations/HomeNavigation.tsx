@@ -34,7 +34,7 @@ export default function HomeNavigation() {
         options={{
           headerBackVisible: false,
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '홈',
           headerTintColor: '#346627',
@@ -50,7 +50,7 @@ export default function HomeNavigation() {
         options={{
           headerBackTitle: '뒤로',
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: '#F9FAF8'},
+          headerStyle: {backgroundColor: '#E7EBE4'},
           headerTitleAlign: 'center',
           headerTitle: '',
           headerTintColor: '#346627',
@@ -82,7 +82,6 @@ export default function HomeNavigation() {
           title: 'AllQuest',
           headerShown: false,
         }}
-
       />
     </Stack.Navigator>
   );

@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Alert,
   TextInput,
+  FlatList,
+  RefreshControl,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -17,12 +19,17 @@ import Config from 'react-native-config';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import PostMyItem from '../components/PostMyItem';
 
-export type MyKnowhowStackParamList = {
-  SearchMyPost: undefined;
+export type MyKnowhowScreenProps = NativeStackScreenProps<MypageStackParamList>;
+
+type ItemProps = {
+  incr: number;
+  c_id: number;
+  title: string;
+  like: number;
+  comment: number;
 };
-export type MyKnowhowScreenProps =
-  NativeStackScreenProps<MyKnowhowStackParamList>;
 
 const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
   const userID = useSelector((state: RootState) => state.user.id);
@@ -105,6 +112,7 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/mypage/mywriting?id='${userID}'`,
         );
+        console.log(response.data.post);
         setDATA(response.data.post);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -131,7 +139,7 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
             <TextInput
               style={styles.headerSearchInput}
               placeholder="검색"
-              placeholderTextColor={'#DAE2D8'}
+              placeholderTextColor={'#B7CBB2'}
               onFocus={toSearchMyPost}
             />
           </View>
@@ -199,6 +207,14 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
           rowTextStyle={styles.RowTxtSt}
         />
       </View>
+      <FlatList
+        data={DATA}
+        renderItem={({item}) => <PostMyItem item={item} />}
+        keyExtractor={Item => String(Item.incr)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -250,7 +266,7 @@ const styles = StyleSheet.create({
   categoryTxt: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#DAE2D8',
+    color: '#B7CBB2',
     marginLeft: 20,
   },
   categoryIcon: {
@@ -275,13 +291,3 @@ const styles = StyleSheet.create({
     right: 20,
   },
 });
-
-/*<FlatList
-        data={DATA}
-        renderItem={({item}) => <PostItem item={item} />}
-        keyExtractor={Item => String(Item.incr)} // incr을 무식하게 String으로 바꿔서 하는 게 맞나?
-        ListHeaderComponent={FlatListHeader(bestPostDATA)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      /> */
