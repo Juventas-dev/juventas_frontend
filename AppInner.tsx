@@ -57,7 +57,7 @@ function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.id);
   const [socket, disconnect] = useSocket();
-  const [isFirstLogin, setFirstLogin] = useState(false);
+  const [isFirstLogin, setFirstLogin] = useState(true);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -117,8 +117,8 @@ function AppInner() {
           const response = await axios.get(
             `${Config.API_URL}/quest/questselected/${userID}`,
           );
-          if (response.data.is_first === 'T') {
-            setFirstLogin(true);
+          if (response.data.is_first === 'F') {
+            setFirstLogin(false);
           }
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>)
