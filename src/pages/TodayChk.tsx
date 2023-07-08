@@ -21,6 +21,7 @@ import {useSelector} from 'react-redux';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {RootState} from '../store';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'TodayChk'>;
 
@@ -65,23 +66,27 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
     setImages(response);
   };
 
+  const saveAfter = useCallback((text: string) => {
+    AsyncStorage.setItem('afterTd', text, () => {
+      console.log('저장완료');
+    });
+  }, []);
+
   const uploadTd = async () => {
     console.log('1');
     console.log(userID);
     console.log(myQuest.quest_id);
     console.log(title);
     console.log(content);
+    saveAfter('T');
     await axios.post(`${Config.API_URL}/quest/post`, {
       id: userID,
       q_id: myQuest.quest_id,
       title: title,
       content: content,
-      img_path_1: undefined,
-      img_path_2: undefined,
-      img_path_3: undefined,
     });
     console.log('123');
-    navigation.goBack();
+    navigation.navigate('Home');
   };
 
   useEffect(() => {
@@ -168,7 +173,12 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
                 </Text>
               </View>
               <View style={styles.Choose}>
-                <Pressable style={styles.YesBt} onPress={() => uploadTd()}>
+                <Pressable
+                  style={styles.YesBt}
+                  onPress={() => {
+                    saveAfter('T');
+                    uploadTd();
+                  }}>
                   <Text style={styles.ChooseTxt}>예</Text>
                 </Pressable>
                 <Pressable
