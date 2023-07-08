@@ -32,12 +32,6 @@ const QuestList = ({navigation}: QuestScreenProps) => {
 
   const userID = useSelector((state: RootState) => state.user.id);
 
-  const saveSelect = useCallback(() => {
-    AsyncStorage.setItem('select', 'T', () => {
-      console.log('저장완료');
-    });
-  }, []);
-
   useEffect(() => {
     const getCategory = async () => {
       const Category = await AsyncStorage.getItem('category');
@@ -59,6 +53,12 @@ const QuestList = ({navigation}: QuestScreenProps) => {
     };
 
     getCategory();
+  }, []);
+
+  const saveAfter = useCallback((text: string) => {
+    AsyncStorage.setItem('afterTd', text, () => {
+      console.log('저장완료');
+    });
   }, []);
 
   useEffect(() => {
@@ -106,11 +106,10 @@ const QuestList = ({navigation}: QuestScreenProps) => {
         <Pressable
           style={styles.selectBox}
           onPress={() => {
-            saveSelect();
             // 여기서 뭘 어케해야되는지 진짜 모르겠음
+            saveAfter('F');
             selectQuest(Item.incr);
-            navigation.pop();
-            navigation.pop();
+            navigation.navigate('Home');
           }}>
           <Text style={styles.selectTxt}>도전 선택하기</Text>
         </Pressable>
