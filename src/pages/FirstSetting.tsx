@@ -87,7 +87,7 @@ const FirstSetting = ({
 
   const onChangeSex = useCallback(
     (text: string) => {
-      if (text == Sex) {
+      if (text === Sex) {
         setSex('');
       } else {
         setSex(text);
@@ -98,7 +98,7 @@ const FirstSetting = ({
 
   const onChooseHousemate = useCallback(
     (num: number) => {
-      if (num == 1) {
+      if (num === 1) {
         if (parent) {
           chooseParent(false);
         } else {
@@ -106,7 +106,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 2) {
+      if (num === 2) {
         if (spouse) {
           chooseSpouse(false);
         } else {
@@ -114,7 +114,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 3) {
+      if (num === 3) {
         if (child) {
           chooseChild(false);
         } else {
@@ -122,7 +122,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 4) {
+      if (num === 4) {
         if (sibling) {
           chooseSibling(false);
         } else {
@@ -130,7 +130,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 5) {
+      if (num === 5) {
         if (relative) {
           chooseRelative(false);
         } else {
@@ -138,7 +138,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 6) {
+      if (num === 6) {
         if (lover) {
           chooseLover(false);
         } else {
@@ -146,7 +146,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 7) {
+      if (num === 7) {
         if (friend) {
           chooseFriend(false);
         } else {
@@ -154,7 +154,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 8) {
+      if (num === 8) {
         if (pet) {
           choosePet(false);
         } else {
@@ -162,7 +162,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 9) {
+      if (num === 9) {
         if (etc) {
           chooseEtc(false);
         } else {
@@ -170,7 +170,7 @@ const FirstSetting = ({
           chooseNone(false);
         }
       }
-      if (num == 10) {
+      if (num === 10) {
         if (none) {
           chooseNone(false);
         } else {
@@ -192,7 +192,7 @@ const FirstSetting = ({
   );
   const onChooseJob = useCallback(
     (num: number) => {
-      if (num == 1) {
+      if (num === 1) {
         if (worker) {
           chooseWorker(false);
         } else {
@@ -200,7 +200,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 2) {
+      if (num === 2) {
         if (self) {
           chooseSelf(false);
         } else {
@@ -208,7 +208,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 3) {
+      if (num === 3) {
         if (partTime) {
           choosePartTime(false);
         } else {
@@ -216,7 +216,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 4) {
+      if (num === 4) {
         if (housemaker) {
           chooseHousemaker(false);
         } else {
@@ -224,7 +224,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 5) {
+      if (num === 5) {
         if (student) {
           chooseStudent(false);
         } else {
@@ -232,7 +232,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 6) {
+      if (num === 6) {
         if (nojob) {
           chooseNojob(false);
         } else {
@@ -246,7 +246,7 @@ const FirstSetting = ({
           chooseEtcjob(false);
         }
       }
-      if (num == 7) {
+      if (num === 7) {
         if (official) {
           chooseOfficial(false);
         } else {
@@ -254,7 +254,7 @@ const FirstSetting = ({
           chooseNojob(false);
         }
       }
-      if (num == 8) {
+      if (num === 8) {
         if (etcjob) {
           chooseEtcjob(false);
         } else {
@@ -268,7 +268,7 @@ const FirstSetting = ({
   );
   const onChoosePrefer = useCallback(
     (num: number) => {
-      if (num == 1) {
+      if (num === 1) {
         if (!health) {
           setSelected(selected + 1);
           setHealthOrder(selected);
@@ -288,7 +288,7 @@ const FirstSetting = ({
         }
         setHealth(!health);
       }
-      if (num == 2) {
+      if (num === 2) {
         if (!leisure) {
           setSelected(selected + 1);
           setLeisureOrder(selected);
@@ -308,7 +308,7 @@ const FirstSetting = ({
         }
         setLeisure(!leisure);
       }
-      if (num == 3) {
+      if (num === 3) {
         if (!study) {
           setSelected(selected + 1);
           setStudyOrder(selected);
@@ -328,7 +328,7 @@ const FirstSetting = ({
         }
         setStudy(!study);
       }
-      if (num == 4) {
+      if (num === 4) {
         if (!relation) {
           setSelected(selected + 1);
           setRelationOrder(selected);
@@ -364,7 +364,7 @@ const FirstSetting = ({
 
   const onNameCheck = useCallback(
     async (text: string) => {
-      if (text == '') {
+      if (text === '') {
         Alert.alert('알림', '닉네임은 한 글자 이상이어야 합니다.');
       } else {
         //  중복확인 필요
@@ -392,44 +392,20 @@ const FirstSetting = ({
 
   const nextScreen = useCallback(() => {
     if (firstScreen == 1) {
-      if (
-        NameCheck != 'T' ||
-        !/^\d{1,3}$/.test(Age) ||
-        !Sex ||
-        !Sex.trim() ||
-        (!worker &&
-          !self &&
-          !partTime &&
-          !housemaker &&
-          !student &&
-          !nojob &&
-          !official &&
-          !etcjob) ||
-        !UsingtimeMin ||
-        !UsingtimeMax ||
-        UsingtimeMin > UsingtimeMax ||
-        (!parent &&
-          !spouse &&
-          !child &&
-          !sibling &&
-          !relative &&
-          !lover &&
-          !friend &&
-          !pet &&
-          !etc &&
-          !none) ||
-        selected < 3
-      ) {
-        if (UsingtimeMin > UsingtimeMax) {
-          Alert.alert('알림', '최소시간이 최대시간보다 짧아야 함');
-        } else {
+      if ((NameCheck != 'T') || (!/^\d{1,3}$/.test(Age)) || (!Sex || !Sex.trim()) 
+      || (!worker && !self && !partTime && !housemaker && !student && !nojob && !official && !etcjob) 
+      || (!UsingtimeMin) || (!UsingtimeMax) || (UsingtimeMin > UsingtimeMax) 
+      || (!parent && !spouse && !child && !sibling && !relative && !lover && !friend && !pet && !etc && !none) 
+      || (selected < 3)) {
+        if (UsingtimeMin > UsingtimeMax) {Alert.alert('알림', '최소시간이 최대시간보다 짧아야 함')}
+        else {
           Alert.alert('알림', '다 쓰셈');
-          console.log(NameCheck);
-          console.log(Age);
-          console.log(Sex);
-          console.log(UsingtimeMin);
-          console.log(UsingtimeMax);
-          console.log(selected);
+          console.log('name ', NameCheck)
+          console.log('age ', Age)
+          console.log('sex ', Sex)
+          console.log('mintime ', UsingtimeMin)
+          console.log('maxtime ', UsingtimeMax)
+          console.log('category ', selected)
         }
       } else {
         setFirstScreen(firstScreen + 1);
@@ -571,7 +547,7 @@ const FirstSetting = ({
               placeholder="닉네임"
               placeholderTextColor={'#B7CBB2'}
               selectionColor={'#346627'}
-              style={NameCheck == 'F' ? styles.nameInputRed : styles.nameInput}
+              style={NameCheck === 'F' ? styles.nameInputRed : styles.nameInput}
               autoCapitalize="none"
               onChangeText={onChangeName}
               textContentType="name"
@@ -581,20 +557,20 @@ const FirstSetting = ({
             <Pressable
               onPress={() => onNameCheck(Name)}
               style={styles.nameCheck}>
-              {NameCheck != 'T' && (
+              {NameCheck !== 'T' && (
                 <Text style={styles.nameCheckTxt}>중복 확인</Text>
               )}
-              {NameCheck == 'T' && (
+              {NameCheck === 'T' && (
                 <Text style={styles.nameCheckTxt}>확인 완료</Text>
               )}
             </Pressable>
           </View>
-          {NameCheck == 'T' && (
+          {NameCheck === 'T' && (
             <Text style={styles.nameAvailable}>
               • 사용 가능한 닉네임입니다.
             </Text>
           )}
-          {NameCheck == 'F' && (
+          {NameCheck === 'F' && (
             <Text style={styles.nameUnAvailable}>
               • 이미 사용 중인 닉네임입니다. 다른 닉네임을 작성해주세요.
             </Text>
@@ -635,20 +611,20 @@ const FirstSetting = ({
             <View style={styles.selectView}>
               <Pressable
                 onPress={() => onChangeSex('M')}
-                style={Sex == 'M' ? styles.selectedBtn : styles.selectBtn}>
+                style={Sex === 'M' ? styles.selectedBtn : styles.selectBtn}>
                 <Text
                   style={
-                    Sex == 'M' ? styles.selectedBtnTxt : styles.selectBtnTxt
+                    Sex === 'M' ? styles.selectedBtnTxt : styles.selectBtnTxt
                   }>
                   남자
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => onChangeSex('F')}
-                style={Sex == 'F' ? styles.selectedBtn : styles.selectBtn}>
+                style={Sex === 'F' ? styles.selectedBtn : styles.selectBtn}>
                 <Text
                   style={
-                    Sex == 'F' ? styles.selectedBtnTxt : styles.selectBtnTxt
+                    Sex === 'F' ? styles.selectedBtnTxt : styles.selectBtnTxt
                   }>
                   여자
                 </Text>
@@ -656,11 +632,11 @@ const FirstSetting = ({
               <Pressable
                 onPress={() => onChangeSex('N')}
                 style={
-                  Sex == 'N' ? styles.selectedBtnBig : styles.selectBtnBig
+                  Sex === 'N' ? styles.selectedBtnBig : styles.selectBtnBig
                 }>
                 <Text
                   style={
-                    Sex == 'N' ? styles.selectedBtnTxt : styles.selectBtnTxt
+                    Sex === 'N' ? styles.selectedBtnTxt : styles.selectBtnTxt
                   }>
                   밝히지 않음
                 </Text>
@@ -769,7 +745,7 @@ const FirstSetting = ({
               <SelectDropdown
                 data={timeDATA}
                 onSelect={(_selectedItem, index) => {
-                  if (UsingtimeMin == index + 1) {
+                  if (UsingtimeMin === index + 1) {
                     setUsingtimeMin(0);
                   } else {
                     setUsingtimeMin(index + 1);
@@ -778,23 +754,23 @@ const FirstSetting = ({
                 defaultButtonText="최소"
                 defaultValue={0}
                 buttonTextAfterSelection={(selectedItem, _index) => {
-                  if (UsingtimeMin == 0) {
+                  if (UsingtimeMin === 0) {
                     return '최소';
                   } else {
                     return timeDATA[UsingtimeMin - 1];
                   }
                 }}
                 buttonStyle={
-                  UsingtimeMin == 0 ? styles.category : styles.categorySelected
+                  UsingtimeMin === 0 ? styles.category : styles.categorySelected
                 }
                 buttonTextStyle={
-                  UsingtimeMin == 0
+                  UsingtimeMin === 0
                     ? styles.categoryTxt
                     : styles.categoryTxtSelected
                 }
                 renderDropdownIcon={() => {
                   return (
-                    UsingtimeMin == 0 && (
+                    UsingtimeMin === 0 && (
                       <FontAwesome5Icon
                         name="caret-down"
                         size={30}
@@ -813,7 +789,7 @@ const FirstSetting = ({
               <SelectDropdown
                 data={timeDATA}
                 onSelect={(_selectedItem, index) => {
-                  if (UsingtimeMax == index + 1) {
+                  if (UsingtimeMax === index + 1) {
                     setUsingtimeMax(0);
                   } else {
                     setUsingtimeMax(index + 1);
@@ -822,23 +798,23 @@ const FirstSetting = ({
                 defaultButtonText="최대"
                 defaultValue={0}
                 buttonTextAfterSelection={(selectedItem, _index) => {
-                  if (UsingtimeMax == 0) {
+                  if (UsingtimeMax === 0) {
                     return '최대';
                   } else {
                     return timeDATA[UsingtimeMax - 1];
                   }
                 }}
                 buttonStyle={
-                  UsingtimeMax == 0 ? styles.category : styles.categorySelected
+                  UsingtimeMax === 0 ? styles.category : styles.categorySelected
                 }
                 buttonTextStyle={
-                  UsingtimeMax == 0
+                  UsingtimeMax === 0
                     ? styles.categoryTxt
                     : styles.categoryTxtSelected
                 }
                 renderDropdownIcon={() => {
                   return (
-                    UsingtimeMax == 0 && (
+                    UsingtimeMax === 0 && (
                       <FontAwesome5Icon
                         name="caret-down"
                         size={30}

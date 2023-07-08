@@ -77,17 +77,14 @@ function Home({navigation}: HomeScreenProps) {
   useEffect(() => {
     getQuestSelectedOrNot();
     getBoardData();
-  }, [questSelected]);
+  }, []);
 
   const getQuestSelectedOrNot = useCallback(async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/quest/questselected/${userID}`,
       );
-      console.log('^^');
-      console.log(response.data.is_selected);
       setQuestSelected(response.data.is_selected);
-      getQuestData();
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -99,16 +96,12 @@ function Home({navigation}: HomeScreenProps) {
 
   const getQuestData = useCallback(async () => {
     try {
-      console.log('%%');
-      console.log(afterComplete);
-      console.log(questSelected);
+      console.log(111);
       const response = await axios.get(
         `${Config.API_URL}/quest/userquest/${userID}`,
       );
-      console.log('***');
-      console.log(response.data);
-      console.log(response.data.recommend);
-      if (questSelected === 'T') {
+      if (questSelected == 'T') {
+        console.log(222);
         setMyQuest({
           questCategory: response.data.category,
           questMidCategory: response.data.middle_category,
@@ -120,16 +113,10 @@ function Home({navigation}: HomeScreenProps) {
         console.log('#$#$#$#$');
         setAllQuestData(response.data.recommend);
       }
-
       setLevel(response.data.level);
-      console.log('&&');
-      console.log(level);
       setSeqCount(response.data.seq_count);
-      console.log(seqCount);
       setCompletedNUm(response.data.quest_completed);
-      console.log(completedNum);
       setPoint(response.data.point);
-      console.log(point);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -147,13 +134,16 @@ function Home({navigation}: HomeScreenProps) {
     myQuest,
   ]);
 
+  useEffect(() => {
+    getQuestData();
+    getImage(level);
+  }, [questSelected]);
+
   const getBoardData = async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/board/bestpost?id='${userID}'`,
       );
-      console.log('^^^');
-      console.log(response.data.bestPost);
       setBoardData(response.data.bestPost);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -163,6 +153,26 @@ function Home({navigation}: HomeScreenProps) {
       }
     }
   };
+
+  const getImage = useCallback(
+    (lev: string) => {
+      if (lev.includes('씨앗') === true) {
+        setLevelTxt('Level_1');
+      } else if (lev.includes('새싹') === true) {
+        setLevelTxt('Level_2');
+      } else if (lev.includes('묘목') === true) {
+        setLevelTxt('Level_3');
+      } else if (lev.includes('나무') === true) {
+        setLevelTxt('Level_4');
+      } else if (lev.includes('꽃') === true) {
+        setLevelTxt('Level_5');
+      } else {
+        setLevelTxt('Level_6');
+      }
+      getSrc();
+    },
+    [level, levelTxt, levelImage],
+  );
 
   const getSrc = useCallback(() => {
     if (levelTxt === 'Level_1') {
@@ -180,42 +190,24 @@ function Home({navigation}: HomeScreenProps) {
     }
   }, [levelTxt, levelImage]);
 
-  const getImage = useCallback((lev: string) => {
-    if (lev.includes('씨앗') === true) {
-      setLevelTxt('Level_1');
-    } else if (lev.includes('새싹') === true) {
-      setLevelTxt('Level_2');
-    } else if (lev.includes('묘목') === true) {
-      setLevelTxt('Level_3');
-    } else if (lev.includes('나무') === true) {
-      setLevelTxt('Level_4');
-    } else if (lev.includes('꽃') === true) {
-      setLevelTxt('Level_5');
-    } else {
-      setLevelTxt('Level_6');
-    }
-  }, []);
-
-  useEffect(() => {
-    getImage(level);
-    getSrc();
-  }, [level, getImage, getSrc]);
-
-  const selectQuest = async (num: number) => {
-    console.log('^^');
-    try {
-      await axios.post(`${Config.API_URL}/quest/userquest`, {
-        id: userID,
-        q_id: allQuestData[num].incr,
-      });
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
-      if (errorResponse) {
-        return Alert.alert('알림', errorResponse.data?.message);
+  const selectQuest = useCallback(
+    async (num: number) => {
+      try {
+        await axios.post(`${Config.API_URL}/quest/userquest`, {
+          id: userID,
+          q_id: allQuestData[num].incr,
+        });
+        setQuestSelected('T');
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.error(errorResponse);
+        if (errorResponse) {
+          return Alert.alert('알림', errorResponse.data?.message);
+        }
       }
-    }
-  };
+    },
+    [questSelected, allQuestData, myQuest],
+  );
 
   const resetQuest = useCallback(async () => {
     try {
@@ -367,30 +359,21 @@ function Home({navigation}: HomeScreenProps) {
           <View style={styles.questBody}>
             <Pressable
               style={styles.questBtn}
-              onPress={() => {
-                setQuestSelected('T');
-                selectQuest(questNum * 3);
-              }}>
+              onPress={() => selectQuest(questNum * 3)}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3].q_name}
               </Text>
             </Pressable>
             <Pressable
               style={styles.questBtn}
-              onPress={() => {
-                setQuestSelected('T');
-                selectQuest(questNum * 3 + 1);
-              }}>
+              onPress={() => selectQuest(questNum * 3 + 1)}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 1].q_name}
               </Text>
             </Pressable>
             <Pressable
               style={styles.questBtn}
-              onPress={() => {
-                setQuestSelected('T');
-                selectQuest(questNum * 3 + 2);
-              }}>
+              onPress={() => selectQuest(questNum * 3 + 2)}>
               <Text style={styles.questBtnTxt}>
                 {allQuestData[questNum * 3 + 2].q_name}
               </Text>
