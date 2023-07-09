@@ -22,9 +22,10 @@ import SettingNavigation from './src/navigations/SettingNavigation';
 import SplashScreen from 'react-native-splash-screen';
 import MessageNavigation from './src/navigations/MessageNavigation';
 import useSocket from './src/hooks/useSockets';
-import {Alert} from 'react-native';
+import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import FirstSetting from './src/pages/FirstSetting';
 import {useNavigation} from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 
 export type LoggedInParamList = {
   Board: undefined;
