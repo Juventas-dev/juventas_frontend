@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert,
   Image,
+  FlatList,
 } from 'react-native';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
@@ -15,8 +16,18 @@ import {RootState} from '../store';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import CheckIcon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
+type boardItemPorps = {
+  content: string;
+  incr: number;
+  like: number;
+  myrec: number;
+  title: string;
+  user_name: string;
+};
 
 function Home({navigation}: HomeScreenProps) {
   const [seqCount, setSeqCount] = useState(0);
@@ -25,6 +36,7 @@ function Home({navigation}: HomeScreenProps) {
   const [level, setLevel] = useState('');
   const [levelTxt, setLevelTxt] = useState('');
   const [levelImage, setImage] = useState<any>();
+  const [afterComplete, setAfterComplete] = useState('F');
   const [questSelected, setQuestSelected] = useState('F');
   const [allQuestData, setAllQuestData] = useState([
     {incr: 0, q_name: 'q_name'},
@@ -38,9 +50,14 @@ function Home({navigation}: HomeScreenProps) {
     {incr: 8, q_name: 'q_name'},
   ]);
   const [questNum, setQuestNum] = useState(0);
-  const [modal, showModal] = useState(false);
-  const [myQuest, setMyQuest] = useState({});
-  const [boardData, setBoardData] = useState([]);
+  const [myQuest, setMyQuest] = useState({
+    questCategory: 'category',
+    questMidCategory: 'midCategory',
+    quest_name: 'quest_name',
+    quest_id: 0,
+    num_people: 0,
+  });
+  const [boardData, setBoardData] = useState<boardItemPorps[]>([]);
   const [whichPost, setWhichPost] = useState(0);
   const imageArray = {
     Level_1: require('../../assets/image/Lv1.png'),
@@ -93,10 +110,9 @@ function Home({navigation}: HomeScreenProps) {
           num_people: response.data.num_people,
         });
       } else {
-        console.log(333);
+        console.log('#$#$#$#$');
         setAllQuestData(response.data.recommend);
       }
-      console.log(444);
       setLevel(response.data.level);
       setSeqCount(response.data.seq_count);
       setCompletedNUm(response.data.quest_completed);
@@ -195,10 +211,10 @@ function Home({navigation}: HomeScreenProps) {
 
   const resetQuest = useCallback(async () => {
     try {
+      console.log('sssssssss');
       await axios.patch(`${Config.API_URL}/quest/questreselect`, {
         id: userID,
       });
-      setQuestSelected('F');
       setMyQuest({
         questCategory: 'category',
         questMidCategory: 'midCategory',
@@ -206,7 +222,8 @@ function Home({navigation}: HomeScreenProps) {
         quest_id: 0,
         num_people: 0,
       });
-      getQuestData();
+      console.log('@!@');
+      console.log(questSelected);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -215,6 +232,22 @@ function Home({navigation}: HomeScreenProps) {
       }
     }
   }, [questSelected, myQuest, allQuestData]);
+
+  const completeQuest = useCallback(async () => {
+    try {
+      await axios.patch(`${Config.API_URL}/quest/userquest`, {
+        id: userID,
+        is_fin: 1,
+        q_id: myQuest.quest_id,
+      });
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
+      }
+    }
+  }, []);
 
   const nextQuestList = useCallback(() => {
     if (questNum === 2) {
@@ -226,8 +259,8 @@ function Home({navigation}: HomeScreenProps) {
 
   const nextPost = useCallback(
     (num: number) => {
+      console.log(boardData);
       setWhichPost(num);
-      getBoardData();
     },
     [whichPost, boardData],
   );
@@ -239,6 +272,63 @@ function Home({navigation}: HomeScreenProps) {
   const toAllQuest = useCallback(() => {
     navigation.navigate('AllQuest');
   }, [navigation]);
+
+  const handleScroll = (event: any) => {
+    const {contentOffset} = event.nativeEvent;
+    const currentIndex = Math.round(contentOffset.x / 330);
+    setWhichPost(currentIndex);
+    // currentIndex를 사용하여 현재 보이는 아이템에 대한 작업을 수행할 수 있습니다.
+    // 예: currentIndex를 상태로 업데이트하고, 해당 아이템을 활성화하거나 데이터를 변경합니다.
+  };
+
+  useEffect(() => {
+    const getAfterTd = async () => {
+      console.log('$%$%$');
+      const afterTd = await AsyncStorage.getItem('afterTd');
+      console.log(afterTd);
+      setAfterComplete(afterTd);
+    };
+    getAfterTd();
+  }, [navigation]);
+
+  function ShowBoard({Item}) {
+    return (
+      <Pressable
+        style={styles.boardBody}
+        onPress={() =>
+          navigation.navigate('PostDetail', {
+            postID: Item.incr,
+          })
+        }>
+        <View style={styles.boardHeader}>
+          <View style={styles.boardProfile}>
+            <Pressable style={styles.profile} />
+            <View style={{flex: 5}}>
+              <Text style={styles.boardProfileUsername} numberOfLines={1}>
+                {Item?.user_name}
+              </Text>
+              <Text style={styles.boardProfileTitle} numberOfLines={2}>
+                {Item?.title}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.boardRecommend}>
+            <Pressable onPress={() => console.log(allQuestData)}>
+              <FontAwesomeIcon
+                name="thumbs-up"
+                size={39}
+                color={Item?.myrec ? '#1F6733' : '#DAE2D8'}
+              />
+            </Pressable>
+            <Text style={styles.boardRecommendTxt}>{Item?.like}</Text>
+          </View>
+        </View>
+        <Text style={styles.boardContentTxt} numberOfLines={3}>
+          {Item?.content}
+        </Text>
+      </Pressable>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.entire}>
@@ -297,7 +387,7 @@ function Home({navigation}: HomeScreenProps) {
               </Pressable>
             </View>
           </View>
-        ) : (
+        ) : afterComplete === 'F' ? (
           <View style={styles.questBodyDecided}>
             <View style={styles.myQuest}>
               <Text style={styles.questNum}>
@@ -311,9 +401,58 @@ function Home({navigation}: HomeScreenProps) {
                 <Text style={styles.submitQuestTodayTxt}>도전 기록하기</Text>
               </Pressable>
             </View>
-            <Pressable style={styles.reselect} onPress={resetQuest}>
+            <Pressable
+              style={styles.reselect}
+              onPress={async () => {
+                resetQuest();
+                await setAfterComplete('F');
+                await setQuestSelected('F');
+                await getQuestData();
+              }}>
               <Text style={styles.questBtnTxt}>도전 다시 선택하기</Text>
             </Pressable>
+          </View>
+        ) : (
+          <View style={styles.questBodyDecided}>
+            <View style={styles.myQuest_2}>
+              <View style={styles.questBox}>
+                <Text style={styles.questNum}>
+                  {myQuest.questCategory} - {myQuest.questMidCategory}
+                </Text>
+                <Text style={styles.questName}>{myQuest.quest_name}</Text>
+              </View>
+              <View>
+                <View style={{flexDirection: 'row', marginTop: 20}}>
+                  <CheckIcon
+                    name="check-circle"
+                    size={30}
+                    color="#F6DD55"
+                    style={{marginRight: 10}}
+                  />
+                  <Text style={styles.completeTxt}>오늘의 도전 기록 완료</Text>
+                </View>
+              </View>
+            </View>
+            <View style={{flex: 4, flexDirection: 'row'}}>
+              <Pressable
+                style={styles.completeTd}
+                onPress={async () => {
+                  completeQuest();
+                  await setAfterComplete('F');
+                  await setQuestSelected('F');
+                }}>
+                <Text style={styles.questBtnTxt}>오늘로 도전 완료하기</Text>
+              </Pressable>
+              <Pressable
+                style={styles.completeTd_2}
+                onPress={() => {
+                  setAfterComplete('F');
+                }}>
+                <Text style={styles.questBtnTxt}>
+                  내일도 같은 도전 이어가기
+                </Text>
+              </Pressable>
+            </View>
           </View>
         )}
       </View>
@@ -327,40 +466,18 @@ function Home({navigation}: HomeScreenProps) {
             <Text style={styles.searchTxt}>게시판 검색</Text>
           </Pressable>
         </View>
-        <Pressable
-          style={styles.boardBody}
-          onPress={() =>
-            navigation.navigate('PostDetail', {postID: boardData[0].incr})
-          }>
-          <View style={styles.boardHeader}>
-            <View style={styles.boardProfile}>
-              <Pressable style={styles.profile} />
-              <View style={{flex: 5}}>
-                <Text style={styles.boardProfileUsername} numberOfLines={1}>
-                  {boardData[whichPost]?.user_name}
-                </Text>
-                <Text style={styles.boardProfileTitle} numberOfLines={2}>
-                  {boardData[whichPost]?.title}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.boardRecommend}>
-              <Pressable onPress={() => console.log(allQuestData)}>
-                <FontAwesomeIcon
-                  name="thumbs-up"
-                  size={39}
-                  color={boardData[whichPost]?.myrec ? '#1F6733' : '#DAE2D8'}
-                />
-              </Pressable>
-              <Text style={styles.boardRecommendTxt}>
-                {boardData[whichPost]?.like}
-              </Text>
-            </View>
-          </View>
-          <Text style={styles.boardContentTxt} numberOfLines={3}>
-            {boardData[whichPost]?.content}
-          </Text>
-        </Pressable>
+        <View style={styles.boardCt}>
+          <FlatList
+            horizontal
+            pagingEnabled
+            data={boardData}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => String(item.incr)}
+            renderItem={({item}) => <ShowBoard Item={item} />}
+            ItemSeparatorComponent={() => <View style={{width: 2}} />}
+            onScroll={handleScroll}
+          />
+        </View>
         <View style={styles.boardFooter}>
           {boardData.length > 0 && (
             <Pressable
@@ -512,6 +629,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: '100%',
   },
+  myQuest_2: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    flex: 12.5,
+    marginTop: 5,
+    width: '100%',
+  },
+  questBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   questNum: {
     color: '#1F6733',
     fontSize: 12,
@@ -520,10 +651,15 @@ const styles = StyleSheet.create({
   },
   questName: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 5,
     fontWeight: '800',
     textAlign: 'center',
+  },
+  completeTxt: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#346627',
   },
   howManyPeopleInQuest: {
     color: '#8D8D8D',
@@ -554,6 +690,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  completeTd: {
+    flex: 1,
+    marginTop: 12,
+    marginBottom: 5,
+    backgroundColor: '#B7CBB2',
+    borderBottomLeftRadius: 30,
+    borderTopLeftRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 2,
+  },
+  completeTd_2: {
+    flex: 1,
+    marginTop: 12,
+    marginBottom: 5,
+    backgroundColor: '#B7CBB2',
+    borderBottomRightRadius: 30,
+    borderTopRightRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   questBtn: {
     flex: 1,
     backgroundColor: 'white',
@@ -564,9 +721,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   questBtnTxt: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#3D3C3C',
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   questRandomBtn: {
     flex: 1,
@@ -613,8 +770,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: '600',
   },
-  boardBody: {
+  boardCt: {
     flex: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  boardBody: {
+    width: 340,
     marginTop: 15,
     marginBottom: 10,
     backgroundColor: 'white',
