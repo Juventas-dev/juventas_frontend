@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import React, {useCallback, useState} from 'react';
-import {Text, View, Pressable, StyleSheet, Modal} from 'react-native';
-=======
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Text, View, Pressable, StyleSheet, Modal, FlatList} from 'react-native';
->>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {MessageStackNavigationProp} from '../navigations/MessageNavigation';
@@ -177,21 +172,13 @@ const CommentItem = ({
                 borderRadius: 70,
               }}
             />
-<<<<<<< HEAD
-            <Text style={styles.modalID}>{item.user_name}</Text>
-=======
             <Text style={styles.modalID}>{items.user_name}</Text>
->>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
             <Pressable
               style={styles.modalBtn}
               onPress={() =>
                 navigation.navigate('MessageDetail', {
                   me: userID,
-<<<<<<< HEAD
-                  you: item.user_name,
-=======
                   you: items.user_name,
->>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
                 })
               }>
               {/* navigate할때 전달해주는 정보 수정 필요! roomID 찾아보고 있으면 string으로 전달해줘야함 (없으면 만들면서 전달) */}
@@ -206,24 +193,6 @@ const CommentItem = ({
 
 const styles = StyleSheet.create({
   eachComment: {
-<<<<<<< HEAD
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 10,
-  },
-  commentContent: {
-    paddingHorizontal: 10,
-  },
-  commentProfile: {
-    flexDirection: 'row',
-    width: '60%',
-  },
-  commentContentIDTxt: {
-    fontSize: 11,
-  },
-  commentContentBodyTxt: {
-    fontSize: 14,
-=======
     paddingHorizontal: 10,
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -263,7 +232,6 @@ const styles = StyleSheet.create({
   commentContentBodyTxt: {
     fontSize: 14,
     color: '#878787',
->>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
   },
   commentInfo: {
     flexDirection: 'row',
@@ -315,8 +283,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     top: 1,
   },
-<<<<<<< HEAD
-=======
   reprofile: {
     width: 35,
     height: 35,
@@ -325,7 +291,6 @@ const styles = StyleSheet.create({
     top: 1,
   },
 
->>>>>>> 8f40dff9520f9d2a5ed89b105052981034244d86
   postHeaderTxt: {
     fontSize: 17,
     marginLeft: 20,
