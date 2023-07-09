@@ -171,11 +171,10 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
+    // implementation 'com.google.firebase:firebase-analytics:21.1.0'
     // implementation platform('com.google.firebase:firebase-bom:32.0.0')
-    // implementation 'com.google.firebase:firebase-messaging'
-    // implementation 'com.google.firebase:firebase-analytics:17.3.0'
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+apply plugin: 'com.google.gms.google-services'
