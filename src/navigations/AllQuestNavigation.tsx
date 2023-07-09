@@ -5,10 +5,13 @@ import {
 } from '@react-navigation/native-stack';
 import AllQuest from '../pages/AllQuest';
 import QuestList from '../pages/QuestList';
+import Home from '../pages/Home';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 export type QuestStackParamList = {
   AllQuest: undefined;
   QuestList: undefined;
+  Home: undefined;
 };
 
 export type QuestStackNavigationProp =
@@ -43,6 +46,22 @@ export default function AllQuestNavigation() {
           headerTitle: '도전',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+        }}
+      />
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{
+          headerBackVisible: false,
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: '#E7EBE4'},
+          headerTitleAlign: 'center',
+          headerTitle: '홈',
+          headerTintColor: '#346627',
+          headerTitleStyle: {fontSize: 22, fontWeight: '800'},
+          headerRight: () => (
+            <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          ),
         }}
       />
     </Stack.Navigator>
