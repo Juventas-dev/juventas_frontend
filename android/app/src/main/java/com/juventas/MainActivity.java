@@ -1,5 +1,5 @@
 package com.juventas;
-
+import android.content.Intent;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -24,6 +24,13 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     RNNaverLoginModule.initialize(this);
   }
+
+  @Override
+    public void onNewIntent(Intent intent) {
+
+        super.onNewIntent(intent);
+
+    }
 
   // @Override
   // protected void onCreate(Bundle savedInstanceState) {
