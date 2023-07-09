@@ -6,6 +6,9 @@ import AppInner from './AppInner';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
+import PushNotification from 'react-native-push-notification';
+import {useEffect} from 'react';
+
 export default function App() {
   return (
     <Provider store={store}>
