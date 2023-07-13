@@ -37,9 +37,9 @@ function MessageNavigation() {
           headerTitle: '쪽지',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
@@ -53,9 +53,9 @@ function MessageNavigation() {
           headerTitle: '쪽지', // 여기에 상대방 이름을 뜨게 할 수 있나?
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
     </Stack.Navigator>

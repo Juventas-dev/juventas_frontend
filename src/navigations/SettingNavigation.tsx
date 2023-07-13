@@ -33,9 +33,9 @@ export default function SettingNavigation() {
           headerTitle: '설정',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
@@ -65,9 +65,9 @@ export default function SettingNavigation() {
           headerTitle: '계정 관리',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
     </Stack.Navigator>

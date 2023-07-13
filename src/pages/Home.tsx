@@ -79,7 +79,7 @@ function Home({navigation}: HomeScreenProps) {
     getBoardData();
   }, []);
 
-  const getQuestSelectedOrNot = useCallback(async () => {
+  const getQuestSelectedOrNot = async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/quest/questselected/${userID}`,
@@ -92,9 +92,9 @@ function Home({navigation}: HomeScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, [questSelected]);
+  };
 
-  const getQuestData = useCallback(async () => {
+  const getQuestData = async () => {
     try {
       console.log(111);
       const response = await axios.get(
@@ -124,15 +124,7 @@ function Home({navigation}: HomeScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, [
-    questSelected,
-    allQuestData,
-    level,
-    seqCount,
-    completedNum,
-    point,
-    myQuest,
-  ]);
+  };
 
   useEffect(() => {
     getQuestData();
@@ -190,26 +182,24 @@ function Home({navigation}: HomeScreenProps) {
     }
   }, [levelTxt, levelImage]);
 
-  const selectQuest = useCallback(
-    async (num: number) => {
-      try {
-        await axios.post(`${Config.API_URL}/quest/userquest`, {
-          id: userID,
-          q_id: allQuestData[num].incr,
-        });
-        setQuestSelected('T');
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-        if (errorResponse) {
-          return Alert.alert('알림', errorResponse.data?.message);
-        }
+  const selectQuest = async (num: number) => {
+    try {
+      console.log(num);
+      await axios.post(`${Config.API_URL}/quest/userquest`, {
+        id: userID,
+        q_id: allQuestData[num].incr,
+      });
+      setQuestSelected('T');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse);
+      if (errorResponse) {
+        return Alert.alert('알림', errorResponse.data?.message);
       }
-    },
-    [questSelected, allQuestData, myQuest],
-  );
+    }
+  };
 
-  const resetQuest = useCallback(async () => {
+  const resetQuest = async () => {
     try {
       console.log('sssssssss');
       await axios.patch(`${Config.API_URL}/quest/questreselect`, {
@@ -231,9 +221,9 @@ function Home({navigation}: HomeScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, [questSelected, myQuest, allQuestData]);
+  };
 
-  const completeQuest = useCallback(async () => {
+  const completeQuest = async () => {
     try {
       await axios.patch(`${Config.API_URL}/quest/userquest`, {
         id: userID,
@@ -247,15 +237,15 @@ function Home({navigation}: HomeScreenProps) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, []);
+  };
 
-  const nextQuestList = useCallback(() => {
+  const nextQuestList = () => {
     if (questNum === 2) {
       setQuestNum(0);
     } else {
       setQuestNum(questNum + 1);
     }
-  }, [questNum]);
+  };
 
   const nextPost = useCallback(
     (num: number) => {
@@ -323,7 +313,7 @@ function Home({navigation}: HomeScreenProps) {
             <Text style={styles.boardRecommendTxt}>{Item?.like}</Text>
           </View>
         </View>
-        <Text style={styles.boardContentTxt} numberOfLines={3}>
+        <Text style={styles.boardContentTxt} numberOfLines={2}>
           {Item?.content}
         </Text>
       </Pressable>
@@ -520,6 +510,7 @@ function Home({navigation}: HomeScreenProps) {
     </SafeAreaView>
   );
 }
+
 export default Home;
 
 const styles = StyleSheet.create({
