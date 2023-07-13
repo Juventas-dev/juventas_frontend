@@ -105,6 +105,7 @@ function SignIn({navigation}: SignInScreenProps) {
   }, [navigation]);
 
   const signInWithKakao = async (): Promise<void> => {
+    let kakaoId;
     try {
       const token: KakaoOAuthToken = await login();
       const profile: KakaoProfile = await getProfile();
@@ -118,9 +119,11 @@ function SignIn({navigation}: SignInScreenProps) {
           loginType: 'kakao',
         }),
       );
+      kakaoId = profile.id;
       const response = await axios.post(`${Config.API_URL}/user/signup`, {
         name: profile.nickname,
-        id: 'kakao' + profile.id,
+        phone: 'kakao' + profile.id,
+        pwd: '1234',
       });
       console.log(response);
 
@@ -131,11 +134,22 @@ function SignIn({navigation}: SignInScreenProps) {
         deviceToken: deviceToken,
       });
     } catch (error) {
-      console.log(error);
+      const response = await axios.post(`${Config.API_URL}/user/login`, {
+        phone: 'kakao' + kakaoId,
+        pwd: '1234',
+      });
+
+      const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+      await axios.post(`${Config.API_URL}/push/register`, {
+        id: response.data.id,
+        deviceToken: deviceToken,
+      });
     }
   };
 
   const signInWithNaver = async (): Promise<void> => {
+    let naverId;
     try {
       const {successResponse} = await NaverLogin.login({
         appName: '유벤타스',
@@ -155,9 +169,11 @@ function SignIn({navigation}: SignInScreenProps) {
             loginType: 'naver',
           }),
         );
+        naverId = profile.response.id;
         const response = await axios.post(`${Config.API_URL}/user/signup`, {
           name: profile.response.name,
-          id: 'naver' + profile.response.id,
+          phone: 'naver' + profile.response.id,
+          pwd: '1234',
         });
         console.log(response);
 
@@ -169,7 +185,17 @@ function SignIn({navigation}: SignInScreenProps) {
         });
       }
     } catch (error) {
-      console.log(error);
+      const response = await axios.post(`${Config.API_URL}/user/login`, {
+        phone: 'naver' + naverId,
+        pwd: '1234',
+      });
+
+      const deviceToken = await EncryptedStorage.getItem('deviceToken');
+
+      await axios.post(`${Config.API_URL}/push/register`, {
+        id: response.data.id,
+        deviceToken: deviceToken,
+      });
     }
   };
 

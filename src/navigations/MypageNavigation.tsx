@@ -54,9 +54,9 @@ export default function MypageNavigation() {
           headerTitle: '내 정보',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
@@ -70,9 +70,9 @@ export default function MypageNavigation() {
           headerTitle: '카테고리',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
@@ -86,9 +86,9 @@ export default function MypageNavigation() {
           headerTitle: '내 등급',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
@@ -114,9 +114,9 @@ export default function MypageNavigation() {
           headerTitle: '내 글',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
 

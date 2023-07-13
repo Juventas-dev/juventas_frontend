@@ -257,7 +257,7 @@ const Mypage = () => {
           </Pressable>
         </View>
         <View style={styles.Adv}>
-          <Text>홍보 배너</Text>
+          <Text></Text>
         </View>
       </View>
     </SafeAreaView>

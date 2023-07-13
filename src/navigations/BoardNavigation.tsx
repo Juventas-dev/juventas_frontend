@@ -41,9 +41,9 @@ export default function BoardNavigation() {
           headerTitle: '게시판',
           headerTintColor: '#346627',
           headerTitleStyle: {fontSize: 22, fontWeight: '800'},
-          headerRight: () => (
-            <FontAwesome5Icon name="bell" size={35} color="#346627" />
-          ),
+          // headerRight: () => (
+          //   <FontAwesome5Icon name="bell" size={35} color="#346627" />
+          // ),
         }}
       />
       <Stack.Screen
