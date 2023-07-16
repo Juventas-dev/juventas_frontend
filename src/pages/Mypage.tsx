@@ -11,10 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackNavigationProp} from '../navigations/MypageNavigation';
 import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-import MultipleImagePicker, {
-  ImageResults,
-  MediaType,
-} from '@baronha/react-native-multiple-image-picker';
+import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import Board from './Board';
 import {useNavigation} from '@react-navigation/native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -51,14 +48,15 @@ const Mypage = () => {
   };
 
   const selectImage = async () => {
-    const response = await MultipleImagePicker.openPicker({
-      mediaType: MediaType.IMAGE,
-      maxSelectedAssets: 3,
+    const response = await openPicker({
+      mediaType: 'image',
+      singleSelectedMode: true,
+      maxSelectedAssets: 1,
       doneTitle: '완료',
       cancelTitle: '취소',
       selectedAssets: images,
     });
-    setImages(response);
+    console.log(response)
   };
   const toSetCategory = useCallback(() => {
     navigation.navigate('SetCategory');
@@ -110,6 +108,11 @@ const Mypage = () => {
       name: userName,
       intro: Intro,
     });
+    const response = await axios.get(`${Config.API_URL}/mypage/main/${userID}`);
+    setProfile(response.data);
+    setuserName(response.data.name);
+    setIntro(response.data.intro);
+    getPercent(response.data.percentage);
   };
 
   return (
@@ -161,7 +164,7 @@ const Mypage = () => {
         <View style={styles.profile}>
           <View style={styles.profileContent}>
             <View style={styles.Image}>
-              <Pressable onPress={selectImage}>
+              <Pressable>
                 <Icon name="md-person-circle-outline" color="gray" size={75} />
               </Pressable>
             </View>
@@ -257,7 +260,7 @@ const Mypage = () => {
           </Pressable>
         </View>
         <View style={styles.Adv}>
-          <Text></Text>
+          <Text />
         </View>
       </View>
     </SafeAreaView>
