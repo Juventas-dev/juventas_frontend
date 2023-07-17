@@ -1,11 +1,20 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Text, View, Pressable, StyleSheet, Modal, FlatList} from 'react-native';
+import {
+  Text,
+  View,
+  Pressable,
+  StyleSheet,
+  Modal,
+  FlatList,
+  Image,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import {MessageStackNavigationProp} from '../navigations/MessageNavigation';
 import {useNavigation} from '@react-navigation/native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type ItemProps = {
   incr: number;
@@ -13,6 +22,7 @@ type ItemProps = {
   user_name: string;
   like: number;
   myrec: number;
+  profile_img: string;
 };
 
 type CommentItemProps = {
@@ -23,6 +33,7 @@ type CommentItemProps = {
   like: number;
   myrec: number;
   r_id: number;
+  profile_img: string;
 };
 
 const CommentItem = ({
@@ -84,13 +95,24 @@ const CommentItem = ({
     return (
       <View style={styles.replyComment}>
         <View style={styles.RecommentProfile}>
-          {/* setProfile(item.user_name) */}
-          <Pressable
-            style={styles.reprofile}
-            onPress={() => {
-              setShowProfile(true);
-            }}
-          />
+          {Item.profile_img === undefined || Item.profile_img === null ? (
+            <Pressable
+              onPress={() => {
+                setShowProfile(true);
+              }}>
+              <Icon name="md-person-circle-outline" color="gray" size={35} />
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowProfile(true);
+              }}>
+              <Image
+                style={styles.reprofile}
+                source={{uri: `${Item.profile_img}?time=${new Date()}`}}
+              />
+            </Pressable>
+          )}
           <View style={styles.commentContent}>
             <Text style={styles.commentContentIDTxt}>{Item.user_name}</Text>
             <Text style={styles.commentContentBodyTxt}>{Item.c_content}</Text>
@@ -105,13 +127,24 @@ const CommentItem = ({
       <View style={{flexDirection: 'row'}}>
         <View style={styles.commentProfile}>
           {/* setProfile(item.user_name) */}
-          <Pressable
-            style={styles.profile}
-            onPress={() => {
-              console.log(currentReData);
-              setShowProfile(true);
-            }}
-          />
+          {items.profile_img === undefined || items.profile_img === null ? (
+            <Pressable
+              onPress={() => {
+                setShowProfile(true);
+              }}>
+              <Icon name="md-person-circle-outline" color="gray" size={40} />
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                setShowProfile(true);
+              }}>
+              <Image
+                style={styles.profile}
+                source={{uri: `${items.profile_img}?time=${new Date()}`}}
+              />
+            </Pressable>
+          )}
           <View style={styles.commentContent}>
             <Text style={styles.commentContentIDTxt}>{items.user_name}</Text>
             <Text style={styles.commentContentBodyTxt}>{items.c_content}</Text>
@@ -165,13 +198,28 @@ const CommentItem = ({
             setShowProfile(false);
           }}>
           <View style={styles.modal}>
-            <View
-              style={{
-                width: 130,
-                height: 130,
-                borderRadius: 70,
-              }}
-            />
+            {items.profile_img === undefined || items.profile_img === null ? (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Icon name="md-person-circle-outline" color="gray" size={130} />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Image
+                  style={{
+                    width: 130,
+                    height: 130,
+                    borderRadius: 70,
+                  }}
+                  source={{uri: `${items.profile_img}?time=${new Date()}`}}
+                />
+              </Pressable>
+            )}
             <Text style={styles.modalID}>{items.user_name}</Text>
             <Pressable
               style={styles.modalBtn}

@@ -275,14 +275,14 @@ function SignIn({navigation}: SignInScreenProps) {
             onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
-          <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
+          {/* <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>
             <Image source={kakao} style={styles.kakaoLogo} />
             <Text style={styles.btnTextKakao}>카카오 로그인</Text>
           </Pressable>
           <Pressable style={styles.signInNaverBtn} onPress={signInWithNaver}>
             <Image source={naver} style={styles.naverLogo} />
             <Text style={styles.btnTextNaver}>네이버 로그인</Text>
-          </Pressable>
+          </Pressable> */}
           <Pressable style={styles.signInBtn} onPress={toSignUp}>
             <Text style={styles.btnText}>회원가입</Text>
           </Pressable>

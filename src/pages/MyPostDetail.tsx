@@ -22,6 +22,7 @@ import {RootState} from '../store';
 import CommentItem from '../components/CommentItem';
 import {MypageStackParamList} from '../navigations/MypageNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type MyPostDetailScreenProps = NativeStackScreenProps<
   MypageStackParamList,
@@ -31,11 +32,14 @@ type PostItemProps = {
   is_qna: string;
   title: string;
   content: string;
-  img_path: string;
+  img_path_1: string;
+  img_path_2: string;
+  img_path_3: string;
   user_id: number;
   user_name: string;
   like: number;
   myrec: number;
+  profile_img: string;
 };
 type CommentItemProps = {
   incr: number;
@@ -45,6 +49,7 @@ type CommentItemProps = {
   like: number;
   myrec: number;
   r_id: number;
+  profile_img: string;
 };
 
 function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
@@ -58,11 +63,14 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
     is_qna: 'T',
     title: '',
     content: '',
-    img_path: '',
+    img_path_1: 'undefined',
+    img_path_2: 'undefined',
+    img_path_3: 'undefined',
     user_id: 0,
     user_name: '',
     like: 0,
     myrec: 0,
+    profile_img: 'undefined',
   });
   const [commentDATA, setCommentDATA] = useState<CommentItemProps[]>([]);
   const [RecommentDATA, setReCommentDATA] = useState<CommentItemProps[]>([]);
@@ -223,18 +231,50 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
     [needReset, userID, getBoardAndRefresh],
   );
 
+  const deletePost = async () => {
+    Alert.alert('알림', '정말 게시글을 삭제하시겠습니까?', [
+      {
+        text: '예',
+        onPress: async () => {
+          await axios.delete(`${Config.API_URL}/board/delete/${idCurrent}`, {});
+          navigation.goBack();
+        },
+      },
+      {
+        text: '아니요',
+      },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.entire}>
       <ScrollView>
         <View style={styles.post}>
           <View style={styles.postHeader}>
             <View style={styles.postTitle}>
-              <Pressable
-                style={styles.postProfile}
-                onPress={() => {
-                  setShowProfile(true);
-                }}
-              />
+              {postDATA.profile_img === undefined ||
+              postDATA.profile_img === null ? (
+                <Pressable
+                  onPress={() => {
+                    setShowProfile(true);
+                  }}>
+                  <Icon
+                    name="md-person-circle-outline"
+                    color="gray"
+                    size={40}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    setShowProfile(true);
+                  }}>
+                  <Image
+                    style={styles.profile}
+                    source={{uri: `${postDATA.profile_img}?time=${new Date()}`}}
+                  />
+                </Pressable>
+              )}
               <View style={styles.postProfileTxt}>
                 <Text style={styles.postProfileNameTxt}>
                   {postDATA.user_name}
@@ -242,6 +282,11 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
                 <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
               </View>
             </View>
+            {postDATA.user_id === parseInt(userID) && (
+              <Text style={styles.deleteBtn} onPress={deletePost}>
+                삭제
+              </Text>
+            )}
             <Pressable onPress={recommendPost}>
               <FontAwesomeIcon
                 name="thumbs-up"
@@ -253,6 +298,17 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
           </View>
           <View style={styles.postContent}>
             <Text style={{color: '#4C4D4C'}}>{postDATA.content}</Text>
+          </View>
+          <View style={styles.imageContainer}>
+            {postDATA.img_path_1 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_1}} />
+            )}
+            {postDATA.img_path_2 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_2}} />
+            )}
+            {postDATA.img_path_3 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_3}} />
+            )}
           </View>
         </View>
         <View style={styles.comment}>
@@ -275,7 +331,6 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
         </View>
       </ScrollView>
       <View style={styles.myComment}>
-        <Pressable style={styles.myProfile} />
         <TextInput
           value={commentValue}
           ref={textInputRef}
@@ -300,14 +355,29 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
             setShowProfile(false);
           }}>
           <View style={styles.modal}>
-            <View
-              style={{
-                width: 130,
-                height: 130,
-                borderRadius: 70,
-                backgroundColor: 'black',
-              }}
-            />
+            {postDATA.profile_img === undefined ||
+            postDATA.profile_img === null ? (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Icon name="md-person-circle-outline" color="gray" size={130} />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Image
+                  style={{
+                    width: 130,
+                    height: 130,
+                    borderRadius: 70,
+                  }}
+                  source={{uri: `${postDATA.profile_img}?time=${new Date()}`}}
+                />
+              </Pressable>
+            )}
             <Text style={styles.modalID}>{postDATA.user_name}</Text>
             <Pressable
               style={styles.modalBtn}
@@ -336,6 +406,21 @@ function MyPostDetail({navigation, route}: MyPostDetailScreenProps) {
 export default MyPostDetail;
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    marginHorizontal: '10%',
+    width: '80%',
+    flexDirection: 'column',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    marginBottom: 20,
+  },
+  deleteBtn: {
+    fontSize: 15,
+    fontWeight: '800',
+    marginRight: 25,
+  },
   eachComment: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -375,6 +460,7 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     backgroundColor: 'white',
+    paddingBottom: 50,
   },
   post: {
     paddingHorizontal: 20,

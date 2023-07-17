@@ -14,6 +14,7 @@ type RoomProps = {
   message: string;
   timestamp: string;
   not_read: number;
+  profile_img: string;
 };
 
 function Message() {

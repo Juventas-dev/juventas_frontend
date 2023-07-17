@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   AnsBoardTitle: {
-    height: '15%',
     justifyContent: 'center',
     alignItems: 'center',
   },

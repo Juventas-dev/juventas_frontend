@@ -5,13 +5,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackNavigationProp} from '../navigations/MypageNavigation';
 import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { openPicker } from '@baronha/react-native-multiple-image-picker';
 import Board from './Board';
 import {useNavigation} from '@react-navigation/native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -20,12 +20,12 @@ import {RootState} from '../store';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import * as Progress from 'react-native-progress';
-// npm install react-native-progress --save
+import ImagePicker from 'react-native-image-crop-picker';
 
 const Mypage = () => {
   const navigation = useNavigation<MypageStackNavigationProp>();
   const [isModifying, setModifying] = useState(false);
-  const [images, setImages] = useState<ImageResults[]>([]);
+  const [profileImg, setImage] = useState(null);
   const [userName, setuserName] = useState('');
   const [Intro, setIntro] = useState('');
   const [percent, setPercent] = useState(0);
@@ -39,6 +39,7 @@ const Mypage = () => {
     name: '',
     intro: '',
     quest: '',
+    profile_img: '',
   });
   const getPercent = (text: string) => {
     let arr = text.split('%');
@@ -48,15 +49,13 @@ const Mypage = () => {
   };
 
   const selectImage = async () => {
-    const response = await openPicker({
-      mediaType: 'image',
-      singleSelectedMode: true,
-      maxSelectedAssets: 1,
-      doneTitle: '완료',
-      cancelTitle: '취소',
-      selectedAssets: images,
+    ImagePicker.openPicker({
+      mediaType: 'photo',
+      compressImageQuality: 0.4,
+    }).then(image => {
+      setImage(image);
+      console.log(image);
     });
-    console.log(response)
   };
   const toSetCategory = useCallback(() => {
     navigation.navigate('SetCategory');
@@ -103,16 +102,100 @@ const Mypage = () => {
   }, []);
 
   const changeProfile = async () => {
-    await axios.patch(`${Config.API_URL}/mypage/name`, {
-      id: userID,
-      name: userName,
-      intro: Intro,
-    });
-    const response = await axios.get(`${Config.API_URL}/mypage/main/${userID}`);
-    setProfile(response.data);
-    setuserName(response.data.name);
-    setIntro(response.data.intro);
-    getPercent(response.data.percentage);
+    if (profileImg != null) {
+      const data = new FormData();
+      let file = {
+        uri: profileImg?.path,
+        type: profileImg?.mime,
+        name: `${userID}`,
+      };
+      console.log(file);
+      data.append('image', file);
+      axios({
+        url: `${Config.API_URL}/img/profile`,
+        method: 'POST',
+        data,
+        headers: {'Content-Type': 'multipart/form-data'},
+      })
+        .then(async response => {
+          console.log('image upload response: ', response);
+          await axios.patch(`${Config.API_URL}/mypage/name`, {
+            id: userID,
+            name: userName,
+            intro: Intro,
+            profileImg: `https://kr.object.ncloudstorage.com/profileimg/${userID}`,
+          });
+        })
+        .catch(async error => {
+          await axios.patch(`${Config.API_URL}/mypage/name`, {
+            id: userID,
+            name: userName,
+            intro: Intro,
+          });
+        })
+        .finally(async () => {
+          const response = await axios.get(
+            `${Config.API_URL}/mypage/main/${userID}`,
+          );
+          setProfile(response.data);
+          setuserName(response.data.name);
+          setIntro(response.data.intro);
+          getPercent(response.data.percentage);
+          setImage(null);
+          console.log(profile);
+        });
+    } else {
+      await axios.patch(`${Config.API_URL}/mypage/name`, {
+        id: userID,
+        name: userName,
+        intro: Intro,
+      });
+      const response = await axios.get(
+        `${Config.API_URL}/mypage/main/${userID}`,
+      );
+      setProfile(response.data);
+      setuserName(response.data.name);
+      setIntro(response.data.intro);
+      getPercent(response.data.percentage);
+      console.log(profile);
+    }
+    // body.append('name', 'dddaaaa');
+    // await axios({
+    //   method: 'post',
+    //   url: `${Config.API_URL}/img/post`,
+    //   data: body,
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // });
+    // fetch(`${Config.API_URL}/img/post`, {
+    //   method: 'POST',
+    //   body: body,
+
+    // }).then(res => console.log(res.status));
+
+    // axios({
+    //   url: `${Config.API_URL}/img/post`,
+    //   method: 'POST',
+    //   data,
+    //   headers: {'Content-Type': 'multipart/form-data'},
+    // })
+    //   .then(response => {
+    //     console.log('image upload response: ', response);
+    //   })
+    //   .catch(error => {
+    //     console.log('image upload error: ', error);
+    //   });
+
+    // const rese = await fetch(`${Config.API_URL}/img/post`, {
+    //   method: 'POST',
+    //   body: body,
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // });
+    // await rese.json();
   };
 
   return (
@@ -122,9 +205,29 @@ const Mypage = () => {
         <View style={styles.modifyProfile}>
           <View style={styles.profileContent}>
             <View style={styles.Image}>
-              <Pressable onPress={selectImage}>
-                <Icon name="md-person-circle-outline" color="gray" size={75} />
-              </Pressable>
+              {(profile.profile_img === undefined ||
+                profile.profile_img === null) &&
+              profileImg === null ? (
+                <Pressable onPress={selectImage}>
+                  <Icon
+                    name="md-person-circle-outline"
+                    color="gray"
+                    size={75}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable onPress={selectImage}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri:
+                        profileImg !== null
+                          ? `${profileImg.path}`
+                          : `${profile.profile_img}?time=${new Date()}`,
+                    }}
+                  />
+                </Pressable>
+              )}
             </View>
             <View style={styles.NameBox}>
               <View style={styles.modifyIntroduce}>
@@ -164,13 +267,27 @@ const Mypage = () => {
         <View style={styles.profile}>
           <View style={styles.profileContent}>
             <View style={styles.Image}>
-              <Pressable>
-                <Icon name="md-person-circle-outline" color="gray" size={75} />
-              </Pressable>
+              {profile.profile_img === undefined ||
+              profile.profile_img === null ? (
+                <Pressable>
+                  <Icon
+                    name="md-person-circle-outline"
+                    color="gray"
+                    size={75}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable>
+                  <Image
+                    style={styles.image}
+                    source={{uri: `${profile.profile_img}?time=${new Date()}`}}
+                  />
+                </Pressable>
+              )}
             </View>
             <View style={styles.NameBox}>
               <View>
-                <Text style={styles.NameSt}>{userName}</Text>
+                <Text style={styles.NameSt}>{profile.name}</Text>
               </View>
               <View style={styles.Introduce}>
                 <Text style={styles.IntroduceSt}>{Intro}</Text>
@@ -270,6 +387,12 @@ const Mypage = () => {
 export default Mypage;
 
 const styles = StyleSheet.create({
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginTop: 5,
+  },
   entire: {
     flex: 1,
     flexWrap: 'nowrap',

@@ -25,12 +25,6 @@ public class MainActivity extends ReactActivity {
     RNNaverLoginModule.initialize(this);
   }
 
-  @Override
-    public void onNewIntent(Intent intent) {
-
-        super.onNewIntent(intent);
-
-    }
 
   // @Override
   // protected void onCreate(Bundle savedInstanceState) {

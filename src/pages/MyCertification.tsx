@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
+  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -36,6 +37,9 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
     q_name: string;
     t_date: string;
     title: string;
+    img_path_1: string;
+    img_path_2: string;
+    img_path_3: string;
   }
 
   const setTdIncr = useCallback((id: string) => {
@@ -85,9 +89,21 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
         <View style={styles.Content}>
           <Text style={styles.ChallengeName}>{item.q_name}</Text>
           <View style={styles.Step}>
-            <View style={styles.Step1} />
-            <View style={styles.Step2} />
-            <View style={styles.Step3} />
+            {item.img_path_1 === 'undefined' ? (
+              <View style={styles.Step1} />
+            ) : (
+              <Image style={styles.image} source={{uri: item.img_path_1}} />
+            )}
+            {item.img_path_2 === 'undefined' ? (
+              <View style={styles.Step2} />
+            ) : (
+              <Image style={styles.image} source={{uri: item.img_path_2}} />
+            )}
+            {item.img_path_3 === 'undefined' ? (
+              <View style={styles.Step3} />
+            ) : (
+              <Image style={styles.image} source={{uri: item.img_path_3}} />
+            )}
           </View>
         </View>
       </Pressable>
@@ -148,6 +164,10 @@ const styles = StyleSheet.create({
     width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  image: {
+    width: 80,
+    height: 80,
   },
   Step1: {
     width: 80,

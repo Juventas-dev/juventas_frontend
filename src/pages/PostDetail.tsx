@@ -14,7 +14,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useRoute} from '@react-navigation/native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
@@ -22,7 +21,7 @@ import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import CommentItem from '../components/CommentItem';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type PostDetailScreenProps = NativeStackScreenProps<
   BoardStackParamList,
@@ -32,11 +31,14 @@ type PostItemProps = {
   is_qna: string;
   title: string;
   content: string;
-  img_path: string;
+  img_path_1: string;
+  img_path_2: string;
+  img_path_3: string;
   user_id: number;
   user_name: string;
   like: number;
   myrec: number;
+  profile_img: string;
 };
 type CommentItemProps = {
   incr: number;
@@ -46,6 +48,7 @@ type CommentItemProps = {
   like: number;
   myrec: number;
   r_id: number;
+  profile_img: string;
 };
 
 function PostDetail({navigation, route}: PostDetailScreenProps) {
@@ -55,11 +58,14 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
     is_qna: 'T',
     title: '',
     content: '',
-    img_path: '',
+    img_path_1: '',
+    img_path_2: '',
+    img_path_3: '',
     user_id: 0,
     user_name: '',
     like: 0,
     myrec: 0,
+    profile_img: 'undefined',
   });
   const [commentDATA, setCommentDATA] = useState<CommentItemProps[]>([]);
   const [RecommentDATA, setReCommentDATA] = useState<CommentItemProps[]>([]);
@@ -206,18 +212,50 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
     [needReset, userID, getBoardAndRefresh],
   );
 
+  const deletePost = async () => {
+    Alert.alert('알림', '정말 게시글을 삭제하시겠습니까?', [
+      {
+        text: '예',
+        onPress: async () => {
+          await axios.delete(`${Config.API_URL}/board/delete/${idCurrent}`, {});
+          navigation.goBack();
+        },
+      },
+      {
+        text: '아니요',
+      },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.entire}>
       <ScrollView>
         <View style={styles.post}>
           <View style={styles.postHeader}>
             <View style={styles.postTitle}>
-              <Pressable
-                style={styles.postProfile}
-                onPress={() => {
-                  setShowProfile(true);
-                }}
-              />
+              {postDATA.profile_img === undefined ||
+              postDATA.profile_img === null ? (
+                <Pressable
+                  onPress={() => {
+                    setShowProfile(true);
+                  }}>
+                  <Icon
+                    name="md-person-circle-outline"
+                    color="gray"
+                    size={40}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    setShowProfile(true);
+                  }}>
+                  <Image
+                    style={styles.profile}
+                    source={{uri: `${postDATA.profile_img}?time=${new Date()}`}}
+                  />
+                </Pressable>
+              )}
               <View style={styles.postProfileTxt}>
                 <Text style={styles.postProfileNameTxt}>
                   {postDATA.user_name}
@@ -225,6 +263,11 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
                 <Text style={styles.postHeaderTxt}>{postDATA.title}</Text>
               </View>
             </View>
+            {postDATA.user_id === parseInt(userID) && (
+              <Text style={styles.deleteBtn} onPress={deletePost}>
+                삭제
+              </Text>
+            )}
             <Pressable onPress={recommendPost} style={styles.like}>
               <FontAwesomeIcon
                 name="thumbs-up"
@@ -236,6 +279,17 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           </View>
           <View style={styles.postContent}>
             <Text style={{color: '#4C4D4C'}}>{postDATA.content}</Text>
+          </View>
+          <View style={styles.imageContainer}>
+            {postDATA.img_path_1 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_1}} />
+            )}
+            {postDATA.img_path_2 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_2}} />
+            )}
+            {postDATA.img_path_3 !== 'undefined' && (
+              <Image style={styles.image} source={{uri: postDATA.img_path_3}} />
+            )}
           </View>
         </View>
 
@@ -259,7 +313,6 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         </View>
       </ScrollView>
       <View style={styles.myComment}>
-        <Pressable style={styles.myProfile} />
         <TextInput
           value={commentValue}
           ref={textInputRef}
@@ -284,14 +337,29 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
             setShowProfile(false);
           }}>
           <View style={styles.modal}>
-            <View
-              style={{
-                width: 130,
-                height: 130,
-                borderRadius: 70,
-                backgroundColor: 'black',
-              }}
-            />
+            {postDATA.profile_img === undefined ||
+            postDATA.profile_img === null ? (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Icon name="md-person-circle-outline" color="gray" size={130} />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  setShowProfile(true);
+                }}>
+                <Image
+                  style={{
+                    width: 130,
+                    height: 130,
+                    borderRadius: 70,
+                  }}
+                  source={{uri: `${postDATA.profile_img}?time=${new Date()}`}}
+                />
+              </Pressable>
+            )}
             <Text style={styles.modalID}>{postDATA.user_name}</Text>
             <Pressable
               style={styles.modalBtn}
@@ -320,6 +388,21 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
 export default PostDetail;
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    marginHorizontal: '10%',
+    width: '80%',
+    flexDirection: 'column',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    marginBottom: 20,
+  },
+  deleteBtn: {
+    fontSize: 15,
+    fontWeight: '800',
+    marginRight: 25,
+  },
   eachComment: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -359,6 +442,7 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     backgroundColor: 'white',
+    paddingBottom: 50,
   },
   post: {
     paddingHorizontal: 20,

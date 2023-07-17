@@ -100,7 +100,7 @@ function Complain({navigation}: ComplainScreenProps) {
 
   return (
     <SafeAreaView style={styles.entire}>
-      <View style={{height: 150}}>
+      <View>
         <FlatList
           data={faq}
           keyExtractor={item => String(item.incr)}

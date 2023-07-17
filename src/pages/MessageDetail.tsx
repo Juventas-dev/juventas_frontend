@@ -119,9 +119,6 @@ function MessageDetail({navigation, route}: MessageDetailScreenProps) {
       />
 
       <View style={styles.myMessage}>
-        <Pressable style={styles.cameraBtn}>
-          <FontAwesomeIcon name="camera" size={20} color={'white'} />
-        </Pressable>
         <TextInput
           style={styles.myMessageContent}
           onChangeText={onChangeMessage}
