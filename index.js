@@ -19,8 +19,6 @@ PushNotification.configure({
     console.log('NOTIFICATION:', notification);
     // 여기에서 로컬 저장소에 알림 저장
   },
-  popInitialNotification: true,
-  requestPermissions: true,
 });
 
 AppRegistry.registerComponent(appName, () => App);

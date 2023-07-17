@@ -11,7 +11,7 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import AllQuestNavigation from './AllQuestNavigation';
 
 export type HomeStackParamList = {
-  Home: undefined;
+  Home: {didCheck: String};
   TodayChk: undefined;
   FirstSetting: undefined;
   PostDetail: {postID: number};

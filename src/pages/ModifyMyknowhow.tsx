@@ -15,10 +15,6 @@ import axios, {AxiosError} from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import MultipleImagePicker, {
-  ImageResults,
-  MediaType,
-} from '@baronha/react-native-multiple-image-picker';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
@@ -36,7 +32,7 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
   const [cId, setcId] = useState(0);
   const [categorySelected, setCategorySelected] = useState<number | null>(null);
   const [filterSelected, setFilterSelected] = useState<number | null>(null);
-  const [images, setImages] = useState<ImageResults[]>([]);
+  // const [images, setImages] = useState<ImageResults[]>([]);
   const [questId, setQuestId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -76,7 +72,7 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
           const response = await axios.get(
             `${Config.API_URL}/board/post/${postId}?id='${userID}'`,
           );
-          setQuestId();
+          setQuestId(0);
           setTitle(response.data.post[0].title);
           setContent(response.data.post[0].content);
           if (response.data.post[0].is_qna === 'T') {
@@ -111,14 +107,14 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
   }, []);
 
   const selectImage = async () => {
-    const response = await MultipleImagePicker.openPicker({
-      mediaType: MediaType.IMAGE,
-      maxSelectedAssets: 3,
-      doneTitle: '완료',
-      cancelTitle: '취소',
-      selectedAssets: images,
-    });
-    setImages(response);
+    // const response = await MultipleImagePicker.openPicker({
+    //   mediaType: MediaType.IMAGE,
+    //   maxSelectedAssets: 3,
+    //   doneTitle: '완료',
+    //   cancelTitle: '취소',
+    //   selectedAssets: images,
+    // });
+    // setImages(response);
   };
 
   const upload = async () => {

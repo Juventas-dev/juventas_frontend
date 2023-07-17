@@ -10,12 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@baronha/react-native-multiple-image-picker": "^0.4.13",
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-native-community/checkbox": "^0.5.15",
-    "@react-native-firebase/analytics": "^21.1.0",
-    "@react-native-firebase/app": "^21.1.0",
-    "@react-native-firebase/messaging": "^21.1.0",
     "@react-native-seoul/kakao-login": "^5.2.6",
     "@react-native-seoul/naver-login": "^3.0.0-rc.1",
     "@react-navigation/bottom-tabs": "^6.5.4",
@@ -34,6 +30,7 @@
     "react-native-config": "^1.5.0",
     "react-native-device-info": "^10.6.0",
     "react-native-encrypted-storage": "^4.0.3",
+    "react-native-image-crop-picker": "^0.40.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.2.0",
     "react-native-progress": "^5.0.0",

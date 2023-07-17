@@ -12,10 +12,6 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ComplainStackParamList} from '../navigations/ComplainNavigation';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MultipleImagePicker, {
-  ImageResults,
-  MediaType,
-} from '@baronha/react-native-multiple-image-picker';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
@@ -30,7 +26,6 @@ type ComplainScreenProps = NativeStackScreenProps<
 >;
 
 const NewComplain = ({navigation}: ComplainScreenProps) => {
-  const [images, setImages] = useState<ImageResults[]>([]);
   const ComplainData = ['도전', '노하우', '쪽지', '내 정보', '기타 문의'];
   const [ComplainSelected, setComplainSelected] = useState<number | null>(null);
   const [title, Settitle] = useState('');
@@ -40,16 +35,6 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
   const onChangeTitle = useCallback((text: string) => {
     Settitle(text);
   }, []);
-  const selectImage = async () => {
-    const response = await MultipleImagePicker.openPicker({
-      mediaType: MediaType.IMAGE,
-      maxSelectedAssets: 3,
-      doneTitle: '완료',
-      cancelTitle: '취소',
-      selectedAssets: images,
-    });
-    setImages(response);
-  };
   const onChangeContent = useCallback((text: string) => {
     SetContent(text);
   }, []);
@@ -109,14 +94,6 @@ const NewComplain = ({navigation}: ComplainScreenProps) => {
         </View>
 
         <View style={styles.board}>
-          <Pressable
-            android_ripple={{
-              color: '#ffffff',
-            }}
-            style={styles.circle}
-            onPress={selectImage}>
-            <Icon name="camera-alt" color="white" size={24} />
-          </Pressable>
           <TextInput
             style={styles.contentInput}
             placeholder="내용을 입력하세요"

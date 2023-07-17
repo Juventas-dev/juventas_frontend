@@ -1,5 +1,12 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CertificationtStackParamList} from '../navigations/MycertificationNavigation';
@@ -20,6 +27,9 @@ const QuestList = ({navigation}: CertificationScreenProps) => {
     q_name: '',
     t_date: '',
     title: '',
+    img_path_1: 'undefined',
+    img_path_2: 'undefined',
+    img_path_3: 'undefined',
   });
   const [Incr, setIncr] = useState(-1);
 
@@ -92,6 +102,26 @@ const QuestList = ({navigation}: CertificationScreenProps) => {
             <View>
               <Text style={styles.contentTxt}>{myCertification.content}</Text>
             </View>
+            <View style={styles.imageContainer}>
+              {myCertification.img_path_1 !== 'undefined' && (
+                <Image
+                  style={styles.image}
+                  source={{uri: myCertification.img_path_1}}
+                />
+              )}
+              {myCertification.img_path_2 !== 'undefined' && (
+                <Image
+                  style={styles.image}
+                  source={{uri: myCertification.img_path_2}}
+                />
+              )}
+              {myCertification.img_path_3 !== 'undefined' && (
+                <Image
+                  style={styles.image}
+                  source={{uri: myCertification.img_path_3}}
+                />
+              )}
+            </View>
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -102,6 +132,17 @@ const QuestList = ({navigation}: CertificationScreenProps) => {
 export default QuestList;
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
+    marginHorizontal: 5,
+  },
   entire: {
     backgroundColor: '#E7EBE4',
     flex: 1,

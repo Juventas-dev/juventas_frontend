@@ -128,7 +128,7 @@ function Setting({navigation}: SettingScreenProps) {
           <Text style={styles.AllTxt}>전체 공지 보기</Text>
         </Pressable>
       </View>
-      <View style={styles.AlarmSetting}>
+      {/* <View style={styles.AlarmSetting}>
         <Text style={styles.BoardTitle}>알림 설정</Text>
         <View style={styles.AlarmBoard}>
           <View style={styles.AlarmSt1}>
@@ -182,7 +182,7 @@ function Setting({navigation}: SettingScreenProps) {
             />
           </View>
         </View>
-      </View>
+      </View> */}
       <View style={styles.ComplainBoard}>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.BoardTitle}>문의 게시판</Text>

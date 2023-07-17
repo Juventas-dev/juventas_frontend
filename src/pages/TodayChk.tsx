@@ -1,7 +1,3 @@
-import MultipleImagePicker, {
-  ImageResults,
-  MediaType,
-} from '@baronha/react-native-multiple-image-picker';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import axios, {AxiosError} from 'axios';
 import React, {useCallback, useState, useEffect} from 'react';
@@ -12,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  Image,
 } from 'react-native';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -22,11 +19,12 @@ import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {RootState} from '../store';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImagePicker from 'react-native-image-crop-picker';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'TodayChk'>;
 
 const TodayChk = ({navigation}: HomeScreenProps) => {
-  const [images, setImages] = useState<ImageResults[]>([]);
+  const [images, setImages] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -56,14 +54,19 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
   }, []);
 
   const selectImage = async () => {
-    const response = await MultipleImagePicker.openPicker({
-      mediaType: MediaType.IMAGE,
-      maxSelectedAssets: 3,
-      doneTitle: '완료',
-      cancelTitle: '취소',
-      selectedAssets: images,
+    ImagePicker.openPicker({
+      mediaType: 'photo',
+      compressImageQuality: 0.4,
+      multiple: true,
+    }).then(image => {
+      if (image.length > 3) {
+        Alert.alert('알림', '이미지는 3개까지만 업로드 가능합니다.');
+      } else {
+        setImages(image);
+      }
+      console.log(image);
+      console.log(images);
     });
-    setImages(response);
   };
 
   const saveAfter = useCallback((text: string) => {
@@ -72,6 +75,7 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
     });
   }, []);
 
+  let files_length = 0;
   const uploadTd = async () => {
     console.log('1');
     console.log(userID);
@@ -79,14 +83,58 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
     console.log(title);
     console.log(content);
     saveAfter('T');
-    await axios.post(`${Config.API_URL}/quest/post`, {
-      id: userID,
-      q_id: myQuest.quest_id,
-      title: title,
-      content: content,
-    });
-    console.log('123');
-    navigation.navigate('Home');
+    if (images.length > 0) {
+      const data = new FormData();
+      let files = [];
+      images.map(x => {
+        let file = {
+          uri: x?.path,
+          type: x?.mime,
+          name: `${userID}_${new Date().getTime()}_${files.length}`,
+        };
+        files.push(file);
+        data.append('image', file);
+      });
+      console.log('files');
+      console.log(files);
+      files_length = files.length;
+      axios({
+        url: `${Config.API_URL}/img/quest`,
+        method: 'POST',
+        data,
+        headers: {'Content-Type': 'multipart/form-data'},
+      }).finally(async () => {
+        await axios.post(`${Config.API_URL}/quest/post`, {
+          id: userID,
+          q_id: myQuest.quest_id,
+          title: title,
+          content: content,
+          img_path_1:
+            files_length >= 1
+              ? `https://kr.object.ncloudstorage.com/myquestimg/${files[0].name}`
+              : undefined,
+          img_path_2:
+            files_length >= 2
+              ? `https://kr.object.ncloudstorage.com/myquestimg/${files[1].name}`
+              : undefined,
+          img_path_3:
+            files_length >= 3
+              ? `https://kr.object.ncloudstorage.com/myquestimg/${files[2].name}`
+              : undefined,
+        });
+        console.log('123');
+        navigation.navigate('Home', {didCheck: 'T'});
+      });
+    } else {
+      await axios.post(`${Config.API_URL}/quest/post`, {
+        id: userID,
+        q_id: myQuest.quest_id,
+        title: title,
+        content: content,
+      });
+      console.log('123');
+      navigation.navigate('Home', {didCheck: 'T'});
+    }
   };
 
   useEffect(() => {
@@ -152,6 +200,11 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
             value={content}
             onChangeText={onChangeContentTd}
           />
+          <View style={styles.imageContainer}>
+            {images.map(x => (
+              <Image style={styles.image} source={{uri: x.path}} />
+            ))}
+          </View>
         </View>
         <View>
           <Pressable style={styles.complete} onPress={writeDone}>
@@ -196,6 +249,18 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
 };
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    marginHorizontal: '5%',
+    width: '90%',
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
+    marginHorizontal: 5,
+  },
   Background: {
     backgroundColor: '#E7EBE4',
     flex: 1,
@@ -203,6 +268,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: 80,
   },
   upLoad: {
     color: '#1F6733',
@@ -308,6 +374,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 19,
     right: 10,
+    zIndex: 3,
   },
   listBt: {
     height: 40,

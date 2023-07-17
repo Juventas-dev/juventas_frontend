@@ -17,7 +17,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 type boardItemPorps = {
@@ -27,9 +27,10 @@ type boardItemPorps = {
   myrec: number;
   title: string;
   user_name: string;
+  profile_img: string;
 };
 
-function Home({navigation}: HomeScreenProps) {
+function Home({navigation, route}: HomeScreenProps) {
   const [seqCount, setSeqCount] = useState(0);
   const [completedNum, setCompletedNUm] = useState(0);
   const [point, setPoint] = useState(0);
@@ -100,7 +101,12 @@ function Home({navigation}: HomeScreenProps) {
       const response = await axios.get(
         `${Config.API_URL}/quest/userquest/${userID}`,
       );
-      if (questSelected == 'T') {
+      if (response.data.selected === 'F') {
+        setQuestSelected('F');
+      } else {
+        setQuestSelected('T');
+      }
+      if (questSelected === 'T') {
         console.log(222);
         setMyQuest({
           questCategory: response.data.category,
@@ -230,6 +236,7 @@ function Home({navigation}: HomeScreenProps) {
         is_fin: 1,
         q_id: myQuest.quest_id,
       });
+      getQuestData();
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse);
@@ -274,12 +281,17 @@ function Home({navigation}: HomeScreenProps) {
   useEffect(() => {
     const getAfterTd = async () => {
       console.log('$%$%$');
-      const afterTd = await AsyncStorage.getItem('afterTd');
-      console.log(afterTd);
-      setAfterComplete(afterTd);
+      if (questSelected) {
+        const response = await axios.get(
+          `${Config.API_URL}/quest/didCheck/${userID}/${myQuest.quest_id}`,
+        );
+        setAfterComplete(response.data.complete);
+      } else {
+        setAfterComplete('F');
+      }
     };
     getAfterTd();
-  }, [navigation]);
+  }, [route.params]);
 
   function ShowBoard({Item}) {
     return (
@@ -292,7 +304,18 @@ function Home({navigation}: HomeScreenProps) {
         }>
         <View style={styles.boardHeader}>
           <View style={styles.boardProfile}>
-            <Pressable style={styles.profile} />
+            {Item.profile_img === undefined || Item.profile_img === null ? (
+              <Pressable>
+                <Icon name="md-person-circle-outline" color="gray" size={40} />
+              </Pressable>
+            ) : (
+              <Pressable>
+                <Image
+                  style={styles.image}
+                  source={{uri: `${Item.profile_img}?time=${new Date()}`}}
+                />
+              </Pressable>
+            )}
             <View style={{flex: 5}}>
               <Text style={styles.boardProfileUsername} numberOfLines={1}>
                 {Item?.user_name}
@@ -514,6 +537,12 @@ function Home({navigation}: HomeScreenProps) {
 export default Home;
 
 const styles = StyleSheet.create({
+  image: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
   entire: {
     flex: 1,
     backgroundColor: 'white',
@@ -785,13 +814,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 4,
     flexWrap: 'wrap',
-  },
-  profile: {
-    flex: 1,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'black',
-    marginRight: 10,
   },
   boardProfileUsername: {
     fontSize: 12,

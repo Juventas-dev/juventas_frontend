@@ -1,7 +1,8 @@
 import React from 'react';
-import {View, Text, Pressable, StyleSheet} from 'react-native';
+import {View, Text, Pressable, StyleSheet, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {MessageStackNavigationProp} from '../navigations/MessageNavigation';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type ItemProps = {
   incr: number;
@@ -9,16 +10,55 @@ type ItemProps = {
   message: string;
   timestamp: string;
   not_read: number;
+  profile_img: string;
 };
 
 const MessageItem = ({item}: {item: ItemProps}) => {
   const navigation = useNavigation<MessageStackNavigationProp>();
 
+  function timeForToday(value) {
+    const today = new Date();
+    const timeValue = new Date(value);
+
+    const betweenTime = Math.floor(
+      (today.getTime() - timeValue.getTime()) / 1000 / 60,
+    );
+    if (betweenTime < 1) {
+      return '방금전';
+    }
+    if (betweenTime < 60) {
+      return `${betweenTime}분전`;
+    }
+
+    const betweenTimeHour = Math.floor(betweenTime / 60);
+    if (betweenTimeHour < 24) {
+      return `${betweenTimeHour}시간전`;
+    }
+
+    const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+    if (betweenTimeDay < 365) {
+      return `${betweenTimeDay}일전`;
+    }
+
+    return `${Math.floor(betweenTimeDay / 365)}년전`;
+  }
+
   return (
     <Pressable
       style={styles.eachMessage}
       onPress={() => navigation.navigate('MessageDetail', {incr: item.incr})}>
-      <View style={styles.profile} />
+      {item.profile_img === undefined || item.profile_img === null ? (
+        <Pressable>
+          <Icon name="md-person-circle-outline" color="gray" size={60} />
+        </Pressable>
+      ) : (
+        <Pressable>
+          <Image
+            style={styles.image}
+            source={{uri: `${item.profile_img}?time=${new Date()}`}}
+          />
+        </Pressable>
+      )}
       <View style={styles.body}>
         <Text style={styles.id} numberOfLines={1}>
           {item.user_name}
@@ -29,7 +69,7 @@ const MessageItem = ({item}: {item: ItemProps}) => {
       </View>
       <View style={styles.body}>
         <View style={styles.when}>
-          <Text style={styles.whenTxt}>{item.timestamp}</Text>
+          <Text style={styles.whenTxt}>{timeForToday(item.timestamp)}</Text>
         </View>
         {item.not_read !== 0 ? (
           <View style={styles.notread}>
@@ -46,6 +86,11 @@ const MessageItem = ({item}: {item: ItemProps}) => {
 export default MessageItem;
 
 const styles = StyleSheet.create({
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
   eachMessage: {
     flexDirection: 'row',
     paddingHorizontal: 15,
