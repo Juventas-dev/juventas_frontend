@@ -12,7 +12,6 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import userSlice from '../slices/user';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
-import user from '../slices/user';
 
 type SettingScreenProps = NativeStackScreenProps<SettingStackParamList, 'Quit'>;
 
@@ -32,17 +31,14 @@ const Quit = ({navigation}: SettingScreenProps) => {
   const signOutUser = async (): Promise<void> => {
     if (user.loginType === 'kakao') {
       await logout();
-      console.log('카카오 로그아웃 완료');
     } else if (user.loginType === 'naver') {
       await NaverLogin.logout();
-      console.log('네이버 로그아웃 완료');
     } else {
       const response = await axios.patch(`${Config.API_URL}/user/logout`, {
         headers: {
           authorization: `Bearer ${user.accessToken}`,
         },
       });
-      console.log(response);
       await EncryptedStorage.removeItem('refreshToken');
     }
     const deviceToken = await EncryptedStorage.getItem('deviceToken');
@@ -63,18 +59,10 @@ const Quit = ({navigation}: SettingScreenProps) => {
   const unlinkUser = async (): Promise<void> => {
     if (user.loginType === 'kakao') {
       await unlink();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('카카오 회원탈퇴 완료');
+      await axios.delete(`${Config.API_URL}/user/unlinkSocial?id=${user.id}`);
     } else if (user.loginType === 'naver') {
       await NaverLogin.deleteToken();
-      const response = await axios.delete(
-        `${Config.API_URL}/user/unlinkSocial?id=${user.id}`,
-      );
-      console.log(response);
-      console.log('네이버 회원탈퇴 완료');
+      await axios.delete(`${Config.API_URL}/user/unlinkSocial?id=${user.id}`);
     } else {
       const response = await axios.delete(
         `${Config.API_URL}/user/unlink?id=${user.id}`,
@@ -84,7 +72,6 @@ const Quit = ({navigation}: SettingScreenProps) => {
           },
         },
       );
-      console.log(response);
       await EncryptedStorage.removeItem('refreshToken');
     }
     dispatch(

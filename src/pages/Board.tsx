@@ -113,7 +113,6 @@ function Board({navigation}: BoardScreenProps) {
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -132,7 +131,6 @@ function Board({navigation}: BoardScreenProps) {
         setBestPostDATA(response.data.bestPost);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -287,9 +285,10 @@ const styles = StyleSheet.create({
   },
   category: {
     backgroundColor: 'white',
-    width: '40%',
+    width: '45%',
   },
   categoryTxt: {
+    width: '30%',
     fontSize: 18,
     fontWeight: 'bold',
     color: '#B7CBB2',

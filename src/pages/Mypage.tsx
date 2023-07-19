@@ -4,20 +4,18 @@ import {
   Pressable,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Dimensions,
   Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackNavigationProp} from '../navigations/MypageNavigation';
 import {TextInput} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Board from './Board';
 import {useNavigation} from '@react-navigation/native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
 import * as Progress from 'react-native-progress';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -45,8 +43,8 @@ const Mypage = () => {
     let arr = text.split('%');
     let p = parseInt(arr[0], 10);
     setPercent(p);
-    console.log({percent});
   };
+  const screenWidth = Dimensions.get('window').width;
 
   const selectImage = async () => {
     ImagePicker.openPicker({
@@ -54,7 +52,6 @@ const Mypage = () => {
       compressImageQuality: 0.4,
     }).then(image => {
       setImage(image);
-      console.log(image);
     });
   };
   const toSetCategory = useCallback(() => {
@@ -85,17 +82,11 @@ const Mypage = () => {
           const response = await axios.get(
             `${Config.API_URL}/mypage/main/${userID}`,
           );
-          console.log(response.data);
           setProfile(response.data);
           setuserName(response.data.name);
           setIntro(response.data.intro);
           getPercent(response.data.percentage);
-          console.log(profile);
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-        }
+        } catch (error) {}
       }
     };
     getName();
@@ -107,9 +98,8 @@ const Mypage = () => {
       let file = {
         uri: profileImg?.path,
         type: profileImg?.mime,
-        name: `${userID}`,
+        name: `profile_${userID}`,
       };
-      console.log(file);
       data.append('image', file);
       axios({
         url: `${Config.API_URL}/img/profile`,
@@ -117,16 +107,15 @@ const Mypage = () => {
         data,
         headers: {'Content-Type': 'multipart/form-data'},
       })
-        .then(async response => {
-          console.log('image upload response: ', response);
+        .then(async () => {
           await axios.patch(`${Config.API_URL}/mypage/name`, {
             id: userID,
             name: userName,
             intro: Intro,
-            profileImg: `https://kr.object.ncloudstorage.com/profileimg/${userID}`,
+            profileImg: `https://kr.object.ncloudstorage.com/profileimg/profile_${userID}`,
           });
         })
-        .catch(async error => {
+        .catch(async () => {
           await axios.patch(`${Config.API_URL}/mypage/name`, {
             id: userID,
             name: userName,
@@ -142,7 +131,6 @@ const Mypage = () => {
           setIntro(response.data.intro);
           getPercent(response.data.percentage);
           setImage(null);
-          console.log(profile);
         });
     } else {
       await axios.patch(`${Config.API_URL}/mypage/name`, {
@@ -157,45 +145,7 @@ const Mypage = () => {
       setuserName(response.data.name);
       setIntro(response.data.intro);
       getPercent(response.data.percentage);
-      console.log(profile);
     }
-    // body.append('name', 'dddaaaa');
-    // await axios({
-    //   method: 'post',
-    //   url: `${Config.API_URL}/img/post`,
-    //   data: body,
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // });
-    // fetch(`${Config.API_URL}/img/post`, {
-    //   method: 'POST',
-    //   body: body,
-
-    // }).then(res => console.log(res.status));
-
-    // axios({
-    //   url: `${Config.API_URL}/img/post`,
-    //   method: 'POST',
-    //   data,
-    //   headers: {'Content-Type': 'multipart/form-data'},
-    // })
-    //   .then(response => {
-    //     console.log('image upload response: ', response);
-    //   })
-    //   .catch(error => {
-    //     console.log('image upload error: ', error);
-    //   });
-
-    // const rese = await fetch(`${Config.API_URL}/img/post`, {
-    //   method: 'POST',
-    //   body: body,
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // });
-    // await rese.json();
   };
 
   return (
@@ -311,7 +261,7 @@ const Mypage = () => {
             progress={percent / 100}
             color={'#346627'}
             unfilledColor={'#EBEFEA'}
-            width={370}
+            width={screenWidth - 40}
             height={30}
             borderRadius={30}
             style={styles.bar}>
@@ -616,10 +566,11 @@ const styles = StyleSheet.create({
   EtcBt: {
     backgroundColor: '#B7CBB2',
     borderRadius: 30,
-    width: 110,
+    flex: 1,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 7,
   },
   barTxt_1: {
     position: 'absolute',
@@ -631,7 +582,7 @@ const styles = StyleSheet.create({
   barTxt_2: {
     position: 'absolute',
     top: 6,
-    left: 245,
+    right: 20,
     color: 'black',
     fontSize: 12,
   },

@@ -1,24 +1,13 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Alert, FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {QuestStackParamList} from '../navigations/AllQuestNavigation';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SetCategory from './SetCategory';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
-import {compose} from '@reduxjs/toolkit';
-import {useNavigationBuilder} from '@react-navigation/native';
 
 type QuestScreenProps = NativeStackScreenProps<
   QuestStackParamList,
@@ -35,7 +24,6 @@ const QuestList = ({navigation}: QuestScreenProps) => {
   useEffect(() => {
     const getCategory = async () => {
       const Category = await AsyncStorage.getItem('category');
-      console.log(Category);
       if (Category) {
         setCategoryNmae(Category);
         if (Category === '건강') {
@@ -56,9 +44,7 @@ const QuestList = ({navigation}: QuestScreenProps) => {
   }, []);
 
   const saveAfter = useCallback((text: string) => {
-    AsyncStorage.setItem('afterTd', text, () => {
-      console.log('저장완료');
-    });
+    AsyncStorage.setItem('afterTd', text);
   }, []);
 
   useEffect(() => {
@@ -68,20 +54,10 @@ const QuestList = ({navigation}: QuestScreenProps) => {
           `${Config.API_URL}/quest/wholequest/${category}`,
         );
         setQuest(response.data.quest);
-        console.log(quest);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getQuest();
   }, [category]);
-
-  // const selectQuest = useCallback((num:number) => {
-  //   AsyncStorage.setItem('questAgain', num.toString(), () => {
-  //     console.log('change quest');
-  //   });
-  // }, []);
 
   const selectQuest = useCallback(async (num: number) => {
     try {
@@ -91,7 +67,6 @@ const QuestList = ({navigation}: QuestScreenProps) => {
       });
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -99,7 +74,6 @@ const QuestList = ({navigation}: QuestScreenProps) => {
   }, []);
 
   function Quest({Item}) {
-    console.log({Item});
     return (
       <View style={styles.Quest}>
         <Text style={styles.QuestName}>{Item.q_name}</Text>
@@ -109,7 +83,7 @@ const QuestList = ({navigation}: QuestScreenProps) => {
             // 여기서 뭘 어케해야되는지 진짜 모르겠음
             saveAfter('F');
             selectQuest(Item.incr);
-            navigation.navigate('Home');
+            navigation.navigate('Home', {didSelect: 'T'});
           }}>
           <Text style={styles.selectTxt}>도전 선택하기</Text>
         </Pressable>
@@ -157,7 +131,6 @@ const styles = StyleSheet.create({
   },
   Quest: {
     backgroundColor: 'white',
-
     height: 45,
     borderRadius: 10,
     marginVertical: 5,
@@ -168,10 +141,10 @@ const styles = StyleSheet.create({
   },
 
   QuestName: {
+    width: '65%',
     color: '#346627',
     fontWeight: '600',
     fontSize: 15,
-    width: 220,
   },
   selectBox: {
     backgroundColor: '#D9D9D9',

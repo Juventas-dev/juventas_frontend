@@ -12,7 +12,6 @@ import {
   Image,
 } from 'react-native';
 import {BoardStackParamList} from '../navigations/BoardNavigation';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -22,6 +21,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker from 'react-native-image-crop-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 type BoardScreenProps = NativeStackScreenProps<BoardStackParamList, 'NewPost'>;
 
@@ -29,7 +29,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   const [categorySelected, setCategorySelected] = useState<number | null>(null);
   const [filterSelected, setFilterSelected] = useState<number | null>(null);
   const [images, setImages] = useState([]);
-  const [questId, setQuestId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -38,9 +37,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
   const filterDATA = ['노하우', '질문'];
   const userID = useSelector((state: RootState) => state.user.id);
 
-  const onChangeQuest = useCallback((text: string) => {
-    setQuestId(text);
-  }, []);
   const onChangeTitle = useCallback((text: string) => {
     setTitle(text);
   }, []);
@@ -62,12 +58,10 @@ const NewPost = ({navigation}: BoardScreenProps) => {
       } else {
         setImages(image);
       }
-      console.log(image);
-      console.log(images);
     });
   };
 
-  let temp;
+  let temp: string;
   let files_length = 0;
   const upload = async () => {
     if (filterSelected === 1) {
@@ -87,8 +81,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
         files.push(file);
         data.append('image', file);
       });
-      console.log('files');
-      console.log(files);
       files_length = files.length;
       axios({
         url: `${Config.API_URL}/img/board`,
@@ -96,8 +88,6 @@ const NewPost = ({navigation}: BoardScreenProps) => {
         data,
         headers: {'Content-Type': 'multipart/form-data'},
       }).finally(async () => {
-        console.log(files_length);
-        console.log(files_length > 1);
         await axios.post(`${Config.API_URL}/board/post`, {
           id: userID,
           c_id: categorySelected,
@@ -224,7 +214,11 @@ const NewPost = ({navigation}: BoardScreenProps) => {
           />
           <View style={styles.imageContainer}>
             {images.map(x => (
-              <Image style={styles.image} source={{uri: x.path}} />
+              <Image
+                style={styles.image}
+                source={{uri: x.path}}
+                resizeMode="center"
+              />
             ))}
           </View>
         </View>
@@ -270,6 +264,7 @@ const styles = StyleSheet.create({
     marginHorizontal: '10%',
     width: '80%',
     flexDirection: 'column',
+    alignItems: 'center',
   },
   image: {
     width: '100%',

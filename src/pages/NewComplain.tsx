@@ -11,7 +11,6 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {ComplainStackParamList} from '../navigations/ComplainNavigation';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import CheckIcon from 'react-native-vector-icons/FontAwesome';

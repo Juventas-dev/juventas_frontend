@@ -18,8 +18,6 @@ type ItemProps = {
 const PostMyItem = ({item}: {item: ItemProps}) => {
   const navigation = useNavigation<MypageStackNavigationProp>();
   const setCid = useCallback((id: string) => {
-    console.log(id);
-    console.log('##');
     AsyncStorage.setItem('cId', id, () => [console.log('저장완료')]);
   }, []);
   const category = (c_id: number): string => {

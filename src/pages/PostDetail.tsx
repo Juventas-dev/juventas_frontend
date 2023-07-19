@@ -109,10 +109,8 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         setMyPostRecommend(response.data.post[0].myrec);
         setCommentDATA(response.data.comment);
         setReCommentDATA(response.data.comment2);
-        console.log(response.data.comment2);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -132,23 +130,16 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
       Alert.alert('이미 추천한 게시글입니다.');
     } else {
       setMyPostRecommend(1);
-      console.log(userID);
       const recommendPostWait = async () => {
         try {
-          const response = await axios.post(
-            `${Config.API_URL}/board/likepost`,
-            {
-              id: userID,
-              w_id: idCurrent,
-            },
-          );
-          console.log(response.data);
-          console.log(1);
+          await axios.post(`${Config.API_URL}/board/likepost`, {
+            id: userID,
+            w_id: idCurrent,
+          });
           getBoardAndRefresh();
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>)
             .response;
-          console.error(errorResponse);
           if (errorResponse) {
             return Alert.alert('알림', errorResponse.data?.message);
           }
@@ -161,7 +152,6 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
   const postComment = useCallback(() => {
     const postCommentWait = async () => {
       try {
-        console.log(rid);
         const response = await axios.post(`${Config.API_URL}/board/comment`, {
           id: userID,
           w_id: idCurrent,
@@ -170,12 +160,10 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
         });
         setNeedReset(!needReset);
         setCommentValue('');
-        console.log(response.data);
         // 백엔드 문제 해결 후 프론트 : post하고 나서 textinput clear되는지 확인해야 함
         getBoardAndRefresh();
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -188,20 +176,15 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
     (incr: number) => {
       const likeCommentWait = async () => {
         try {
-          const response = await axios.post(
-            `${Config.API_URL}/board/likecomment`,
-            {
-              id: userID,
-              c_id: incr,
-            },
-          );
+          await axios.post(`${Config.API_URL}/board/likecomment`, {
+            id: userID,
+            c_id: incr,
+          });
           setNeedReset(!needReset);
-          console.log(response.data);
           getBoardAndRefresh();
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>)
             .response;
-          console.error(errorResponse);
           if (errorResponse) {
             return Alert.alert('알림', errorResponse.data?.message);
           }
@@ -282,13 +265,25 @@ function PostDetail({navigation, route}: PostDetailScreenProps) {
           </View>
           <View style={styles.imageContainer}>
             {postDATA.img_path_1 !== 'undefined' && (
-              <Image style={styles.image} source={{uri: postDATA.img_path_1}} />
+              <Image
+                style={styles.image}
+                source={{uri: postDATA.img_path_1}}
+                resizeMode="center"
+              />
             )}
             {postDATA.img_path_2 !== 'undefined' && (
-              <Image style={styles.image} source={{uri: postDATA.img_path_2}} />
+              <Image
+                style={styles.image}
+                source={{uri: postDATA.img_path_2}}
+                resizeMode="center"
+              />
             )}
             {postDATA.img_path_3 !== 'undefined' && (
-              <Image style={styles.image} source={{uri: postDATA.img_path_3}} />
+              <Image
+                style={styles.image}
+                source={{uri: postDATA.img_path_3}}
+                resizeMode="center"
+              />
             )}
           </View>
         </View>
@@ -392,6 +387,7 @@ const styles = StyleSheet.create({
     marginHorizontal: '10%',
     width: '80%',
     flexDirection: 'column',
+    alignItems: 'center',
   },
   image: {
     width: '100%',

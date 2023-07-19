@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, Switch} from 'react-native';
 import Config from 'react-native-config';
@@ -73,11 +73,7 @@ function Setting({navigation}: SettingScreenProps) {
           `${Config.API_URL}/settings/announcement`,
         );
         setNotice(response.data.fixed[0]);
-        console.log({Notice});
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getNotice();
   }, []);
@@ -89,11 +85,7 @@ function Setting({navigation}: SettingScreenProps) {
           `${Config.API_URL}/settings/announcement`,
         );
         setNotice(response.data.fixed[0]);
-        console.log({Notice});
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getNotice();
   }, []);
@@ -102,8 +94,6 @@ function Setting({navigation}: SettingScreenProps) {
     const getComplain = async () => {
       const response = await axios.get(`${Config.API_URL}/settings/inquiry`);
       setFaq(response.data.FAQ);
-      console.log({faq});
-      console.log(faq[0].title);
     };
     getComplain();
   }, []);

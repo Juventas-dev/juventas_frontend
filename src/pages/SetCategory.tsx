@@ -1,15 +1,20 @@
-import React, {PureComponent, useEffect, useState} from 'react';
-import {View, Pressable, Text, StyleSheet, Alert} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  Alert,
+  Dimensions,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackParamList} from '../navigations/MypageNavigation';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
-
 import {BarChart} from 'react-native-chart-kit';
-import {useFocusEffect} from '@react-navigation/native';
 
 type MypageScreenProps = NativeStackScreenProps<
   MypageStackParamList,
@@ -28,6 +33,8 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
     cat_3: '',
   });
 
+  const screenWidth = Dimensions.get('window').width;
+
   const chartConfig = {
     backgroundGradientFrom: '#FFF',
     backgroundGradientFromOpacity: 0,
@@ -36,6 +43,10 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
     strokeWidth: 3, // optional, default 3
     barPercentage: 1.5,
     useShadowColorFromDataset: false, // optional
+    propsForLabels: {
+      width: 0,
+      height: 0,
+    },
   };
   const data = {
     labels: ['1', '2', '3', '4'],
@@ -53,21 +64,21 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
 
   const check_0 = (ct: string) => {
     if (categorySelected_1 === ct || categorySelected_2 === ct) {
-      Alert.alert('카테고리를 중복하여 선택할 수 없습니다.');
+      Alert.alert('알림', '카테고리를 중복하여 선택할 수 없습니다.');
     } else {
       setCategorySelected_0(ct);
     }
   };
   const check_1 = (ct: string) => {
     if (categorySelected_0 === ct || categorySelected_2 === ct) {
-      Alert.alert('카테고리를 중복하여 선택할 수 없습니다.');
+      Alert.alert('알림', '카테고리를 중복하여 선택할 수 없습니다.');
     } else {
       setCategorySelected_1(ct);
     }
   };
   const check_2 = (ct: string) => {
     if (categorySelected_0 === ct || categorySelected_1 === ct) {
-      Alert.alert('카테고리를 중복하여 선택할 수 없습니다.');
+      Alert.alert('알림', '카테고리를 중복하여 선택할 수 없습니다.');
     } else {
       setCategorySelected_2(ct);
     }
@@ -84,10 +95,7 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
         setCategorySelected_0(response.data.cat_0);
         setCategorySelected_1(response.data.cat_1);
         setCategorySelected_2(response.data.cat_2);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getCat();
   }, []);
@@ -99,10 +107,7 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
           `${Config.API_URL}/mypage/category/${userID}`,
         );
         setNum(response.data);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getCompletedCategory();
   }, []);
@@ -147,7 +152,7 @@ const SetCategory = ({navigation}: MypageScreenProps) => {
             showValuesOnTopOfBars={true}
             data={data}
             height={220}
-            width={370}
+            width={screenWidth + 20}
             chartConfig={chartConfig}
             showBarTops={true}
           />
@@ -491,11 +496,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chartSt: {
-    marginRight: 10,
     height: 220,
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   graphStyle: {
     marginTop: 38,
-    paddingRight: 5,
   },
 });

@@ -21,25 +21,16 @@ const Notice = ({navigation}: NoticeScreenProps) => {
             `${Config.API_URL}/settings/announcement/${incr}`,
           );
           setNotice(response.data);
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-        }
+        } catch (error) {}
       }
     };
     getNotice();
   }, [incr]);
 
   useEffect(() => {
-    console.log('^^');
     const getIncr = async () => {
       const inc = await AsyncStorage.getItem('notice');
-      console.log('**');
-      console.log(inc);
-      console.log(typeof inc);
       setIncr(parseInt(inc));
-      console.log(incr);
     };
     getIncr();
   }, []);

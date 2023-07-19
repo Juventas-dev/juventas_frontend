@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MessageStackParamList} from '../navigations/MessageNavigation';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';

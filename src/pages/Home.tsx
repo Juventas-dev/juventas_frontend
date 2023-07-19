@@ -9,6 +9,7 @@ import {
   Alert,
   Image,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
 import {useSelector} from 'react-redux';
@@ -75,6 +76,8 @@ function Home({navigation, route}: HomeScreenProps) {
   };
   const userID = useSelector((state: RootState) => state.user.id);
 
+  const screenWidth = Dimensions.get('window').width;
+
   useEffect(() => {
     getQuestSelectedOrNot();
     getBoardData();
@@ -88,7 +91,6 @@ function Home({navigation, route}: HomeScreenProps) {
       setQuestSelected(response.data.is_selected);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -97,7 +99,6 @@ function Home({navigation, route}: HomeScreenProps) {
 
   const getQuestData = async () => {
     try {
-      console.log(111);
       const response = await axios.get(
         `${Config.API_URL}/quest/userquest/${userID}`,
       );
@@ -107,7 +108,6 @@ function Home({navigation, route}: HomeScreenProps) {
         setQuestSelected('T');
       }
       if (questSelected === 'T') {
-        console.log(222);
         setMyQuest({
           questCategory: response.data.category,
           questMidCategory: response.data.middle_category,
@@ -115,8 +115,11 @@ function Home({navigation, route}: HomeScreenProps) {
           quest_id: response.data.quest_id,
           num_people: response.data.num_people,
         });
+        const response2 = await axios.get(
+          `${Config.API_URL}/quest/didCheck/${userID}/${response.data.quest_id}`,
+        );
+        setAfterComplete(response2.data.complete);
       } else {
-        console.log('#$#$#$#$');
         setAllQuestData(response.data.recommend);
       }
       setLevel(response.data.level);
@@ -125,7 +128,6 @@ function Home({navigation, route}: HomeScreenProps) {
       setPoint(response.data.point);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -135,7 +137,7 @@ function Home({navigation, route}: HomeScreenProps) {
   useEffect(() => {
     getQuestData();
     getImage(level);
-  }, [questSelected]);
+  }, [questSelected, route.params?.didSelect]);
 
   const getBoardData = async () => {
     try {
@@ -145,7 +147,6 @@ function Home({navigation, route}: HomeScreenProps) {
       setBoardData(response.data.bestPost);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -190,7 +191,6 @@ function Home({navigation, route}: HomeScreenProps) {
 
   const selectQuest = async (num: number) => {
     try {
-      console.log(num);
       await axios.post(`${Config.API_URL}/quest/userquest`, {
         id: userID,
         q_id: allQuestData[num].incr,
@@ -198,7 +198,6 @@ function Home({navigation, route}: HomeScreenProps) {
       setQuestSelected('T');
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -207,7 +206,6 @@ function Home({navigation, route}: HomeScreenProps) {
 
   const resetQuest = async () => {
     try {
-      console.log('sssssssss');
       await axios.patch(`${Config.API_URL}/quest/questreselect`, {
         id: userID,
       });
@@ -218,11 +216,8 @@ function Home({navigation, route}: HomeScreenProps) {
         quest_id: 0,
         num_people: 0,
       });
-      console.log('@!@');
-      console.log(questSelected);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -236,10 +231,10 @@ function Home({navigation, route}: HomeScreenProps) {
         is_fin: 1,
         q_id: myQuest.quest_id,
       });
-      getQuestData();
+      await getQuestData();
+      await setAfterComplete('F');
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         return Alert.alert('알림', errorResponse.data?.message);
       }
@@ -254,14 +249,6 @@ function Home({navigation, route}: HomeScreenProps) {
     }
   };
 
-  const nextPost = useCallback(
-    (num: number) => {
-      console.log(boardData);
-      setWhichPost(num);
-    },
-    [whichPost, boardData],
-  );
-
   const toDaychk = useCallback(() => {
     navigation.navigate('TodayChk');
   }, [navigation]);
@@ -272,7 +259,7 @@ function Home({navigation, route}: HomeScreenProps) {
 
   const handleScroll = (event: any) => {
     const {contentOffset} = event.nativeEvent;
-    const currentIndex = Math.round(contentOffset.x / 330);
+    const currentIndex = Math.round(contentOffset.x / (screenWidth - 71));
     setWhichPost(currentIndex);
     // currentIndex를 사용하여 현재 보이는 아이템에 대한 작업을 수행할 수 있습니다.
     // 예: currentIndex를 상태로 업데이트하고, 해당 아이템을 활성화하거나 데이터를 변경합니다.
@@ -280,7 +267,7 @@ function Home({navigation, route}: HomeScreenProps) {
 
   useEffect(() => {
     const getAfterTd = async () => {
-      console.log('$%$%$');
+      await getQuestData();
       if (questSelected) {
         const response = await axios.get(
           `${Config.API_URL}/quest/didCheck/${userID}/${myQuest.quest_id}`,
@@ -291,12 +278,12 @@ function Home({navigation, route}: HomeScreenProps) {
       }
     };
     getAfterTd();
-  }, [route.params]);
+  }, [route.params?.didCheck]);
 
   function ShowBoard({Item}) {
     return (
       <Pressable
-        style={styles.boardBody}
+        style={[styles.boardBody, {width: screenWidth - 71}]}
         onPress={() =>
           navigation.navigate('PostDetail', {
             postID: Item.incr,
@@ -450,9 +437,7 @@ function Home({navigation, route}: HomeScreenProps) {
               <Pressable
                 style={styles.completeTd}
                 onPress={async () => {
-                  completeQuest();
-                  await setAfterComplete('F');
-                  await setQuestSelected('F');
+                  await completeQuest();
                 }}>
                 <Text style={styles.questBtnTxt}>오늘로 도전 완료하기</Text>
               </Pressable>
@@ -484,6 +469,9 @@ function Home({navigation, route}: HomeScreenProps) {
             horizontal
             pagingEnabled
             data={boardData}
+            contentContainerStyle={{
+              width: `${(screenWidth - 71) * boardData.length}%`,
+            }}
             showsHorizontalScrollIndicator={false}
             keyExtractor={item => String(item.incr)}
             renderItem={({item}) => <ShowBoard Item={item} />}
@@ -494,9 +482,6 @@ function Home({navigation, route}: HomeScreenProps) {
         <View style={styles.boardFooter}>
           {boardData.length > 0 && (
             <Pressable
-              onPress={() => {
-                nextPost(0);
-              }}
               style={
                 whichPost === 0
                   ? styles.boardFooterBtnActive
@@ -506,9 +491,6 @@ function Home({navigation, route}: HomeScreenProps) {
           )}
           {boardData.length > 1 && (
             <Pressable
-              onPress={() => {
-                nextPost(1);
-              }}
               style={
                 whichPost === 1
                   ? styles.boardFooterBtnActive
@@ -518,9 +500,6 @@ function Home({navigation, route}: HomeScreenProps) {
           )}
           {boardData.length > 2 && (
             <Pressable
-              onPress={() => {
-                nextPost(2);
-              }}
               style={
                 whichPost === 2
                   ? styles.boardFooterBtnActive
@@ -597,7 +576,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   attendanceDetail_2: {
-    flex: 1,
+    flex: 1.1,
     alignItems: 'center',
     justifyContent: 'center',
     borderLeftWidth: 1,
@@ -722,7 +701,7 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   completeTd_2: {
-    flex: 1,
+    flex: 1.1,
     marginTop: 12,
     marginBottom: 5,
     backgroundColor: '#B7CBB2',
@@ -796,7 +775,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   boardBody: {
-    width: 340,
+    marginHorizontal: 'auto',
     marginTop: 15,
     marginBottom: 10,
     backgroundColor: 'white',

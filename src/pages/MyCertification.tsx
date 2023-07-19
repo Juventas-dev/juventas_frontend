@@ -1,21 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  View,
-  Pressable,
-  Text,
-  StyleSheet,
-  ScrollView,
-  FlatList,
-  Image,
-} from 'react-native';
+import {View, Pressable, Text, StyleSheet, FlatList, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CertificationtStackParamList} from '../navigations/MycertificationNavigation';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import Config from 'react-native-config';
-import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type CertificationScreenProps = NativeStackScreenProps<
@@ -43,10 +34,7 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
   }
 
   const setTdIncr = useCallback((id: string) => {
-    console.log(id);
-    AsyncStorage.setItem('TdIncr', id, () => {
-      console.log('저장완료');
-    });
+    AsyncStorage.setItem('TdIncr', id);
   }, []);
 
   const userID = useSelector((state: RootState) => state.user.id);
@@ -56,12 +44,8 @@ const MyCertification = ({navigation}: CertificationScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/mypage/myrecord/${userID}`,
         );
-        console.log(response.data.record);
         setMyCertification(response.data.record);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getCertification();
   }, []);

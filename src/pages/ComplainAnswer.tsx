@@ -3,7 +3,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ComplainStackParamList} from '../navigations/ComplainNavigation';
 import {SafeAreaView, StyleSheet, Text, View, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
 
 type ComplainScreenProps = NativeStackScreenProps<
@@ -24,17 +24,11 @@ const ComplainAnswer = ({navigation}: ComplainScreenProps) => {
     const getComplain = async () => {
       if (incr !== 0) {
         try {
-          console.log({incr});
           const response = await axios.get(
             `${Config.API_URL}/settings/inquiry/${incr}`,
           );
-          console.log(response.data);
           setComplain(response.data);
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.error(errorResponse);
-        }
+        } catch (error) {}
       }
     };
     getComplain();
@@ -43,7 +37,6 @@ const ComplainAnswer = ({navigation}: ComplainScreenProps) => {
   useEffect(() => {
     const getIncr = async () => {
       const response = await AsyncStorage.getItem('complain');
-      console.log(response);
       setIncr(parseInt(response));
     };
     getIncr();

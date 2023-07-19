@@ -68,13 +68,9 @@ const MessageItem = ({item}: {item: ItemProps}) => {
         </Text>
       </View>
       <View style={styles.body}>
-        <View style={styles.when}>
-          <Text style={styles.whenTxt}>{timeForToday(item.timestamp)}</Text>
-        </View>
+        <Text style={styles.whenTxt}>{timeForToday(item.timestamp)}</Text>
         {item.not_read !== 0 ? (
-          <View style={styles.notread}>
-            <Text style={styles.notreadTxt}>{item.not_read}</Text>
-          </View>
+          <Text style={styles.notreadTxt}>{item.not_read}</Text>
         ) : (
           <View />
         )}
@@ -104,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   body: {
-    width: '65%',
+    width: '60%',
     height: 60,
     paddingLeft: 10,
   },
@@ -118,22 +114,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 15,
   },
-  when: {
-    width: 70,
-    alignItems: 'flex-end',
-  },
   whenTxt: {
     color: '#878787',
     fontWeight: '500',
     fontSize: 12,
-  },
-  notread: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#346627',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginRight: 5,
   },
   notreadTxt: {
     color: '#FFFFFF',

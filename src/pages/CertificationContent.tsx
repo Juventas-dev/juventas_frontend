@@ -1,13 +1,6 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text, View, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CertificationtStackParamList} from '../navigations/MycertificationNavigation';
 import axios, {AxiosError} from 'axios';
@@ -15,7 +8,6 @@ import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {renderer} from 'react-test-renderer';
 
 type CertificationScreenProps = NativeStackScreenProps<
   CertificationtStackParamList,
@@ -38,8 +30,6 @@ const QuestList = ({navigation}: CertificationScreenProps) => {
     if (incr) {
       const parsedIncr = parseInt(incr, 10);
       setIncr(parsedIncr);
-      console.log('**');
-      console.log(Incr);
     }
   };
 
@@ -70,12 +60,8 @@ const QuestList = ({navigation}: CertificationScreenProps) => {
             `${Config.API_URL}/mypage/myrecord/${userID}`,
           );
           setMyCertification(response.data.record[Incr]);
-          console.log(myCertification);
         }
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
 
     getCertification();
