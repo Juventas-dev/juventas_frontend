@@ -1,7 +1,5 @@
 import React, {useCallback, useState, useEffect} from 'react';
 import {SafeAreaView, FlatList, StyleSheet, RefreshControl} from 'react-native';
-// import { NativeStackScreenProps } from '@react-navigation/native-stack';
-// import { MessageStackParamList } from '../navigations/MessageNavigation';
 import MessageItem from '../components/MessageItem';
 import axios from 'axios';
 import Config from 'react-native-config';
@@ -35,7 +33,6 @@ function Message() {
         `${Config.API_URL}/message/roomlist?id=${userID}`,
       );
       setRoomlist(response.data.roomlist);
-      console.log(response.data.roomlist);
     };
     getRoomlist();
   }, [refreshing, userID]);

@@ -9,7 +9,6 @@ import {
   FlatList,
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
-
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Config from 'react-native-config';

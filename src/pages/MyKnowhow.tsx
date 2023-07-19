@@ -1,8 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
-  Pressable,
-  Text,
   StyleSheet,
   Alert,
   TextInput,
@@ -97,7 +95,6 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -112,11 +109,9 @@ const MyKnowhow = ({navigation}: MyKnowhowScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/mypage/mywriting?id='${userID}'`,
         );
-        console.log(response.data.post);
         setDATA(response.data.post);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -261,9 +256,10 @@ const styles = StyleSheet.create({
   },
   category: {
     backgroundColor: 'white',
-    width: '40%',
+    width: '45%',
   },
   categoryTxt: {
+    width: '30%',
     fontSize: 18,
     fontWeight: 'bold',
     color: '#B7CBB2',

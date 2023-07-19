@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState, useEffect} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Text,
   TextInput,
@@ -44,7 +44,7 @@ function SignIn({navigation}: SignInScreenProps) {
   const onChangePass = useCallback((text: string) => {
     setPass(text.trim());
   }, []);
-  const onSubmit = useCallback(async () => {
+  const onSubmit = async () => {
     setAlertPhoneNum(false);
     setAlertPass(false);
     if (!phone || !phone.trim()) {
@@ -58,12 +58,10 @@ function SignIn({navigation}: SignInScreenProps) {
       return setAlertPass(true);
     }
     try {
-      console.log(`${Config.API_URL}/user/login`);
       const response = await axios.post(`${Config.API_URL}/user/login`, {
         phone: phone,
         pwd: Pass,
       });
-      console.log(response);
       dispatch(
         userSlice.actions.setUser({
           name: response.data.name,
@@ -87,14 +85,13 @@ function SignIn({navigation}: SignInScreenProps) {
       const errorResponse = (
         error as AxiosError<{error: string; message: string}>
       ).response;
-      console.error(errorResponse);
       if (errorResponse?.data.error === 'phone') {
         setAlertPhoneNum(true);
       } else {
         setAlertPass(true);
       }
     }
-  }, [dispatch, phone, Pass]);
+  };
 
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
@@ -110,8 +107,6 @@ function SignIn({navigation}: SignInScreenProps) {
       const token: KakaoOAuthToken = await login();
       const profile: KakaoProfile = await getProfile();
 
-      console.log(token);
-      console.log(profile);
       dispatch(
         userSlice.actions.setUser({
           name: profile.nickname,
@@ -125,7 +120,6 @@ function SignIn({navigation}: SignInScreenProps) {
         phone: 'kakao' + profile.id,
         pwd: '1234',
       });
-      console.log(response);
 
       const deviceToken = await EncryptedStorage.getItem('deviceToken');
 
@@ -160,8 +154,6 @@ function SignIn({navigation}: SignInScreenProps) {
         const profile = await NaverLogin.getProfile(
           successResponse.accessToken,
         );
-        console.log(successResponse);
-        console.log(profile);
         dispatch(
           userSlice.actions.setUser({
             name: profile.response.name,
@@ -175,7 +167,6 @@ function SignIn({navigation}: SignInScreenProps) {
           phone: 'naver' + profile.response.id,
           pwd: '1234',
         });
-        console.log(response);
 
         const deviceToken = await EncryptedStorage.getItem('deviceToken');
 
@@ -270,9 +261,7 @@ function SignIn({navigation}: SignInScreenProps) {
           <Text style={styles.wrong} />
         )}
         <View style={styles.btn}>
-          <Pressable
-            style={focused ? styles.signInBtn : styles.signUpBtn}
-            onPress={onSubmit}>
+          <Pressable style={styles.signInBtn} onPress={onSubmit}>
             <Text style={styles.btnText}>로그인</Text>
           </Pressable>
           {/* <Pressable style={styles.signInKakaoBtn} onPress={signInWithKakao}>

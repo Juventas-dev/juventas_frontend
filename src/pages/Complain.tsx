@@ -1,12 +1,4 @@
-import {SettingStackParamList} from '../navigations/SettingNavigation';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, Text, View, Pressable, FlatList} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -24,18 +16,12 @@ type ComplainScreenProps = NativeStackScreenProps<
 function Complain({navigation}: ComplainScreenProps) {
   const [faq, setFaq] = useState([{incr: 0, title: ''}]);
   const [complain, setComplain] = useState([{incr: 0, title: '', answer: ''}]);
-  const toComplainAnswer = useCallback(() => {
-    navigation.navigate('ComplainAnswer');
-  }, [navigation]);
   const toNewComplain = useCallback(() => {
     navigation.navigate('NewComplain');
   }, [navigation]);
 
   const setComplainIncr = useCallback((text: string) => {
-    console.log(text);
-    AsyncStorage.setItem('complain', text, () => {
-      console.log('저장완료');
-    });
+    AsyncStorage.setItem('complain', text);
   }, []);
 
   useEffect(() => {
@@ -58,7 +44,7 @@ function Complain({navigation}: ComplainScreenProps) {
         <View style={{flex: 1}}>
           <Text style={styles.QuestionTxt}>자주 묻는 질문{') '}</Text>
         </View>
-        <View style={{flex: 3.2}}>
+        <View style={{flex: 3}}>
           <Text style={styles.QuestionTxt} numberOfLines={1}>
             {Item.title}
           </Text>

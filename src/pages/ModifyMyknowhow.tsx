@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios, {AxiosError} from 'axios';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import Config from 'react-native-config';
@@ -32,7 +31,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
   const [cId, setcId] = useState(0);
   const [categorySelected, setCategorySelected] = useState<number | null>(null);
   const [filterSelected, setFilterSelected] = useState<number | null>(null);
-  // const [images, setImages] = useState<ImageResults[]>([]);
   const [questId, setQuestId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -48,8 +46,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
       if (id) {
         const parsedId = parseInt(id, 10);
         setPostId(parsedId);
-        console.log('**');
-        console.log(postId);
       }
     };
     getPost();
@@ -59,7 +55,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
         const parsedId = parseInt(id, 10);
         setcId(parsedId);
         setCategorySelected(parsedId);
-        console.log(cId);
       }
     };
     getCid();
@@ -82,12 +77,9 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
             setIsq(0);
             setFilterSelected(0);
           }
-          console.log('$$');
-          console.log(isQ);
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
         if (errorResponse) {
           return Alert.alert('알림', errorResponse.data?.message);
         }
@@ -106,17 +98,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
     setShowModal(true);
   }, []);
 
-  const selectImage = async () => {
-    // const response = await MultipleImagePicker.openPicker({
-    //   mediaType: MediaType.IMAGE,
-    //   maxSelectedAssets: 3,
-    //   doneTitle: '완료',
-    //   cancelTitle: '취소',
-    //   selectedAssets: images,
-    // });
-    // setImages(response);
-  };
-
   const upload = async () => {
     let temp;
     if (filterSelected === 1) {
@@ -124,13 +105,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
     } else {
       temp = 'F';
     }
-    console.log('%$%$%$$');
-    console.log(categorySelected);
-    console.log(questId);
-    console.log(postId);
-    console.log(temp);
-    console.log(title);
-    console.log(content);
     await axios.patch(`${Config.API_URL}/board/post`, {
       id: userID,
       incr: postId,
@@ -209,14 +183,6 @@ const ModifyMyknowhow = ({navigation}: modifyMyknowhowScreenProps) => {
           />
         </View>
         <View style={styles.board}>
-          <Pressable
-            android_ripple={{
-              color: '#ffffff',
-            }}
-            style={styles.circle}
-            onPress={selectImage}>
-            <Icon name="camera-alt" color="white" size={24} />
-          </Pressable>
           <TextInput
             style={styles.titleInput}
             placeholder="제목을 입력하세요"

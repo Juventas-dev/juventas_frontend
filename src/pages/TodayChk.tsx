@@ -9,6 +9,7 @@ import {
   TextInput,
   View,
   Image,
+  Alert,
 } from 'react-native';
 import Config from 'react-native-config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -64,8 +65,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
       } else {
         setImages(image);
       }
-      console.log(image);
-      console.log(images);
     });
   };
 
@@ -77,11 +76,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
 
   let files_length = 0;
   const uploadTd = async () => {
-    console.log('1');
-    console.log(userID);
-    console.log(myQuest.quest_id);
-    console.log(title);
-    console.log(content);
     saveAfter('T');
     if (images.length > 0) {
       const data = new FormData();
@@ -95,8 +89,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
         files.push(file);
         data.append('image', file);
       });
-      console.log('files');
-      console.log(files);
       files_length = files.length;
       axios({
         url: `${Config.API_URL}/img/quest`,
@@ -122,7 +114,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
               ? `https://kr.object.ncloudstorage.com/myquestimg/${files[2].name}`
               : undefined,
         });
-        console.log('123');
         navigation.navigate('Home', {didCheck: 'T'});
       });
     } else {
@@ -132,7 +123,6 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
         title: title,
         content: content,
       });
-      console.log('123');
       navigation.navigate('Home', {didCheck: 'T'});
     }
   };
@@ -143,12 +133,8 @@ const TodayChk = ({navigation}: HomeScreenProps) => {
         const response = await axios.get(
           `${Config.API_URL}/quest/userquest/${userID}`,
         );
-        console.log(response.data);
         setMyQuest(response.data);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getQuest();
   }, []);

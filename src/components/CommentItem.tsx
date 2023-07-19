@@ -49,8 +49,6 @@ const CommentItem = ({
   writeRc: string;
   recommentData: CommentItemProps[];
 }) => {
-  console.log('*&*');
-  console.log(items);
   const [showProfile, setShowProfile] = useState(false);
 
   const userID = useSelector((state: RootState) => state.user.id);

@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   postContent: {
     marginLeft: 20,
     justifyContent: 'center',
-    width: '65%',
+    width: '62%',
   },
   postContentCategory: {
     fontSize: 14,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   postInfoDetail: {
-    marginLeft: 20,
+    marginLeft: '15%',
     alignItems: 'center',
   },
   postInfoTxt: {

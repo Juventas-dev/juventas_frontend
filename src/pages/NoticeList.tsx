@@ -1,19 +1,10 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, Text, View, Pressable, FlatList} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {NoticeStackParamList} from '../navigations/NoticeNavigation';
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 import Config from 'react-native-config';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NoticeScreenProps = NativeStackScreenProps<
@@ -22,16 +13,12 @@ type NoticeScreenProps = NativeStackScreenProps<
 >;
 
 function NoticeList({navigation}: NoticeScreenProps) {
-  const toNotice = useCallback(() => {
-    navigation.navigate('Notice');
-  }, [navigation]);
   const [fixedNotice, setFixedNotice] = useState({
     incr: 0,
     content: '',
     title: '',
   });
   const [Notice, setNotice] = useState([{incr: 0, title: ''}]);
-  const userID = useSelector((state: RootState) => state.user.id);
 
   const setNoticeIncr = useCallback((text: string) => {
     console.log(text);
@@ -48,13 +35,7 @@ function NoticeList({navigation}: NoticeScreenProps) {
         );
         setFixedNotice(response.data.fixed[0]);
         setNotice(response.data.announce);
-        console.log(1);
-        console.log(response.data.fixed);
-        console.log(response.data.announce);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getNotice();
   }, []);
@@ -78,8 +59,6 @@ function NoticeList({navigation}: NoticeScreenProps) {
   }
 
   function NoTice({Item}) {
-    console.log(0);
-    console.log([Item]);
     return (
       <Pressable
         style={styles.NoticeBf}

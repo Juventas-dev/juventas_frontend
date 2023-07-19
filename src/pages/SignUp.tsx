@@ -57,18 +57,18 @@ export default function SignUp({navigation}: SignUpScreenProps) {
     setCheckNum(text.trim());
   }, []);
 
-  const getCheckNum = useCallback(async () => {
+  const getCheckNum = async () => {
     if (!/^\d{3}\d{3,4}\d{4}$/.test(PhoneNum)) {
       return Alert.alert('알림', '올바른 전화번호를 입력하세요');
     } else {
       await axios.post(`${Config.API_URL}/user/postVerifyCode`, {
-        phone: PhoneNum,
+        phone: `${PhoneNum}`,
       });
       setShowModal(true);
     }
-  }, [PhoneNum]);
+  };
 
-  const onCheckNum = useCallback(async () => {
+  const onCheckNum = async () => {
     if (!/^\d{6}$/.test(CheckNum)) {
       return setAlertCheckNum(true);
     } else {
@@ -83,7 +83,7 @@ export default function SignUp({navigation}: SignUpScreenProps) {
         return setAlertCheckNum(true);
       }
     }
-  }, [CheckNum, PhoneNum]);
+  };
 
   const canGoNext =
     Name && Pass && Pass === PassCheck && AfterCheckNum && checked;
@@ -112,18 +112,16 @@ export default function SignUp({navigation}: SignUpScreenProps) {
     }
     try {
       setLoading(true);
-      const response = await axios.post(`${Config.API_URL}/user/signup`, {
+      await axios.post(`${Config.API_URL}/user/signup`, {
         name: Name,
         pwd: Pass,
         phone: PhoneNum,
         ///PassCheck,
       });
-      console.log(response);
       Alert.alert('알림', '회원가입 되었습니다.');
       navigation.navigate('SignIn');
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         Alert.alert('알림', errorResponse.data.message);
       }

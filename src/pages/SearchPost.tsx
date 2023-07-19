@@ -16,28 +16,6 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import SearchPostItem from '../components/SearchPostItem';
 import {HomeStackParamList} from '../navigations/HomeNavigation';
-import MyKnowhow, {MyKnowhowStackParamList} from './MyKnowhow';
-
-// const DATA = [
-//   {
-//     id: '1234',
-//     c_id: '0',
-//     q_id: '0',
-//     Is_qna: 'F',
-//     title: '줄넘기 하는 법',
-//     content: '줄넘기는 이렇게!',
-//     img_path: '',
-//   },
-//   {
-//     id: '12345',
-//     c_id: '1',
-//     q_id: '0',
-//     Is_qna: 'F',
-//     title: '서핑보드 중심 잡기',
-//     content: '어려워요',
-//     img_path: '',
-//   },
-// ];
 
 type SearchPostScreenProps =
   | NativeStackScreenProps<BoardStackParamList, 'SearchPost'>

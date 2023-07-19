@@ -98,7 +98,6 @@ function FindPassword({navigation}: FindPassScreenProps) {
       setUserPassword(response.data.pwd);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse);
       if (errorResponse) {
         Alert.alert('알림', errorResponse.data.message);
       }

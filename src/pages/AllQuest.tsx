@@ -1,21 +1,15 @@
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StyleSheet, Text, View, Pressable} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {QuestStackParamList} from '../navigations/AllQuestNavigation';
-import axios, {AxiosError} from 'axios';
-import Config from 'react-native-config';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type QuestScreenProps = NativeStackScreenProps<QuestStackParamList, 'AllQuest'>;
 
 const AllQuest = ({navigation}: QuestScreenProps) => {
   const setCategory = useCallback((text: string) => {
-    AsyncStorage.setItem('category', text, () => {
-      console.log('저장완료');
-    });
+    AsyncStorage.setItem('category', text);
   }, []);
 
   return (

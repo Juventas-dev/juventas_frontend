@@ -11,7 +11,7 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 export type QuestStackParamList = {
   AllQuest: undefined;
   QuestList: undefined;
-  Home: undefined;
+  Home: {didSelect: string};
 };
 
 export type QuestStackNavigationProp =

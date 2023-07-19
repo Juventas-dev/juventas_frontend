@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Pressable, Text, StyleSheet} from 'react-native';
+import {View, Dimensions, Text, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MypageStackParamList} from '../navigations/MypageNavigation';
@@ -21,25 +21,21 @@ const MyGrade = ({navigation}: MyGradeScreenProps) => {
     let arr = text.split('%');
     let p = parseInt(arr[0], 10);
     setPercent(p);
-    console.log({percent});
   };
   const userID = useSelector((state: RootState) => state.user.id);
+  const screenWidth = Dimensions.get('window').width;
   useEffect(() => {
     const getGrade = async () => {
       try {
         const response = await axios.get(
           `${Config.API_URL}/mypage/mylevel/${userID}`,
         );
-        console.log(response.data);
         setCurrentGrade(response.data.current_level);
         setNextGrade(response.data.next_level);
         setPercentage(response.data.percentage);
         setLeftNum(response.data.questleft);
         getPercent(response.data.percentage);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.error(errorResponse);
-      }
+      } catch (error) {}
     };
     getGrade();
   }, []);
@@ -60,7 +56,7 @@ const MyGrade = ({navigation}: MyGradeScreenProps) => {
             progress={percent / 100}
             color={'#346627'}
             unfilledColor={'#EBEFEA'}
-            width={370}
+            width={screenWidth - 40}
             height={30}
             borderRadius={30}
             style={styles.bar}>
