@@ -93,176 +93,170 @@ const FirstSetting = ({
     [Sex],
   );
 
-  const onChooseHousemate = useCallback(
-    (num: number) => {
-      if (num === 1) {
-        if (parent) {
-          chooseParent(false);
-        } else {
-          chooseParent(true);
-          chooseNone(false);
-        }
+  const onChooseHousemate = (num: number) => {
+    if (num === 1) {
+      if (parent) {
+        chooseParent(false);
+      } else {
+        chooseParent(true);
+        chooseNone(false);
       }
-      if (num === 2) {
-        if (spouse) {
-          chooseSpouse(false);
-        } else {
-          chooseSpouse(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 2) {
+      if (spouse) {
+        chooseSpouse(false);
+      } else {
+        chooseSpouse(true);
+        chooseNone(false);
       }
-      if (num === 3) {
-        if (child) {
-          chooseChild(false);
-        } else {
-          chooseChild(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 3) {
+      if (child) {
+        chooseChild(false);
+      } else {
+        chooseChild(true);
+        chooseNone(false);
       }
-      if (num === 4) {
-        if (sibling) {
-          chooseSibling(false);
-        } else {
-          chooseSibling(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 4) {
+      if (sibling) {
+        chooseSibling(false);
+      } else {
+        chooseSibling(true);
+        chooseNone(false);
       }
-      if (num === 5) {
-        if (relative) {
-          chooseRelative(false);
-        } else {
-          chooseRelative(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 5) {
+      if (relative) {
+        chooseRelative(false);
+      } else {
+        chooseRelative(true);
+        chooseNone(false);
       }
-      if (num === 6) {
-        if (lover) {
-          chooseLover(false);
-        } else {
-          chooseLover(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 6) {
+      if (lover) {
+        chooseLover(false);
+      } else {
+        chooseLover(true);
+        chooseNone(false);
       }
-      if (num === 7) {
-        if (friend) {
-          chooseFriend(false);
-        } else {
-          chooseFriend(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 7) {
+      if (friend) {
+        chooseFriend(false);
+      } else {
+        chooseFriend(true);
+        chooseNone(false);
       }
-      if (num === 8) {
-        if (pet) {
-          choosePet(false);
-        } else {
-          choosePet(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 8) {
+      if (pet) {
+        choosePet(false);
+      } else {
+        choosePet(true);
+        chooseNone(false);
       }
-      if (num === 9) {
-        if (etc) {
-          chooseEtc(false);
-        } else {
-          chooseEtc(true);
-          chooseNone(false);
-        }
+    }
+    if (num === 9) {
+      if (etc) {
+        chooseEtc(false);
+      } else {
+        chooseEtc(true);
+        chooseNone(false);
       }
-      if (num === 10) {
-        if (none) {
-          chooseNone(false);
-        } else {
-          chooseNone(true);
-          chooseParent(false);
-          chooseSpouse(false);
-          chooseChild(false);
-          chooseSibling(false);
-          chooseRelative(false);
-          chooseLover(false);
-          chooseFriend(false);
-          choosePet(false);
-          chooseEtc(false);
-        }
+    }
+    if (num === 10) {
+      if (none) {
+        chooseNone(false);
+      } else {
+        chooseNone(true);
+        chooseParent(false);
+        chooseSpouse(false);
+        chooseChild(false);
+        chooseSibling(false);
+        chooseRelative(false);
+        chooseLover(false);
+        chooseFriend(false);
+        choosePet(false);
+        chooseEtc(false);
       }
-      // setHousemate(!parent && !spouse && !child && !sibling && !relative && !lover && !friend && !pet && !etc && !none);
-    },
-    [parent, spouse, child, sibling, relative, lover, friend, pet, etc, none],
-  );
-  const onChooseJob = useCallback(
-    (num: number) => {
-      if (num === 1) {
-        if (worker) {
-          chooseWorker(false);
-        } else {
-          chooseWorker(true);
-          chooseNojob(false);
-        }
+    }
+    // setHousemate(!parent && !spouse && !child && !sibling && !relative && !lover && !friend && !pet && !etc && !none);
+  };
+  const onChooseJob = (num: number) => {
+    if (num === 1) {
+      if (worker) {
+        chooseWorker(false);
+      } else {
+        chooseWorker(true);
+        chooseNojob(false);
       }
-      if (num === 2) {
-        if (self) {
-          chooseSelf(false);
-        } else {
-          chooseSelf(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 2) {
+      if (self) {
+        chooseSelf(false);
+      } else {
+        chooseSelf(true);
+        chooseNojob(false);
       }
-      if (num === 3) {
-        if (partTime) {
-          choosePartTime(false);
-        } else {
-          choosePartTime(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 3) {
+      if (partTime) {
+        choosePartTime(false);
+      } else {
+        choosePartTime(true);
+        chooseNojob(false);
       }
-      if (num === 4) {
-        if (housemaker) {
-          chooseHousemaker(false);
-        } else {
-          chooseHousemaker(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 4) {
+      if (housemaker) {
+        chooseHousemaker(false);
+      } else {
+        chooseHousemaker(true);
+        chooseNojob(false);
       }
-      if (num === 5) {
-        if (student) {
-          chooseStudent(false);
-        } else {
-          chooseStudent(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 5) {
+      if (student) {
+        chooseStudent(false);
+      } else {
+        chooseStudent(true);
+        chooseNojob(false);
       }
-      if (num === 6) {
-        if (nojob) {
-          chooseNojob(false);
-        } else {
-          chooseNojob(true);
-          chooseWorker(false);
-          chooseSelf(false);
-          choosePartTime(false);
-          chooseHousemaker(false);
-          chooseStudent(false);
-          chooseOfficial(false);
-          chooseEtcjob(false);
-        }
+    }
+    if (num === 6) {
+      if (nojob) {
+        chooseNojob(false);
+      } else {
+        chooseNojob(true);
+        chooseWorker(false);
+        chooseSelf(false);
+        choosePartTime(false);
+        chooseHousemaker(false);
+        chooseStudent(false);
+        chooseOfficial(false);
+        chooseEtcjob(false);
       }
-      if (num === 7) {
-        if (official) {
-          chooseOfficial(false);
-        } else {
-          chooseOfficial(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 7) {
+      if (official) {
+        chooseOfficial(false);
+      } else {
+        chooseOfficial(true);
+        chooseNojob(false);
       }
-      if (num === 8) {
-        if (etcjob) {
-          chooseEtcjob(false);
-        } else {
-          chooseEtcjob(true);
-          chooseNojob(false);
-        }
+    }
+    if (num === 8) {
+      if (etcjob) {
+        chooseEtcjob(false);
+      } else {
+        chooseEtcjob(true);
+        chooseNojob(false);
       }
-      // setJob(!worker && !self && !partTime && !housemaker && !student && !nojob && !official && !etcjob);
-    },
-    [worker, self, partTime, housemaker, student, nojob, official, etcjob],
-  );
+    }
+    // setJob(!worker && !self && !partTime && !housemaker && !student && !nojob && !official && !etcjob);
+  };
   const onChoosePrefer = useCallback(
     (num: number) => {
       if (num === 1) {
@@ -386,13 +380,12 @@ const FirstSetting = ({
     [NameCheck],
   );
 
-  const nextScreen = useCallback(() => {
+  const nextScreen = () => {
     if (firstScreen === 1) {
       if (
         NameCheck !== 'T' ||
         !/^\d{1,3}$/.test(Age) ||
         !Sex ||
-        !Sex.trim() ||
         (!worker &&
           !self &&
           !partTime &&
@@ -420,12 +413,6 @@ const FirstSetting = ({
           Alert.alert('알림', '최소시간이 최대시간보다 짧아야 합니다.');
         } else {
           Alert.alert('알림', '입력하지 않은 정보가 있습니다.');
-          console.log('name ', NameCheck);
-          console.log('age ', Age);
-          console.log('sex ', Sex);
-          console.log('mintime ', UsingtimeMin);
-          console.log('maxtime ', UsingtimeMax);
-          console.log('category ', selected);
         }
       } else {
         setFirstScreen(firstScreen + 1);
@@ -439,9 +426,9 @@ const FirstSetting = ({
         setUserData();
       }
     }
-  }, [firstScreen]);
+  };
 
-  const setUserData = useCallback(async () => {
+  const setUserData = async () => {
     let hm = [];
     if (parent) {
       hm.push('0');
@@ -515,22 +502,19 @@ const FirstSetting = ({
     }
 
     try {
-      const response = await axios.patch(
-        `${Config.API_URL}/user/firstsetting`,
-        {
-          id: userID,
-          nickname: Name,
-          age: parseInt(Age),
-          sex: Sex,
-          livewith: hm.join(''),
-          time_min: UsingtimeMin - 1,
-          time_max: UsingtimeMax - 1,
-          cat_0: pf[0],
-          cat_1: pf[1],
-          cat_2: pf[2],
-          job: jb.join(''),
-        },
-      );
+      await axios.patch(`${Config.API_URL}/user/firstsetting`, {
+        id: userID,
+        nickname: Name,
+        age: parseInt(Age),
+        sex: Sex,
+        livewith: hm.join(''),
+        time_min: `${UsingtimeMin - 1}`,
+        time_max: `${UsingtimeMax - 1}`,
+        cat_0: pf[0],
+        cat_1: pf[1],
+        cat_2: pf[2],
+        job: jb.join(''),
+      });
       // 홈화면으로 이동
       setState(false);
     } catch (error) {
@@ -539,7 +523,7 @@ const FirstSetting = ({
         return Alert.alert('알림', errorResponse.data?.message);
       }
     }
-  }, []);
+  };
   return (
     <SafeAreaView style={styles.entire}>
       {!firstScreen && (
